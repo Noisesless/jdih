@@ -29,6 +29,34 @@ class RagService
      */
     public function generateEmbedding(string $text): ?array
     {
+        // Prioritaskan Gemini Embedding API jika key tersedia
+        $geminiKey = config('services.gemini.api_key');
+        if ($geminiKey) {
+            try {
+                $geminiEmbeddingModel = config('services.gemini.embedding_model', 'gemini-embedding-001');
+                $geminiBaseUrl = config('services.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta');
+
+                $response = Http::timeout(25)
+                    ->post("{$geminiBaseUrl}/models/{$geminiEmbeddingModel}:embedContent?key=" . urlencode($geminiKey), [
+                        'content' => [
+                            'parts' => [
+                                ['text' => mb_substr($text, 0, 2048)]
+                            ]
+                        ]
+                    ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    if (!empty($data['embedding']['values'])) {
+                        return $data['embedding']['values'];
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Gemini RAG Embedding failed: ' . $e->getMessage());
+            }
+        }
+
+        // Fallback ke CFRouter jika Gemini belum aktif
         try {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
