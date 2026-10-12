@@ -93,6 +93,11 @@ JAWABLAH dengan memberikan penjelasan yang komprehensif, terstruktur, dan akurat
         try {
             $answer = $geminiService->generateContent($systemPrompt, $userMessage);
 
+            // Silent Failover: Jika kuota Gemini habis / error, beralih langsung ke Python Offline RAG Engine
+            if (!$answer) {
+                $answer = $this->runOfflineRag((int) $document->id, (string) $request->question);
+            }
+
             if (!$answer) {
                 return response()->json(['error' => 'Layanan Asisten AI sedang mengalami antrean tinggi. Silakan coba sesaat lagi.'], 503);
             }
@@ -213,6 +218,35 @@ JAWABLAH dengan memberikan penjelasan yang komprehensif, terstruktur, dan akurat
         $documentContext .= "\n\n=== AKHIR DATA DOKUMEN ===";
 
         return $documentContext;
+    }
+
+    /**
+     * Silent Failover: Jalankan Offline Legal RAG Engine (Python).
+     * Dipanggil otomatis saat seluruh API Key Gemini di pool kehabisan kuota / limit.
+     */
+    protected function runOfflineRag(int $documentId, string $question): ?string
+    {
+        try {
+            $scriptPath = base_path('scripts/offline_rag.py');
+            if (!file_exists($scriptPath)) {
+                return null;
+            }
+
+            $escapedDoc = (int) $documentId;
+            $escapedQ = escapeshellarg($question);
+
+            $command = "python \"{$scriptPath}\" --doc={$escapedDoc} --q={$escapedQ} 2>&1";
+            $output = shell_exec($command);
+
+            if (!empty($output)) {
+                \Log::info("AI Assistant: Sukses menggunakan Offline Legal RAG Engine (Python) untuk Doc ID: {$documentId}");
+                return trim($output);
+            }
+        } catch (\Throwable $e) {
+            \Log::error("AI Assistant Offline RAG Error: " . $e->getMessage());
+        }
+
+        return null;
     }
 
     /**
