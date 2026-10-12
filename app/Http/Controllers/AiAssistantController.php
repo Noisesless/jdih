@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 use App\Models\LegalDocument;
 use App\Services\RagService;
 use App\Services\GeminiService;
+use App\Services\OfflineLegalRagService;
 use App\Models\PdfChunk;
 
 class AiAssistantController extends Controller
@@ -14,7 +15,7 @@ class AiAssistantController extends Controller
     /**
      * Handle AI assistant question with RAG support.
      */
-    public function ask(Request $request, RagService $ragService, GeminiService $geminiService)
+    public function ask(Request $request, RagService $ragService, GeminiService $geminiService, OfflineLegalRagService $offlineRag)
     {
         $request->validate([
             'document_id' => 'required|exists:legal_documents,id',
@@ -93,12 +94,22 @@ JAWABLAH dengan memberikan penjelasan yang komprehensif, terstruktur, dan akurat
         try {
             $answer = $geminiService->generateContent($systemPrompt, $userMessage);
 
-            // Silent Failover: Jika kuota Gemini habis / error, beralih langsung ke Python Offline RAG Engine
-            if (!$answer) {
-                $answer = $this->runOfflineRag((int) $document->id, (string) $request->question);
+            // Silent Failover: Jika kuota Gemini habis / offline, gunakan mesin Offline RAG
+            if (empty($answer)) {
+                // 1. Prioritas Utama: Mesin Native PHP (100% tahan banting, 0 OS/Python dependency)
+                try {
+                    $answer = $offlineRag->answer($document, $request->question);
+                } catch (\Throwable $eOffline) {
+                    \Log::warning("AI Assistant PHP Offline RAG notice: " . $eOffline->getMessage());
+                }
+
+                // 2. Jika masih kosong, coba Python script jika tersedia
+                if (empty($answer)) {
+                    $answer = $this->runOfflineRag((int) $document->id, (string) $request->question);
+                }
             }
 
-            if (!$answer) {
+            if (empty($answer)) {
                 return response()->json(['error' => 'Layanan Asisten AI sedang mengalami antrean tinggi. Silakan coba sesaat lagi.'], 503);
             }
             
@@ -232,15 +243,35 @@ JAWABLAH dengan memberikan penjelasan yang komprehensif, terstruktur, dan akurat
                 return null;
             }
 
+            // Deteksi binary python: python3 (standar Linux/Ubuntu), python (Windows), atau custom
+            $pythonBin = config('services.gemini.python_bin');
+            if (empty($pythonBin)) {
+                $pythonBin = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ? 'python' : 'python3';
+            }
+
             $escapedDoc = (int) $documentId;
             $escapedQ = escapeshellarg($question);
 
-            $command = "python \"{$scriptPath}\" --doc={$escapedDoc} --q={$escapedQ} 2>&1";
-            $output = shell_exec($command);
+            $command = "{$pythonBin} \"{$scriptPath}\" --doc={$escapedDoc} --q={$escapedQ} 2>&1";
+            $output = @shell_exec($command);
 
             if (!empty($output)) {
+                $trimmed = trim($output);
+
+                // Pastikan tidak membocorkan error shell/python ke pengguna (contoh: "sh: 1:", "not found", "Traceback")
+                if (
+                    str_contains($trimmed, 'not found') ||
+                    str_contains($trimmed, 'Traceback') ||
+                    str_contains($trimmed, 'SyntaxError') ||
+                    str_starts_with($trimmed, 'sh: ') ||
+                    str_starts_with($trimmed, '/bin/sh:')
+                ) {
+                    \Log::warning("AI Assistant Python Offline RAG CLI Warning: " . substr($trimmed, 0, 200));
+                    return null;
+                }
+
                 \Log::info("AI Assistant: Sukses menggunakan Offline Legal RAG Engine (Python) untuk Doc ID: {$documentId}");
-                return trim($output);
+                return $trimmed;
             }
         } catch (\Throwable $e) {
             \Log::error("AI Assistant Offline RAG Error: " . $e->getMessage());

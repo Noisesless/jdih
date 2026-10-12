@@ -67,12 +67,19 @@ class GeminiService
     public function generateContent(string $systemPrompt, string $userMessage, ?string $preferredModel = null): ?string
     {
         if (empty($this->apiKeys)) {
-            Log::error('GeminiService: Tidak ada API Key yang dikonfigurasi.');
+            Log::warning('GeminiService: Tidak ada API Key yang dikonfigurasi di file .env. Beralih ke fallback offline...');
             return null;
         }
 
         $model = $preferredModel ?: $this->defaultGenerationModel;
-        $modelsToTry = array_unique([$model, 'gemini-3.5-flash', 'gemini-3.5-flash-lite']);
+        // Model fallback mencakup 3.5, 2.5, 2.0, dan 1.5 flash
+        $modelsToTry = array_values(array_unique([
+            $model,
+            'gemini-3.5-flash',
+            'gemini-2.5-flash',
+            'gemini-2.0-flash',
+            'gemini-1.5-flash'
+        ]));
 
         // Iterasi setiap API Key yang tersedia (Failover Pool)
         foreach ($this->apiKeys as $keyIndex => $apiKey) {
@@ -81,6 +88,7 @@ class GeminiService
             foreach ($modelsToTry as $currentModel) {
                 try {
                     $response = Http::timeout(25)
+                        ->withoutVerifying()
                         ->post("{$this->baseUrl}/models/{$currentModel}:generateContent?key=" . urlencode($apiKey), [
                             'systemInstruction' => [
                                 'parts' => [['text' => $systemPrompt]]
@@ -109,23 +117,18 @@ class GeminiService
                     $status = $response->status();
                     $body = $response->body();
 
-                    // Tangani Rate Limit (429), Overload (503), atau Kuota Habis (403/400)
-                    if (in_array($status, [429, 503, 403, 400])) {
-                        Log::warning("GeminiService [Key #{$keyIndex} ({$maskedKey})]: HTTP {$status} pada model {$currentModel}. Mencoba failover...", [
-                            'error' => substr($body, 0, 200)
-                        ]);
-                        // Lanjut ke model berikutnya atau key berikutnya
-                        continue;
-                    }
+                    Log::warning("GeminiService [Key #{$keyIndex} ({$maskedKey})]: HTTP {$status} pada model {$currentModel}. Failover...", [
+                        'response' => substr($body, 0, 250)
+                    ]);
 
                 } catch (\Throwable $e) {
-                    Log::warning("GeminiService [Key #{$keyIndex} ({$maskedKey})]: Exception {$e->getMessage()}. Failover ke key berikutnya...");
-                    break; // Pindah ke key berikutnya jika network error
+                    Log::warning("GeminiService [Key #{$keyIndex} ({$maskedKey})]: Exception {$e->getMessage()}. Failover...");
+                    break; // Pindah ke key berikutnya jika ada kendala koneksi
                 }
             }
         }
 
-        Log::error('GeminiService: Seluruh API Key dalam pool gagal merespons.');
+        Log::warning('GeminiService: Seluruh API Key dan model online gagal merespons. Mengaktifkan fallback offline.');
         return null;
     }
 
@@ -135,7 +138,6 @@ class GeminiService
     public function embedContent(string $text, ?string $preferredModel = null): ?array
     {
         if (empty($this->apiKeys)) {
-            Log::error('GeminiService: Tidak ada API Key untuk embedding.');
             return null;
         }
 
@@ -147,6 +149,7 @@ class GeminiService
 
             try {
                 $response = Http::timeout(20)
+                    ->withoutVerifying()
                     ->post("{$this->baseUrl}/models/{$model}:embedContent?key=" . urlencode($apiKey), [
                         'content' => [
                             'parts' => [['text' => $truncatedText]]
@@ -160,11 +163,7 @@ class GeminiService
                     }
                 }
 
-                $status = $response->status();
-                if (in_array($status, [429, 503, 403, 400])) {
-                    Log::warning("GeminiService Embedding [Key #{$keyIndex} ({$maskedKey})]: HTTP {$status}. Failover ke key berikutnya...");
-                    continue;
-                }
+                Log::warning("GeminiService Embedding [Key #{$keyIndex} ({$maskedKey})]: HTTP {$response->status()}. Failover...");
 
             } catch (\Throwable $e) {
                 Log::warning("GeminiService Embedding Exception [Key #{$keyIndex}]: {$e->getMessage()}. Failover...");
