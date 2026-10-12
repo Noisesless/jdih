@@ -38,3 +38,10 @@ Daftar progres pekerjaan dan roadmap operasional sistem JDIH Kabupaten Banjarneg
 - [x] Sinkronisasi dokumentasi Blueprint Brainvibes (`/.docs/` 9 file + `prd.md` + `todo.md` + `handover.md` + `app-context.md`)
 - [ ] Monitoring integritas data sinkronisasi API JDIHN secara berkala
 - [ ] Pengujian performa beban berkas PDF volume besar di server produksi
+
+## [ ] Fase 7: Sinkronisasi Keterkaitan Antar-Peraturan (Mencabut & Mengubah)
+- [ ] Buat Artisan Command Auto-Linker (`php artisan jdih:link-relations`) untuk menautkan otomatis 179+ relasi (16 pencabutan & 163 perubahan) dari teks judul peraturan ke tabel `legal_document_relations`
+- [ ] Perbarui status keberlakuan dokumen yang dicabut dari `'Berlaku'` menjadi `'Dicabut'` / `'Tidak Berlaku'` serta isi catatan `status_note` secara otomatis
+- [ ] Perbaiki accessor `getRelatedAttribute()` & `getReferencedByAttribute()` di `LegalDocument.php` agar menyertakan nilai `relation_type` dari pivot table untuk frontend Inertia
+- [ ] Implementasikan Model Observer / Event pada `LegalDocumentRelation`: otomatis update status dokumen target saat admin menambah relasi pencabutan di Filament Admin
+- [ ] Sinkronisasi data keterkaitan ke JDIHN Pusat: sertakan array `peraturan_terkait` pada payload `formatDocumentForSync` di `JdihSyncController`
