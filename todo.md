@@ -12,7 +12,7 @@ Daftar progres pekerjaan dan roadmap operasional sistem JDIH Kabupaten Banjarneg
 - [x] Fitur pencarian multi-kriteria dokumen hukum (kategori, tahun, nomor, status)
 - [x] Penampil abstrak dan dokumen PDF legalitas hukum
 - [x] Forum Dialog Publik dan Form Aspirasi Masyarakat
-- [x] AI Chatbot Legal Assistant bertenaga Groq Llama 3.1
+- [x] AI Chatbot Legal Assistant bertenaga Groq Llama 3.1 & Google Gemini
 
 ## [x] Fase 3: Pengembangan Backoffice & Filament Admin
 - [x] Resource manajemen Dokumen Hukum (Perda, Perbup, SK, dll.)
@@ -34,10 +34,11 @@ Daftar progres pekerjaan dan roadmap operasional sistem JDIH Kabupaten Banjarneg
 - [x] Pencegahan duplikasi pencatatan log pada login admin
 - [x] Pembuatan akun admin operasional dinas: `admin.jdih@banjarnegarakab.go.id` via migration
 
-## [/] Fase 6: Dokumentasi Sistem & Monitoring Berkelanjutan
+## [x] Fase 6: Mesin AI Hybrid, Responsivitas & Dokumentasi Sistem
+- [x] Implementasi Native PHP Offline Legal RAG Engine & Dynamic OS Python Detection (bebas dari error CLI `python: not found` di Linux server)
+- [x] Optimasi Responsivitas Laptop-First 1366×768 (dan scaling 125% ~1092px) pada layout dan katalog dokumen publik
+- [x] Setup precompiled frontend assets deployment workflow untuk server tanpa Node.js/NPM
 - [x] Sinkronisasi dokumentasi Blueprint Brainvibes (`/.docs/` 9 file + `prd.md` + `todo.md` + `handover.md` + `app-context.md`)
-- [ ] Monitoring integritas data sinkronisasi API JDIHN secara berkala
-- [ ] Pengujian performa beban berkas PDF volume besar di server produksi
 
 ## [ ] Fase 7: Sinkronisasi Keterkaitan Antar-Peraturan (Mencabut & Mengubah)
 - [ ] Buat Artisan Command Auto-Linker (`php artisan jdih:link-relations`) untuk menautkan otomatis 179+ relasi (16 pencabutan & 163 perubahan) dari teks judul peraturan ke tabel `legal_document_relations`

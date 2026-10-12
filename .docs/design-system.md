@@ -54,9 +54,14 @@ Single Source of Truth untuk Visual DNA, Desain Token, Tipografi, dan Responsivi
 |---|---|---|
 | **Android Small** | `360px` | Single column, compact padding, font size -1px |
 | **Android Medium** | `393px` / `412px` | Bottom navigation bar / Hamburger menu, touch target 44px+ |
-| **Tablet** | `768px` | 2-column grid, expanded search filter |
-| **★ Laptop (PRIMARY)** | `1366px` | Max-container: 1200px, multi-column bento catalog, fixed header |
+| **Tablet** | `768px` | 2-column grid, compact search filter |
+| **★ Laptop (PRIMARY)** | `1366px` | Standar laptop instansi (termasuk Windows scaling 125% ~1092px): Container `max-w-[1366px] px-4 lg:px-6`, 4-column bento, dynamic viewport height `min-h-[calc(100vh-140px)]` |
 | **Desktop Wide** | `1920px` | Centered layout with balanced gutters |
+
+### C. Layout & Container Rules
+- **Container Constraint**: Menggunakan `max-w-[1366px] mx-auto px-4 lg:px-6` agar seluruh elemen tidak meregang berlebihan pada layar ultra-wide dan tetap proporsional pada layar laptop 1366×768.
+- **Tab Navigation Horizontal Scroll**: Seluruh baris tab kategori/dokumen wajib menyertakan kelas `overflow-x-auto whitespace-nowrap scrollbar-none` agar tidak meluap atau memaksa baris baru yang merusak ritme vertikal.
+- **Dynamic Viewport Height**: Menggunakan kalkulasi `min-h-[calc(100vh-140px)]` alih-alih `h-screen` kaku, mencegah elemen terpotong ketika taskbar OS atau baris bookmark browser aktif.
 
 ## 3. Komponen Inti & Interaksi
 - **Logo**: Menggunakan aset WebP resmi tanpa manipulasi border/outline eksternal.

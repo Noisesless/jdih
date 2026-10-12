@@ -13,6 +13,9 @@ Daftar isu teknis, bug yang telah diselesaikan, dan pemantauan perbaikan sistem.
 | **ISSUE-005** | 2026-10-12 | Network / Proxy | Kolom `ip_address` di log audit mencatat IP Cloudflare | Ditambahkan header `proxy_set_header X-Real-IP $http_cf_connecting_ip;` pada vhost Nginx | ✅ RESOLVED |
 | **ISSUE-006** | 2026-09-11 | Auth / Security | Captcha custom matematika di Filament login redundan | Dihapus karena Filament v3 sudah memiliki rate-limiting bawaan (5 attempts/min) | ✅ RESOLVED |
 | **ISSUE-007** | 2026-08-09 | QR Code | Kerentanan SSRF pada generator QR Code | Divalidasi host whitelist dan protokol URL sebelum generate SVG | ✅ RESOLVED |
+| **ISSUE-008** | 2026-10-12 | AI Assistant / CLI | Output shell `sh: 1: python: not found` bocor ke bubble chat pengguna di server Linux | Dibuatkan Native PHP Offline Legal RAG Engine (`OfflineLegalRagService.php`), deteksi dinamis `python3`/`python`, serta error masking sanitizer | ✅ RESOLVED |
+| **ISSUE-009** | 2026-10-12 | UI / Responsive | Tampilan terpotong dan tab peraturan meluap pada laptop resolusi 1366×768 (Windows scaling 125% ~1092px) | Diterapkan standar laptop-first, container `max-w-[1366px]`, horizontal scroll tab navigasi, dan height adaptif `min-h-[calc(100vh-140px)]` | ✅ RESOLVED |
+| **ISSUE-010** | 2026-10-12 | Deployment / Assets | Server produksi Linux memunculkan `Command 'npm' not found` saat deploy | Workflow deploy dialihkan ke precompiled local bundle: build lokal `public/build/` dan di-track di Git repo | ✅ RESOLVED |
 
 ## 🔴 Open Issues
 *(Saat ini tidak ada isu kritis yang belum terselesaikan)*

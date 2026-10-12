@@ -26,8 +26,8 @@
 | **Navigasi Model** | `Top Sticky Navbar (Frontend) & Left Sidebar (Filament Admin)` | 🔒 IMMUTABLE |
 | **Hero Layout** | `Dynamic Hero Slider with Legal Quote & Quick Search` | 🔒 IMMUTABLE |
 | **Captcha** | `Native Rate-Limiting + Honeypot Protection` | 🔒 IMMUTABLE |
-| **Fase Aktif** | `Fase 7 (Hardening, Security & Handover Operasional)` | 🔄 DYNAMIC |
-| **Terakhir Diperbarui** | `2026-10-12 12:00 WIB` | 🔄 DYNAMIC |
+| **Fase Aktif** | `Fase 7 (Audit Keterkaitan Peraturan & Stabilitas AI/Responsive)` | 🔄 DYNAMIC |
+| **Terakhir Diperbarui** | `2026-10-12 13:45 WIB` | 🔄 DYNAMIC |
 
 ---
 
@@ -39,7 +39,7 @@
 - **Skala & Scope Aplikasi:** Kabupaten Banjarnegara, OPD, Desa/Kelurahan, dan Publik Luas
 - **Core Value:** Memberikan layanan publik berbasis digital untuk aksesibilitas Peraturan Daerah (Perda), Peraturan Bupati (Perbup), Keputusan Bupati, serta artikel hukum secara cepat, aman, dan berstandar nasional JDIHN.
 - **High-Level Explanation & Business Process:**
-  1. **Publik:** Mengakses portal front-end, mencari dokumen hukum dengan multi-filter (jenis, tahun, nomor, status berlaku), membaca abstrak/teks lengkap, konsultasi hukum via dialog publik, serta tanya-jawab hukum via AI Legal Assistant.
+  1. **Publik:** Mengakses portal front-end, mencari dokumen hukum dengan multi-filter (jenis, tahun, nomor, status berlaku), membaca abstrak/teks lengkap, konsultasi hukum via dialog publik, serta tanya-jawab hukum via AI Legal Assistant (hybrid online/offline).
   2. **Admin Bagian Hukum:** Mengunggah dokumen peraturan, metadata standar JDIHN, mengelola berita, banner hero, survei IKM, serta mengawasi jejak audit pengguna di `/admin`.
   3. **Integrasi Eksternal:** Sinkronisasi API ke JDIHN Nasional dan integrasi produk hukum desa.
 
@@ -49,11 +49,12 @@
 - **Frontend SPA Layer:** Inertia.js (React 18)
 - **Styling Engine:** Tailwind CSS & Framer Motion
 - **Database Engine:** MySQL 8 / MariaDB (InnoDB, utf8mb4)
-- **Search & AI:** Fulltext indexing + Groq Llama 3.1 8B Instant (RAG Legal Assistant)
+- **Search & AI:** Fulltext MySQL Indexing + Google Gemini API (Multi-Key Pool) + Native PHP Offline Legal RAG Engine (100% In-Process) + Python RAG Helper (Dynamic OS detection)
 - **Web Server:** Nginx FastCGI Reverse Proxy + Cloudflare SSL
 - **Timezone:** `Asia/Jakarta` (WIB / UTC+7)
 
 ## 3. KEY METRICS & COMPLIANCE
 - Standar Permenkumham No. 8 Tahun 2019 (Kelengkapan metadata, abstrak, uji materi, status peraturan).
-- OWASP Top 10 Security Hardening (CSRF, XSS, SSRF QR bypass, Nginx dotfiles block).
+- Standar Responsivitas Laptop-First (1366×768 / 125% Windows scaling ~1092px) dan Android 3M (360px, 393px, 412px).
+- OWASP Top 10 Security Hardening (CSRF, XSS, SSRF QR bypass, Nginx dotfiles block, Zero Terminal Error Leak).
 - Audit Trail terpusat untuk setiap event autentikasi dan CRUD peraturan.
