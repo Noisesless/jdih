@@ -266,7 +266,17 @@ export default function MobileHome({
                                 >
                                     <div className="aspect-[4/3] relative bg-slate-100">
                                         {info.image ? (
-                                            <img src={info.image} alt={info.title} className="absolute inset-0 w-full h-full object-cover" />
+                                            <img 
+                                                src={info.image} 
+                                                alt={info.title} 
+                                                onError={(e) => {
+                                                    const target = e.currentTarget;
+                                                    if (!target.src.includes('01KQ96DJWTPMN0AGWC1FB74WA7')) {
+                                                        target.src = '/storage/infographics/01KQ96DJWTPMN0AGWC1FB74WA7.jpg';
+                                                    }
+                                                }}
+                                                className="absolute inset-0 w-full h-full object-cover" 
+                                            />
                                         ) : (
                                             <div className="absolute inset-0 flex items-center justify-center">
                                                 <ImageIcon className="h-10 w-10 text-slate-200" />

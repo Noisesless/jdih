@@ -639,7 +639,17 @@ function InfografisSection({ items, variant = 'classic' }: { items: any[], varia
                         <div key={item.id} 
                             onClick={() => setSelectedImg(item.image)}
                             className="group relative aspect-[3/4] bg-slate-100 rounded-xl overflow-hidden cursor-zoom-in border border-slate-200">
-                            <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <img 
+                                src={item.image} 
+                                alt={item.title} 
+                                onError={(e) => {
+                                    const target = e.currentTarget;
+                                    if (!target.src.includes('01KQ96DJWTPMN0AGWC1FB74WA7')) {
+                                        target.src = '/storage/infographics/01KQ96DJWTPMN0AGWC1FB74WA7.jpg';
+                                    }
+                                }}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                            />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                                 <p className="text-white text-[10px] font-bold leading-tight line-clamp-2">{item.title}</p>
                                 <div className="mt-2 h-6 w-6 bg-[#0d9488] rounded flex items-center justify-center">
@@ -788,8 +798,14 @@ export default function Welcome({
                             <a key={v.id} href={v.video_url || v.href} target="_blank" rel="noreferrer" className="group bg-slate-800 border border-slate-700 rounded-lg overflow-hidden hover:border-[#0d9488] transition-all">
                                 <div className="h-48 relative flex items-center justify-center overflow-hidden bg-[#1e293b]">
                                     <img 
-                                        src={v.thumbnail_path ? `/images/${v.thumbnail_path}` : (v.image || '/images/video-placeholder.png')} 
+                                        src={v.thumbnail_path || v.image || '/images/covers/cover_perbup_54_2025.webp'} 
                                         alt={v.title} 
+                                        onError={(e) => {
+                                            const target = e.currentTarget;
+                                            if (!target.src.includes('cover_perbup_54_2025')) {
+                                                target.src = '/images/covers/cover_perbup_54_2025.webp';
+                                            }
+                                        }}
                                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" 
                                     />
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />

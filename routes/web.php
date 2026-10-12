@@ -128,7 +128,7 @@ Route::get('/', function () {
             ->map(fn($item) => [
                 'id'    => $item->id,
                 'title' => $item->title,
-                'image' => '/storage/' . $item->image_path,
+                'image' => (Str::startsWith($item->image_path, '/') ? '' : '/storage/') . $item->image_path,
             ]);
     });
 
@@ -180,19 +180,41 @@ Route::get('/', function () {
         return $c;
     });
 
-    $videos = \Illuminate\Support\Facades\Cache::remember('home.videos', 600, function () {
+    $videos = \Illuminate\Support\Facades\Cache::remember('home.videos', 60, function () {
         return \App\Models\VideoContent::latest()
             ->take(3)
             ->get()
-            ->map(fn($v) => [
-                'id'             => $v->id,
-                'title'          => $v->title,
-                'video_url'      => $v->video_url,
-                'thumbnail_path' => $v->thumbnail_path,
-                'platform'       => $v->platform,
-                'year'           => $v->year,
-                'duration'       => $v->duration,
-            ]);
+            ->map(function ($v) {
+                $thumb = $v->thumbnail_path;
+                if ($thumb) {
+                    if (str_starts_with($thumb, 'covers/')) {
+                        $thumb = '/images/' . $thumb;
+                    } elseif (!str_starts_with($thumb, '/')) {
+                        $thumb = '/storage/' . $thumb;
+                    }
+                }
+                if (!$thumb) {
+                    if (str_contains($v->title, '54')) {
+                        $thumb = '/images/covers/cover_perbup_54_2025.webp';
+                    } elseif (str_contains(strtolower($v->title), 'tutorial')) {
+                        $thumb = '/images/covers/cover_tutorial.webp';
+                    } elseif (str_contains(strtolower($v->title), 'koperasi')) {
+                        $thumb = '/images/covers/cover_koperasi.webp';
+                    } else {
+                        $thumb = '/images/covers/cover_perbup_54_2025.webp';
+                    }
+                }
+                return [
+                    'id'             => $v->id,
+                    'title'          => $v->title,
+                    'video_url'      => $v->video_url,
+                    'thumbnail_path' => $thumb,
+                    'image'          => $thumb,
+                    'platform'       => $v->platform,
+                    'year'           => $v->year,
+                    'duration'       => $v->duration,
+                ];
+            });
     });
 
     $totalViews = \Illuminate\Support\Facades\Cache::remember('home.total_views', 300, function () {
