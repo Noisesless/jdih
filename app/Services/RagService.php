@@ -9,87 +9,23 @@ use Illuminate\Support\Facades\Log;
 
 class RagService
 {
-    protected string $apiUrl;
-    protected string $apiKey;
-    protected string $embeddingModel;
+    protected GeminiService $gemini;
     protected int $maxChunks;
     protected int $chunkSize;
 
-    public function __construct()
+    public function __construct(GeminiService $gemini)
     {
-        $this->apiUrl = config('services.cfrouter.base_url', 'https://api.cfrouter.my.id/v1');
-        $this->apiKey = config('services.cfrouter.api_key', env('CFROUTER_API_KEY'));
-        $this->embeddingModel = config('services.cfrouter.embedding_model', 'agnes-2.5-flash');
-        $this->maxChunks = config('services.cfrouter.max_chunks', 5);
-        $this->chunkSize = config('services.cfrouter.chunk_size', 500);
+        $this->gemini = $gemini;
+        $this->maxChunks = (int) config('services.gemini.max_chunks', 5);
+        $this->chunkSize = (int) config('services.gemini.chunk_size', 500);
     }
 
     /**
-     * Generate embedding for a text using the API.
+     * Generate embedding for a text using Google Gemini Embedding API dengan failover pool.
      */
     public function generateEmbedding(string $text): ?array
     {
-        // Prioritaskan Gemini Embedding API jika key tersedia
-        $geminiKey = config('services.gemini.api_key');
-        if ($geminiKey) {
-            try {
-                $geminiEmbeddingModel = config('services.gemini.embedding_model', 'gemini-embedding-001');
-                $geminiBaseUrl = config('services.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta');
-
-                $response = Http::timeout(25)
-                    ->post("{$geminiBaseUrl}/models/{$geminiEmbeddingModel}:embedContent?key=" . urlencode($geminiKey), [
-                        'content' => [
-                            'parts' => [
-                                ['text' => mb_substr($text, 0, 2048)]
-                            ]
-                        ]
-                    ]);
-
-                if ($response->successful()) {
-                    $data = $response->json();
-                    if (!empty($data['embedding']['values'])) {
-                        return $data['embedding']['values'];
-                    }
-                }
-            } catch (\Exception $e) {
-                Log::error('Gemini RAG Embedding failed: ' . $e->getMessage());
-            }
-        }
-
-        // Fallback ke CFRouter jika Gemini belum aktif
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->apiKey,
-                'Content-Type' => 'application/json',
-            ])
-            ->timeout(30)
-            ->post("{$this->apiUrl}/chat/completions", [
-                'model' => $this->embeddingModel,
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => "Convert this text to a numerical embedding vector. Return ONLY a JSON array of 384 floating point numbers between -1 and 1. Do not include any explanation. Text: {$text}"
-                    ]
-                ],
-                'max_tokens' => 512,
-                'response_format' => ['type' => 'json_object'],
-            ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                $content = $data['choices'][0]['message']['content'] ?? '';
-                
-                // Parse the embedding from JSON
-                $embedding = json_decode($content, true);
-                if (is_array($embedding) && count($embedding) === 384) {
-                    return $embedding;
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error('RAG Embedding generation failed: ' . $e->getMessage());
-        }
-
-        return null;
+        return $this->gemini->embedContent($text);
     }
 
     /**

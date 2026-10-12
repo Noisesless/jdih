@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\LegalDocument;
 use App\Services\RagService;
+use App\Services\GeminiService;
 use App\Models\PdfChunk;
 
 class AiAssistantController extends Controller
@@ -13,7 +14,7 @@ class AiAssistantController extends Controller
     /**
      * Handle AI assistant question with RAG support.
      */
-    public function ask(Request $request, RagService $ragService)
+    public function ask(Request $request, RagService $ragService, GeminiService $geminiService)
     {
         $request->validate([
             'document_id' => 'required|exists:legal_documents,id',
@@ -89,74 +90,11 @@ PERTANYAAN PENGGUNA: {$request->question}
 
 JAWABLAH dengan memberikan penjelasan yang komprehensif, terstruktur, dan akurat. UTAMAKAN informasi dari KONTEN PDF dan data dokumen resmi di atas.";
 
-        $geminiKey = config('services.gemini.api_key');
-        $geminiModel = config('services.gemini.generation_model', 'gemini-3.8-flash');
-        $geminiBaseUrl = config('services.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta');
-
         try {
-            if ($geminiKey) {
-                // Call Google Gemini API
-                $response = Http::timeout(30)
-                    ->post("{$geminiBaseUrl}/models/{$geminiModel}:generateContent?key=" . urlencode($geminiKey), [
-                        'systemInstruction' => [
-                            'parts' => [
-                                ['text' => $systemPrompt]
-                            ]
-                        ],
-                        'contents' => [
-                            [
-                                'role' => 'user',
-                                'parts' => [
-                                    ['text' => $userMessage]
-                                ]
-                            ]
-                        ],
-                        'generationConfig' => [
-                            'temperature' => 0.2,
-                            'maxOutputTokens' => 3000,
-                            'topP' => 0.95,
-                        ]
-                    ]);
+            $answer = $geminiService->generateContent($systemPrompt, $userMessage);
 
-                if ($response->failed()) {
-                    \Log::error('AI Assistant Gemini Failed: ' . $response->status() . ' - ' . $response->body());
-                    return response()->json(['error' => 'Gagal menghubungi layanan AI Gemini. Silakan coba lagi.'], 500);
-                }
-
-                $result = $response->json();
-                $answer = $result['candidates'][0]['content']['parts'][0]['text'] ?? 'Maaf, saya tidak mendapatkan jawaban.';
-            } else {
-                // Fallback: CFRouter API
-                $apiUrl = config('services.cfrouter.base_url');
-                $apiKey = config('services.cfrouter.api_key');
-                $model = config('services.cfrouter.generation_model', 'deepseek-v4-pro-0813');
-
-                if (!$apiKey) {
-                    \Log::error('AI Assistant: API Key belum dikonfigurasi.');
-                    return response()->json(['error' => 'API Key AI belum dikonfigurasi.'], 500);
-                }
-
-                $response = Http::timeout(30)->withHeaders([
-                    'Authorization' => 'Bearer ' . $apiKey,
-                    'Content-Type' => 'application/json',
-                ])->post("{$apiUrl}/chat/completions", [
-                    'model' => $model,
-                    'messages' => [
-                        ['role' => 'system', 'content' => $systemPrompt],
-                        ['role' => 'user', 'content' => $userMessage],
-                    ],
-                    'temperature' => 0.3,
-                    'max_tokens' => 3000,
-                    'top_p' => 0.95,
-                ]);
-
-                if ($response->failed()) {
-                    \Log::error('AI Assistant CFRouter Failed: ' . $response->status() . ' - ' . $response->body());
-                    return response()->json(['error' => 'Gagal menghubungi AI. Silakan coba lagi.'], 500);
-                }
-
-                $result = $response->json();
-                $answer = $result['choices'][0]['message']['content'] ?? 'Maaf, saya tidak mendapatkan jawaban.';
+            if (!$answer) {
+                return response()->json(['error' => 'Layanan Asisten AI sedang mengalami antrean tinggi. Silakan coba sesaat lagi.'], 503);
             }
             
             // Extract suggested questions based on document
@@ -169,7 +107,7 @@ JAWABLAH dengan memberikan penjelasan yang komprehensif, terstruktur, dan akurat
                 'rag_chunks' => count($ragSourceChunks),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::error('AI Assistant System Error: ' . $e->getMessage());
             return response()->json(['error' => 'Terjadi kesalahan sistem: ' . $e->getMessage()], 500);
         }
