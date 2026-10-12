@@ -754,6 +754,24 @@ Route::get('/vendor/livewire/{file}', function ($file) {
     abort(404);
 })->where('file', '.*');
 
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    return response()->file($fullPath);
+})->where('path', '.*');
+
+Route::get('/manifest.json', function () {
+    $path = public_path('manifest.json');
+    if (file_exists($path)) {
+        return response()->file($path, [
+            'Content-Type' => 'application/manifest+json',
+        ]);
+    }
+    abort(404);
+});
+
 Route::get('/galeri', function() {
     $items = \App\Models\GalleryItem::latest('date')
         ->get()
