@@ -798,7 +798,7 @@ export default function Welcome({
                             <a key={v.id} href={v.video_url || v.href} target="_blank" rel="noreferrer" className="group bg-slate-800 border border-slate-700 rounded-lg overflow-hidden hover:border-[#0d9488] transition-all">
                                 <div className="h-48 relative flex items-center justify-center overflow-hidden bg-[#1e293b]">
                                     <img 
-                                        src={v.thumbnail_path || v.image || '/images/covers/cover_perbup_54_2025.webp'} 
+                                        src={v.thumbnail_path ? `/images/${v.thumbnail_path}` : (v.image || '/images/covers/cover_perbup_54_2025.webp')} 
                                         alt={v.title} 
                                         onError={(e) => {
                                             const target = e.currentTarget;

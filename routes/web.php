@@ -186,22 +186,15 @@ Route::get('/', function () {
             ->get()
             ->map(function ($v) {
                 $thumb = $v->thumbnail_path;
-                if ($thumb) {
-                    if (str_starts_with($thumb, 'covers/')) {
-                        $thumb = '/images/' . $thumb;
-                    } elseif (!str_starts_with($thumb, '/')) {
-                        $thumb = '/storage/' . $thumb;
-                    }
-                }
                 if (!$thumb) {
                     if (str_contains($v->title, '54')) {
-                        $thumb = '/images/covers/cover_perbup_54_2025.webp';
+                        $thumb = 'covers/cover_perbup_54_2025.webp';
                     } elseif (str_contains(strtolower($v->title), 'tutorial')) {
-                        $thumb = '/images/covers/cover_tutorial.webp';
+                        $thumb = 'covers/cover_tutorial.webp';
                     } elseif (str_contains(strtolower($v->title), 'koperasi')) {
-                        $thumb = '/images/covers/cover_koperasi.webp';
+                        $thumb = 'covers/cover_koperasi.webp';
                     } else {
-                        $thumb = '/images/covers/cover_perbup_54_2025.webp';
+                        $thumb = 'covers/cover_perbup_54_2025.webp';
                     }
                 }
                 return [
@@ -209,7 +202,7 @@ Route::get('/', function () {
                     'title'          => $v->title,
                     'video_url'      => $v->video_url,
                     'thumbnail_path' => $thumb,
-                    'image'          => $thumb,
+                    'image'          => '/images/' . $thumb,
                     'platform'       => $v->platform,
                     'year'           => $v->year,
                     'duration'       => $v->duration,
