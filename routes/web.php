@@ -739,6 +739,21 @@ Route::get('/berita/{slug}', function($slug) use ($renderMobileBeritaDetail) {
         'relatedNews' => $related
     ]);
 })->name('berita.detail');
+
+Route::get('/vendor/livewire/{file}', function ($file) {
+    $path = public_path('vendor/livewire/' . $file);
+    if (file_exists($path)) {
+        $mime = 'application/javascript';
+        if (str_ends_with($file, '.css')) $mime = 'text/css';
+        if (str_ends_with($file, '.json') || str_ends_with($file, '.map')) $mime = 'application/json';
+        return response()->file($path, [
+            'Content-Type' => $mime,
+            'Cache-Control' => 'public, max-age=31536000',
+        ]);
+    }
+    abort(404);
+})->where('file', '.*');
+
 Route::get('/galeri', function() {
     $items = \App\Models\GalleryItem::latest('date')
         ->get()
