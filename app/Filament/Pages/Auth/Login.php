@@ -8,21 +8,6 @@ use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 
 class Login extends BaseLogin
 {
-    // Catatan: captcha matematika custom dihapus 2026-09-11 (redundan —
-    // Filament sudah punya rate limiting bawaan 5 percobaan/menit untuk login).
-
-    public function authenticate(): ?LoginResponse
-    {
-        $response = parent::authenticate();
-
-        if ($response && auth()->check()) {
-            ActivityLog::log(
-                'login',
-                auth()->user(),
-                'User login ke admin panel'
-            );
-        }
-
-        return $response;
-    }
+    // Catatan: Rate limiting bawaan Filament (5 percobaan/menit).
+    // Audit log login dicatat secara terpusat via Event Listener Login di AppServiceProvider.
 }
