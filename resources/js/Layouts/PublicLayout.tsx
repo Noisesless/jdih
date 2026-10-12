@@ -184,29 +184,29 @@ function Navbar({ user, variant = 'classic' }: { user?: any; variant?: 'classic'
             </div>
 
             {/* Main nav */}
-            <div className="max-w-screen-2xl mx-auto px-10 h-16 flex items-center justify-between gap-x-32">
+            <div className="max-w-7xl xl:max-w-[1366px] 2xl:max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-x-4 xl:gap-x-6">
                 {/* Logo & Brand */}
                 <Link href="/" className="flex items-center gap-3 shrink-0 group" aria-label="Beranda JDIH Banjarnegara">
-                    <img src="/logo_jdih.webp" alt="Logo JDIH Banjarnegara" width={180} height={48} className="h-12 w-auto object-contain group-hover:scale-105 transition-transform" />
+                    <img src="/logo_jdih.webp" alt="Logo JDIH Banjarnegara" width={180} height={48} className="h-10 sm:h-11 xl:h-12 w-auto object-contain group-hover:scale-105 transition-transform" />
                 </Link>
 
                 {/* Desktop Menu */}
-                <div className="hidden lg:flex items-center gap-1 text-sm font-medium">
+                <div className="hidden lg:flex items-center gap-0.5 xl:gap-1 text-xs xl:text-sm font-medium">
                     {NAV_ITEMS.map((item) => (
                         <div key={item.label} className="relative group/nav">
                             {item.children ? (
                                 <button 
                                     aria-haspopup="true"
                                     aria-expanded="false"
-                                    className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition-all whitespace-nowrap ${
+                                    className={`flex items-center gap-1 xl:gap-1.5 px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-full transition-all whitespace-nowrap ${
                                     isModern 
                                     ? 'text-slate-600 hover:text-[#003399] hover:bg-slate-50' 
                                     : 'text-slate-200 hover:text-white hover:bg-white/10'
                                 }`}>
-                                    {item.label} <ChevronDown className={`h-3.5 w-3.5 transition-transform group-hover/nav:rotate-180 ${isModern ? 'text-slate-400' : 'text-slate-500'}`} />
+                                    {item.label} <ChevronDown className={`h-3 w-3 xl:h-3.5 xl:w-3.5 transition-transform group-hover/nav:rotate-180 ${isModern ? 'text-slate-400' : 'text-slate-500'}`} />
                                 </button>
                             ) : (
-                                <Link href={(item as any).href} className={`flex items-center px-4 py-2 rounded-full transition-all whitespace-nowrap ${
+                                <Link href={(item as any).href} className={`flex items-center px-2.5 py-1.5 xl:px-3.5 xl:py-2 rounded-full transition-all whitespace-nowrap ${
                                     isModern 
                                     ? 'text-slate-600 hover:text-[#003399] hover:bg-slate-50' 
                                     : 'text-slate-200 hover:text-white hover:bg-white/10'

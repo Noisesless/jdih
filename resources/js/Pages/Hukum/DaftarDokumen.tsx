@@ -102,13 +102,13 @@ export default function DaftarDokumen({ kategori, title, code, documents, filter
 
             <div className="bg-slate-50 min-h-screen">
 
-                <div className="max-w-7xl mx-auto px-6 py-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+                <div className="max-w-7xl xl:max-w-[1366px] mx-auto px-4 sm:px-6 lg:px-8 py-6 xl:py-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 xl:gap-7 items-start">
                         
                         {/* Sidebar Filter */}
-                        <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
-                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <div className="lg:col-span-4 xl:col-span-4 2xl:col-span-3 space-y-5 xl:space-y-6 lg:sticky lg:top-24">
+                            <div className="bg-white rounded-xl xl:rounded-2xl shadow-sm border border-slate-200 p-4 xl:p-6">
+                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 xl:mb-6 flex items-center gap-2">
                                     <Filter className="h-4 w-4 text-[#0d9488]" /> Filter Pencarian
                                 </h3>
                                 <SearchForm
@@ -121,11 +121,11 @@ export default function DaftarDokumen({ kategori, title, code, documents, filter
                         </div>
 
                         {/* Main Content: Document List */}
-                        <div className="lg:col-span-3 space-y-6">
+                        <div className="lg:col-span-8 xl:col-span-8 2xl:col-span-9 space-y-4 xl:space-y-6">
                             {/* Stats & Tools */}
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <span className="px-4 py-1.5 bg-slate-200 text-slate-600 text-xs font-bold rounded-full">
+                                    <span className="px-3.5 py-1 xl:px-4 xl:py-1.5 bg-slate-200 text-slate-600 text-[11px] xl:text-xs font-bold rounded-full">
                                         {documents.total.toLocaleString('id-ID')} dokumen ditemukan
                                     </span>
                                 </div>
@@ -140,14 +140,14 @@ export default function DaftarDokumen({ kategori, title, code, documents, filter
                             </div>
 
                             {/* Documents Cards */}
-                            <div className="space-y-4">
+                            <div className="space-y-3 xl:space-y-4">
                                 {documents.data.map((doc) => (
                                     <Link 
                                         key={doc.id}
                                         href={`/${kategori}/${doc.id}`}
-                                        className="block bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-teal-900/5 hover:border-[#0d9488]/30 transition-all group overflow-hidden"
+                                        className="block bg-white rounded-xl xl:rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-teal-900/5 hover:border-[#0d9488]/30 transition-all group overflow-hidden"
                                     >
-                                        <div className="p-6 flex items-center justify-between gap-6">
+                                        <div className="p-4 sm:p-5 xl:p-6 flex items-center justify-between gap-4 xl:gap-6">
                                             <div className="flex-1 min-w-0 space-y-3">
                                                 <div className="flex items-center gap-3">
                                                     <h3 className="text-base md:text-lg font-black text-slate-800 group-hover:text-[#0d9488] transition-colors leading-snug">

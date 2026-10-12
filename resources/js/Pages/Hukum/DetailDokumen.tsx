@@ -123,25 +123,25 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
             <div className="bg-slate-50 min-h-screen pb-20">
                 {/* TOP HEADER SECTION */}
                 <div className="bg-white border-b border-slate-200">
-                    <div className="max-w-7xl mx-auto px-6 py-8">
+                    <div className="max-w-7xl xl:max-w-[1366px] mx-auto px-4 sm:px-6 lg:px-8 py-5 xl:py-7">
 
-                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-                            <div className="lg:col-span-4">
-                                <h1 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight mb-6">
+                        <div className="grid grid-cols-1 items-start">
+                            <div>
+                                <h1 className="text-xl sm:text-2xl xl:text-3xl font-black text-slate-900 leading-tight mb-3 xl:mb-5">
                                     {document.title}
                                 </h1>
 
-                                <div className="flex flex-wrap items-center gap-y-4 gap-x-8 text-sm text-slate-500 font-medium">
-                                    <div className="flex items-center gap-2">
-                                        <Eye className="h-4 w-4 text-slate-400" />
+                                <div className="flex flex-wrap items-center gap-y-2.5 gap-x-5 xl:gap-x-8 text-xs xl:text-sm text-slate-500 font-medium">
+                                    <div className="flex items-center gap-1.5 xl:gap-2">
+                                        <Eye className="h-3.5 w-3.5 xl:h-4 xl:w-4 text-slate-400" />
                                         <span>{document.view_count || 0} Kali diakses</span>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Download className="h-4 w-4 text-slate-400" />
+                                    <div className="flex items-center gap-1.5 xl:gap-2">
+                                        <Download className="h-3.5 w-3.5 xl:h-4 xl:w-4 text-slate-400" />
                                         <span>{document.download_count || 0} Kali diunduh</span>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Clock className="h-4 w-4 text-slate-400" />
+                                    <div className="flex items-center gap-1.5 xl:gap-2">
+                                        <Clock className="h-3.5 w-3.5 xl:h-4 xl:w-4 text-slate-400" />
                                         <span>Diunggah pada {formatDate(document.created_at)}</span>
                                     </div>
                                 </div>
@@ -151,24 +151,24 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                 </div>
 
                 {/* MAIN CONTENT GRID */}
-                <div className="max-w-7xl mx-auto px-6 py-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="max-w-7xl xl:max-w-[1366px] mx-auto px-4 sm:px-6 lg:px-8 py-6 xl:py-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 xl:gap-7 items-start">
                         
                         {/* LEFT: MAIN CONTENT (Tabs) */}
-                        <div className="lg:col-span-3 space-y-6">
+                        <div className="lg:col-span-8 xl:col-span-8 2xl:col-span-9 space-y-5 xl:space-y-6">
                             {/* TAB NAVIGATION */}
-                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-1.5 flex flex-wrap gap-1">
+                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-1 xl:p-1.5 flex overflow-x-auto no-scrollbar gap-1">
                                 {tabs.map((tab) => (
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id as any)}
-                                        className={`flex items-center gap-3 px-6 py-4 text-xs font-black uppercase tracking-widest transition-all relative border-b-2 ${
+                                        className={`flex items-center gap-2 xl:gap-2.5 px-3.5 py-2.5 xl:px-5 xl:py-3 text-[11px] xl:text-xs font-black uppercase tracking-wider transition-all relative border-b-2 shrink-0 ${
                                             activeTab === tab.id 
                                             ? 'text-[#0d9488] border-[#0d9488] bg-[#0d9488]/5' 
                                             : 'text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-50'
                                         }`}
                                     >
-                                        <tab.icon className={`h-4 w-4 ${activeTab === tab.id ? 'text-[#0d9488]' : 'text-slate-300'}`} />
+                                        <tab.icon className={`h-3.5 w-3.5 xl:h-4 xl:w-4 ${activeTab === tab.id ? 'text-[#0d9488]' : 'text-slate-300'}`} />
                                         {tab.label}
                                     </button>
                                 ))}
@@ -177,13 +177,13 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                             {/* TAB CONTENT */}
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                                 {activeTab === 'detail' && (
-                                    <div className="p-8 space-y-10">
+                                    <div className="p-5 sm:p-6 xl:p-8 space-y-6 xl:space-y-8">
                                         {metadataGroups.map((group, gIdx) => (
-                                            <div key={gIdx} className="space-y-6">
-                                                <h3 className="text-slate-900 font-black text-lg border-b-2 border-[#0d9488] inline-block pb-1">
+                                            <div key={gIdx} className="space-y-4 xl:space-y-5">
+                                                <h3 className="text-slate-900 font-black text-base xl:text-lg border-b-2 border-[#0d9488] inline-block pb-1">
                                                     {group.title}
                                                 </h3>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 xl:gap-x-10 gap-y-4 xl:gap-y-5">
                                                     {group.fields.map((field, fIdx) => (
                                                         <div key={fIdx} className="space-y-1 group">
                                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-[#0d9488] transition-colors">
@@ -460,22 +460,22 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                         </div>
 
                         {/* RIGHT: SIDEBAR */}
-                        <div className="lg:col-span-1 space-y-6">
+                        <div className="lg:col-span-4 xl:col-span-4 2xl:col-span-3 space-y-4 xl:space-y-6">
                             
-                            <div className={`p-4 rounded-2xl border-2 mb-4 ${
+                            <div className={`p-3.5 xl:p-4 rounded-xl xl:rounded-2xl border-2 mb-3 xl:mb-4 ${
                                     document.status === 'Berlaku' 
                                     ? 'bg-emerald-50 border-emerald-100 text-emerald-700' 
                                     : 'bg-rose-50 border-rose-100 text-rose-700'
                                 }`}>
                                     <div className="flex items-center gap-3">
-                                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
+                                        <div className={`h-9 w-9 xl:h-10 xl:w-10 rounded-xl flex items-center justify-center shrink-0 ${
                                             document.status === 'Berlaku' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'
                                         }`}>
-                                            {document.status === 'Berlaku' ? <ShieldCheck className="h-6 w-6" /> : <AlertTriangle className="h-6 w-6" />}
+                                            {document.status === 'Berlaku' ? <ShieldCheck className="h-5 w-5 xl:h-6 xl:w-6" /> : <AlertTriangle className="h-5 w-5 xl:h-6 xl:w-6" />}
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black uppercase tracking-widest leading-none mb-1 opacity-70">Status Hukum</p>
-                                            <p className="text-lg font-black tracking-tight uppercase">{document.status}</p>
+                                            <p className="text-base xl:text-lg font-black tracking-tight uppercase">{document.status}</p>
                                         </div>
                                     </div>
                             </div>
@@ -487,57 +487,57 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                         setChatMessages([{ role: 'ai', text: `Halo! Saya Asisten AI JDIH Banjarnegara. Saya telah membaca dokumen "${document.title}". Ada yang bisa saya bantu jelaskan?` }]);
                                     }
                                 }}
-                                className="w-full group flex items-center justify-between p-4 bg-gradient-to-r from-[#0d9488] to-[#0b7a6f] text-white rounded-2xl shadow-lg shadow-teal-900/20 hover:scale-[1.02] active:scale-95 transition-all"
+                                className="w-full group flex items-center justify-between p-3.5 xl:p-4 bg-gradient-to-r from-[#0d9488] to-[#0b7a6f] text-white rounded-xl xl:rounded-2xl shadow-lg shadow-teal-900/20 hover:scale-[1.02] active:scale-95 transition-all"
                             >
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-white/20 rounded-xl">
-                                            <Zap className="h-5 w-5 fill-white" />
+                                        <div className="p-1.5 xl:p-2 bg-white/20 rounded-xl shrink-0">
+                                            <Zap className="h-4 w-4 xl:h-5 xl:w-5 fill-white" />
                                         </div>
                                         <div className="text-left">
-                                            <p className="text-[10px] font-black opacity-80 uppercase tracking-widest leading-none mb-1">Fitur Pintar</p>
-                                            <p className="text-sm font-black tracking-tight">Tanya ASISTEN AI JDIH</p>
+                                            <p className="text-[10px] font-black opacity-80 uppercase tracking-widest leading-none mb-0.5">Fitur Pintar</p>
+                                            <p className="text-xs xl:text-sm font-black tracking-tight">Tanya ASISTEN AI JDIH</p>
                                         </div>
                                     </div>
-                                    <ChevronRight className="h-5 w-5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                    <ChevronRight className="h-4 w-4 xl:h-5 xl:w-5 opacity-50 group-hover:opacity-100 transition-opacity" />
                             </button>
 
                             {/* Search Quick Widget */}
-                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-                                <h4 className="text-slate-900 font-black text-sm uppercase tracking-widest flex items-center gap-2">
+                            <div className="bg-white rounded-xl xl:rounded-2xl shadow-sm border border-slate-200 p-4 xl:p-6 space-y-3 xl:space-y-4">
+                                <h4 className="text-slate-900 font-black text-xs xl:text-sm uppercase tracking-widest flex items-center gap-2">
                                     <Search className="h-4 w-4 text-[#0d9488]" />
                                     Cari Peraturan
                                 </h4>
-                                <div className="space-y-3">
+                                <div className="space-y-2.5 xl:space-y-3">
                                     <input 
                                         type="text" 
                                         placeholder="Judul / Kata Kunci..."
-                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
+                                        className="w-full px-3.5 py-2 xl:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs xl:text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
                                     />
-                                    <button className="w-full py-2.5 bg-[#1e293b] text-white rounded-xl font-bold text-sm hover:bg-black transition-colors">
+                                    <button className="w-full py-2 xl:py-2.5 bg-[#1e293b] text-white rounded-xl font-bold text-xs xl:text-sm hover:bg-black transition-colors">
                                         Cari Dokumen
                                     </button>
                                 </div>
                             </div>
 
                             {/* Popular Documents */}
-                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                                <div className="px-6 py-4 border-b border-slate-100">
-                                    <h4 className="text-slate-900 font-black text-sm uppercase tracking-widest">Dokumen Terpopuler</h4>
+                            <div className="bg-white rounded-xl xl:rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                                <div className="px-4 xl:px-6 py-3 xl:py-4 border-b border-slate-100">
+                                    <h4 className="text-slate-900 font-black text-xs xl:text-sm uppercase tracking-widest">Dokumen Terpopuler</h4>
                                 </div>
                                 <div className="divide-y divide-slate-50">
                                     {popular.length > 0 ? popular.map((p) => (
                                         <Link 
                                             key={p.id} 
                                             href={`/${p.slug}/${p.id}`}
-                                            className="block p-4 hover:bg-slate-50 transition-colors group"
+                                            className="block p-3 xl:p-4 hover:bg-slate-50 transition-colors group"
                                         >
-                                            <p className="text-[10px] font-bold text-[#0d9488] uppercase mb-1">{p.type} NO. {p.number} TAHUN {p.year}</p>
+                                            <p className="text-[10px] font-bold text-[#0d9488] uppercase mb-0.5">{p.type} NO. {p.number} TAHUN {p.year}</p>
                                             <p className="text-xs font-bold text-slate-700 group-hover:text-[#0d9488] line-clamp-2 leading-relaxed">
                                                 {p.title}
                                             </p>
                                         </Link>
                                     )) : (
-                                        <div className="p-6 text-center text-slate-400 text-xs italic">
+                                        <div className="p-4 xl:p-6 text-center text-slate-400 text-xs italic">
                                             Belum ada data populer.
                                         </div>
                                     )}

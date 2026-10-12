@@ -168,11 +168,11 @@ function ConsultationForm({ publicDialogues = [] }: { publicDialogues?: any[] })
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3 xl:space-y-4">
             <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Jenis Layanan</label>
+                <label className="block text-[10px] xl:text-xs font-bold text-slate-500 uppercase mb-1">Jenis Layanan</label>
                 <select 
-                    className="w-full bg-slate-50 border-slate-200 rounded-lg text-sm font-semibold focus:ring-[#0d9488] focus:border-[#0d9488] cursor-pointer"
+                    className="w-full bg-slate-50 border-slate-200 rounded-lg text-xs xl:text-sm font-semibold focus:ring-[#0d9488] focus:border-[#0d9488] cursor-pointer py-2 xl:py-2.5 px-3"
                     value={formData.type}
                     onChange={e => setFormData({...formData, type: e.target.value, public_dialogue_id: ''})}
                 >
@@ -183,10 +183,10 @@ function ConsultationForm({ publicDialogues = [] }: { publicDialogues?: any[] })
 
             {formData.type === 'Konsultasi Publik' && (
                 <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pilih Draft Dokumen</label>
+                    <label className="block text-[10px] xl:text-xs font-bold text-slate-500 uppercase mb-1">Pilih Draft Dokumen</label>
                     <select 
                         required
-                        className="w-full bg-teal-50/50 border-[#0d9488]/20 rounded-lg text-sm font-medium focus:ring-[#0d9488] focus:border-[#0d9488] cursor-pointer"
+                        className="w-full bg-teal-50/50 border-[#0d9488]/20 rounded-lg text-xs xl:text-sm font-medium focus:ring-[#0d9488] focus:border-[#0d9488] cursor-pointer py-2 xl:py-2.5 px-3"
                         value={formData.public_dialogue_id}
                         onChange={e => setFormData({...formData, public_dialogue_id: e.target.value})}
                     >
@@ -200,39 +200,39 @@ function ConsultationForm({ publicDialogues = [] }: { publicDialogues?: any[] })
                             <option disabled>Tidak ada draft aktif saat ini</option>
                         )}
                     </select>
-                    <p className="text-[10px] text-slate-400 mt-1">* Masyarakat dapat memberikan masukan untuk draft di atas</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">* Masyarakat dapat memberikan masukan untuk draft di atas</p>
                 </div>
             )}
 
             <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Lengkap</label>
+                <label className="block text-[10px] xl:text-xs font-bold text-slate-500 uppercase mb-1">Nama Lengkap</label>
                 <input 
                     type="text" 
                     required
                     placeholder="Masukkan nama Anda"
-                    className="w-full bg-slate-50 border-slate-200 rounded-lg text-sm focus:ring-[#0d9488] focus:border-[#0d9488]"
+                    className="w-full bg-slate-50 border-slate-200 rounded-lg text-xs xl:text-sm focus:ring-[#0d9488] focus:border-[#0d9488] py-2 xl:py-2.5 px-3"
                     value={formData.name}
                     onChange={e => setFormData({...formData, name: e.target.value})}
                 />
             </div>
             <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Alamat</label>
+                <label className="block text-[10px] xl:text-xs font-bold text-slate-500 uppercase mb-1">Alamat</label>
                 <input 
                     type="text" 
                     required
                     placeholder="Masukkan alamat domisili"
-                    className="w-full bg-slate-50 border-slate-200 rounded-lg text-sm focus:ring-[#0d9488] focus:border-[#0d9488]"
+                    className="w-full bg-slate-50 border-slate-200 rounded-lg text-xs xl:text-sm focus:ring-[#0d9488] focus:border-[#0d9488] py-2 xl:py-2.5 px-3"
                     value={formData.address}
                     onChange={e => setFormData({...formData, address: e.target.value})}
                 />
             </div>
             <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Saran & Masukan</label>
+                <label className="block text-[10px] xl:text-xs font-bold text-slate-500 uppercase mb-1">Saran & Masukan</label>
                 <textarea 
                     required
-                    rows={3}
-                    placeholder={formData.type === 'Konsultasi Publik' ? "Tuliskan komentar atau usulan perbaikan untuk draft ini..." : "Tuliskan aspirasi atau masukan Anda..."}
-                    className="w-full bg-slate-50 border-slate-200 rounded-lg text-sm focus:ring-[#0d9488] focus:border-[#0d9488]"
+                    rows={2}
+                    placeholder={formData.type === 'Konsultasi Publik' ? "Tuliskan komentar atau usulan perbaikan..." : "Tuliskan aspirasi atau masukan Anda..."}
+                    className="w-full bg-slate-50 border-slate-200 rounded-lg text-xs xl:text-sm focus:ring-[#0d9488] focus:border-[#0d9488] py-2 xl:py-2.5 px-3"
                     value={formData.suggestion}
                     onChange={e => setFormData({...formData, suggestion: e.target.value})}
                 ></textarea>
@@ -240,7 +240,7 @@ function ConsultationForm({ publicDialogues = [] }: { publicDialogues?: any[] })
             <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#0d9488] text-white font-bold py-3 rounded-lg hover:bg-teal-700 transition-colors shadow-lg shadow-teal-900/10 flex items-center justify-center gap-2"
+                className="w-full bg-[#0d9488] text-white font-bold py-2.5 xl:py-3 rounded-lg hover:bg-teal-700 transition-colors shadow-lg shadow-teal-900/10 flex items-center justify-center gap-2 text-xs xl:text-sm"
             >
                 {loading ? 'Mengirim...' : (formData.type === 'Konsultasi Publik' ? 'Kirim Masukan Draft' : 'Kirim Aspirasi')}
             </button>
@@ -315,7 +315,7 @@ function Hero({ banners = [], stats = [], publicDialogues = [] }: { banners?: an
     return (
         <section onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             {/* ── Slider Area ── */}
-            <div className="relative min-h-[750px] lg:min-h-[650px] flex items-center overflow-hidden bg-slate-900">
+            <div className="relative min-h-[580px] lg:min-h-[500px] xl:min-h-[540px] flex items-center overflow-hidden bg-slate-900">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentIndex}
@@ -336,10 +336,10 @@ function Hero({ banners = [], stats = [], publicDialogues = [] }: { banners?: an
                     </motion.div>
                 </AnimatePresence>
 
-                <div className="relative z-10 max-w-7xl mx-auto h-full px-6 py-14 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                <div className="relative z-10 max-w-7xl xl:max-w-[1366px] mx-auto h-full px-4 sm:px-6 lg:px-8 py-8 lg:py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-center">
 
                     {/* ── LEFT: Headline with Motion ── */}
-                    <div>
+                    <div className="lg:col-span-7">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={currentIndex}
@@ -348,18 +348,18 @@ function Hero({ banners = [], stats = [], publicDialogues = [] }: { banners?: an
                                 exit={{ y: -20, opacity: 0 }}
                                 transition={{ duration: 0.5 }}
                             >
-                                <div className="flex items-center gap-4 mb-6">
-                                    <div className="h-12 w-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex items-center justify-center shadow-xl">
-                                        <Quote className="h-6 w-6 text-[#0d9488] fill-[#0d9488]" />
+                                <div className="flex items-center gap-3 mb-3 xl:mb-5">
+                                    <div className="h-9 w-9 xl:h-11 xl:w-11 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex items-center justify-center shadow-xl">
+                                        <Quote className="h-4.5 w-4.5 xl:h-5.5 xl:w-5.5 text-[#0d9488] fill-[#0d9488]" />
                                     </div>
-                                    <div className="inline-block bg-[#0d9488] text-white text-xs font-bold px-4 py-1.5 rounded tracking-widest uppercase shadow-lg shadow-teal-900/20">
+                                    <div className="inline-block bg-[#0d9488] text-white text-[10px] xl:text-xs font-bold px-3 py-1 xl:px-4 xl:py-1.5 rounded tracking-widest uppercase shadow-lg shadow-teal-900/20">
                                         {displayBanners[currentIndex].subtitle || 'Jaringan Dokumentasi & Informasi Hukum'}
                                     </div>
                                 </div>
-                                <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-tight whitespace-pre-line">
+                                <h1 className="text-2xl sm:text-3xl md:text-4xl xl:text-5xl font-bold text-white mb-3 xl:mb-4 leading-tight whitespace-pre-line">
                                     {displayBanners[currentIndex].title || <>Portal Produk Hukum<br /><span className="text-[#0d9488]">Kabupaten Banjarnegara</span></>}
                                 </h1>
-                                <p className="text-slate-300 text-base leading-relaxed mb-8 max-w-md">
+                                <p className="text-slate-300 text-xs sm:text-sm xl:text-base leading-relaxed mb-4 xl:mb-6 max-w-lg">
                                     {displayBanners[currentIndex].description || 'Akses mudah ke database Peraturan Daerah, Peraturan Bupati, Keputusan Bupati, dan produk hukum lainnya secara transparan dan terkini.'}
                                 </p>
                             </motion.div>
@@ -367,15 +367,15 @@ function Hero({ banners = [], stats = [], publicDialogues = [] }: { banners?: an
 
                         {/* Mini stats */}
                         {displayBanners[currentIndex].show_stats !== false && (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-2.5 xl:gap-4">
                                 {stats.map((s: any) => (
-                                    <div key={s.label} className="flex items-center gap-3">
-                                        <div className="h-10 w-10 bg-[#0d9488]/20 rounded-lg flex items-center justify-center shrink-0">
-                                            <s.icon className="h-5 w-5 text-[#0d9488]" />
+                                    <div key={s.label} className="flex items-center gap-2.5 xl:gap-3">
+                                        <div className="h-8 w-8 xl:h-10 xl:w-10 bg-[#0d9488]/20 rounded-lg flex items-center justify-center shrink-0">
+                                            <s.icon className="h-4 w-4 xl:h-5 xl:w-5 text-[#0d9488]" />
                                         </div>
                                         <div>
-                                            <div className="text-xl font-bold text-white leading-none">{s.value}</div>
-                                            <div className="text-xs text-slate-400">{s.label}</div>
+                                            <div className="text-base xl:text-xl font-bold text-white leading-none">{s.value}</div>
+                                            <div className="text-[10px] xl:text-xs text-slate-400 mt-0.5">{s.label}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -384,19 +384,19 @@ function Hero({ banners = [], stats = [], publicDialogues = [] }: { banners?: an
                     </div>
 
                     {/* ── RIGHT: Public Consultation Form Panel ── */}
-                    <div className="bg-white rounded-2xl shadow-2xl overflow-hidden self-center lg:self-auto">
+                    <div className="lg:col-span-5 bg-white rounded-2xl shadow-2xl overflow-hidden self-center">
                         {/* Panel header */}
-                        <div className="bg-[#1e293b] px-6 py-4 flex items-center gap-3">
-                            <div className="h-8 w-8 bg-[#0d9488] rounded-lg flex items-center justify-center shrink-0">
-                                <Users className="h-4 w-4 text-white" />
+                        <div className="bg-[#1e293b] px-4 py-3 xl:px-6 xl:py-3.5 flex items-center gap-3">
+                            <div className="h-7 w-7 xl:h-8 xl:w-8 bg-[#0d9488] rounded-lg flex items-center justify-center shrink-0">
+                                <Users className="h-3.5 w-3.5 xl:h-4 xl:w-4 text-white" />
                             </div>
                             <div>
-                                <p className="text-white font-bold text-sm">Forum Konsultasi Publik</p>
-                                <p className="text-slate-400 text-xs">Sampaikan aspirasi & masukan Anda</p>
+                                <p className="text-white font-bold text-xs xl:text-sm">Forum Konsultasi Publik</p>
+                                <p className="text-slate-400 text-[10px] xl:text-xs">Sampaikan aspirasi & masukan Anda</p>
                             </div>
                         </div>
                         {/* Form body */}
-                        <div className="p-6">
+                        <div className="p-3.5 sm:p-4 xl:p-6">
                             <ConsultationForm publicDialogues={publicDialogues} />
                         </div>
                     </div>
@@ -405,7 +405,7 @@ function Hero({ banners = [], stats = [], publicDialogues = [] }: { banners?: an
 
                 {/* Slider Indicators */}
                 {displayBanners.length > 1 && (
-                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                    <div className="absolute bottom-4 xl:bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
                         {displayBanners.map((_, idx) => (
                             <button
                                 key={idx}
@@ -419,7 +419,7 @@ function Hero({ banners = [], stats = [], publicDialogues = [] }: { banners?: an
             </div>
 
             {/* ── Rotating Quotes Section ── */}
-            <div className="bg-gradient-to-r from-[#0d9488] via-teal-700 to-[#0d9488] py-12 px-6">
+            <div className="bg-gradient-to-r from-[#0d9488] via-teal-700 to-[#0d9488] py-6 xl:py-8 px-4 sm:px-6">
                 <div className="max-w-4xl mx-auto">
                     <AnimatePresence mode="wait">
                         <motion.div
@@ -430,14 +430,14 @@ function Hero({ banners = [], stats = [], publicDialogues = [] }: { banners?: an
                             transition={{ duration: 0.6 }}
                             className="text-center"
                         >
-                            <div className="flex items-center justify-center gap-3 mb-4">
-                                <Quote className="h-6 w-6 text-white/60" />
-                                <span className="text-white/70 text-xs font-bold uppercase tracking-widest">Quote Hari Ini</span>
+                            <div className="flex items-center justify-center gap-2.5 mb-2 xl:mb-3">
+                                <Quote className="h-4 w-4 xl:h-5 xl:w-5 text-white/60" />
+                                <span className="text-white/70 text-[10px] xl:text-xs font-bold uppercase tracking-widest">Quote Hari Ini</span>
                             </div>
-                            <blockquote className="text-white text-lg md:text-xl font-medium italic leading-relaxed mb-4">
+                            <blockquote className="text-white text-sm sm:text-base xl:text-lg font-medium italic leading-relaxed mb-2 xl:mb-3">
                                 "{QUOTES[quoteIndex].text}"
                             </blockquote>
-                            <cite className="text-white/80 text-sm font-semibold not-italic">
+                            <cite className="text-white/80 text-xs xl:text-sm font-semibold not-italic">
                                 — {QUOTES[quoteIndex].author}
                             </cite>
                         </motion.div>
@@ -470,33 +470,33 @@ function CategoryGrid({ variant = 'classic', counts = {} }: { variant?: 'classic
     const themeColor = getThemeColor(variant);
     
     return (
-        <section className="py-16 bg-slate-50">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="flex items-end justify-between mb-10">
+        <section className="py-10 xl:py-14 bg-slate-50">
+            <div className="max-w-7xl xl:max-w-[1366px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-end justify-between mb-6 xl:mb-8">
                     <div>
-                        <p className="text-sm font-bold uppercase tracking-widest mb-1" style={{ color: themeColor }}>Database</p>
-                        <h2 className="text-3xl font-bold text-[#1e293b]">Kategori Produk Hukum</h2>
+                        <p className="text-xs xl:text-sm font-bold uppercase tracking-widest mb-1" style={{ color: themeColor }}>Database</p>
+                        <h2 className="text-2xl xl:text-3xl font-bold text-[#1e293b]">Kategori Produk Hukum</h2>
                     </div>
                     <Link href="/peraturan-daerah" 
-                        className={`hidden md:flex items-center gap-2 text-sm font-semibold transition-colors`}
+                        className={`hidden md:flex items-center gap-1.5 xl:gap-2 text-xs xl:text-sm font-semibold transition-colors`}
                         style={{ color: themeColor }}
                     >
                         Lihat Semua <ArrowRight className="h-4 w-4" />
                     </Link>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 xl:gap-5">
                     {CATEGORIES.map((cat) => {
                         const iconBg = (variant === 'modern' && cat.color === '#0d9488') ? '#003399' : cat.color;
                         const count = counts[cat.title] || 0;
                         return (
                             <Link key={cat.code} href={cat.href}
-                                className={`group flex items-center gap-4 p-5 bg-white border border-slate-200 rounded-lg transition-all ${variant === 'modern' ? 'hover:border-[#003399] hover:shadow-xl hover:shadow-blue-900/5' : 'hover:border-[#0d9488] hover:shadow-md'}`}>
-                                <div className="h-12 w-12 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: iconBg }}>
-                                    <cat.icon className="h-6 w-6 text-white" />
+                                className={`group flex items-center gap-3.5 xl:gap-4 p-3.5 xl:p-5 bg-white border border-slate-200 rounded-lg transition-all ${variant === 'modern' ? 'hover:border-[#003399] hover:shadow-xl hover:shadow-blue-900/5' : 'hover:border-[#0d9488] hover:shadow-md'}`}>
+                                <div className="h-10 w-10 xl:h-12 xl:w-12 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: iconBg }}>
+                                    <cat.icon className="h-5 w-5 xl:h-6 xl:w-6 text-white" />
                                 </div>
                                 <div className="min-w-0">
-                                    <div className={`font-bold text-[#1e293b] text-sm transition-colors truncate ${variant === 'modern' ? 'group-hover:text-[#003399]' : 'group-hover:text-[#0d9488]'}`}>{cat.title}</div>
-                                    <div className="text-slate-500 text-xs">{count.toLocaleString('id-ID')} Dokumen</div>
+                                    <div className={`font-bold text-[#1e293b] text-xs xl:text-sm transition-colors truncate ${variant === 'modern' ? 'group-hover:text-[#003399]' : 'group-hover:text-[#0d9488]'}`}>{cat.title}</div>
+                                    <div className="text-slate-500 text-[11px] xl:text-xs">{count.toLocaleString('id-ID')} Dokumen</div>
                                 </div>
                             </Link>
                         );
@@ -515,43 +515,43 @@ function LatestDocuments({ variant = 'classic', documents = [] }: { variant?: 'c
     const displayDocs = documents.length > 0 ? documents : LATEST_DOCS;
 
     return (
-        <section className="py-16 bg-white">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="flex items-end justify-between mb-10">
+        <section className="py-10 xl:py-14 bg-white">
+            <div className="max-w-7xl xl:max-w-[1366px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-end justify-between mb-6 xl:mb-8">
                     <div>
-                        <p className="text-sm font-bold uppercase tracking-widest mb-1" style={{ color: themeColor }}>Terkini</p>
-                        <h2 className="text-3xl font-bold text-[#1e293b]">Produk Hukum Terbaru</h2>
+                        <p className="text-xs xl:text-sm font-bold uppercase tracking-widest mb-1" style={{ color: themeColor }}>Terkini</p>
+                        <h2 className="text-2xl xl:text-3xl font-bold text-[#1e293b]">Produk Hukum Terbaru</h2>
                     </div>
                     <Link href="/peraturan-daerah" 
-                        className={`hidden md:flex items-center gap-2 text-sm font-semibold transition-colors`}
+                        className={`hidden md:flex items-center gap-1.5 xl:gap-2 text-xs xl:text-sm font-semibold transition-colors`}
                         style={{ color: themeColor }}
                     >
                         Lihat Semua <ArrowRight className="h-4 w-4" />
                     </Link>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3 xl:space-y-4">
                     {displayDocs.map((doc, idx) => (
                         <div key={doc.id}
-                            className={`flex flex-col sm:flex-row sm:items-center gap-4 p-5 border border-slate-200 rounded-lg transition-all group ${variant === 'modern' ? 'hover:border-[#003399] hover:bg-blue-50/30' : 'hover:border-[#0d9488] hover:bg-slate-50'}`}>
-                            <div className="hidden sm:flex h-10 w-10 rounded bg-slate-100 items-center justify-center text-slate-400 font-bold shrink-0">
+                            className={`flex flex-col sm:flex-row sm:items-center gap-3 xl:gap-4 p-3.5 sm:p-4 xl:p-5 border border-slate-200 rounded-lg transition-all group ${variant === 'modern' ? 'hover:border-[#003399] hover:bg-blue-50/30' : 'hover:border-[#0d9488] hover:bg-slate-50'}`}>
+                            <div className="hidden sm:flex h-9 w-9 xl:h-10 xl:w-10 rounded bg-slate-100 items-center justify-center text-slate-400 font-bold shrink-0 text-xs xl:text-sm">
                                 {String(idx + 1).padStart(2, '0')}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                                <div className="flex flex-wrap items-center gap-2 mb-1">
                                     <TypeBadge type={doc.code || doc.type} variant={variant} />
-                                    <span className="text-xs text-slate-400">{doc.date ? fmtDate(doc.date) : doc.year}</span>
-                                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{doc.subject}</span>
+                                    <span className="text-[11px] xl:text-xs text-slate-400">{doc.date ? fmtDate(doc.date) : doc.year}</span>
+                                    <span className="text-[11px] xl:text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{doc.subject}</span>
                                 </div>
-                                <p className={`font-semibold text-[#1e293b] text-sm transition-colors leading-snug ${variant === 'modern' ? 'group-hover:text-[#003399]' : 'group-hover:text-[#0d9488]'}`}>
+                                <p className={`font-semibold text-[#1e293b] text-xs xl:text-sm transition-colors leading-snug ${variant === 'modern' ? 'group-hover:text-[#003399]' : 'group-hover:text-[#0d9488]'}`}>
                                     {doc.number ? `${doc.type} Nomor ${doc.number} Tahun ${doc.year}` : doc.title} — {doc.number ? doc.title : ''}
                                 </p>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
                                 <Link href={doc.href || `/${doc.slug}/${doc.id}`}
-                                    className={`flex items-center gap-1.5 px-4 py-2 text-white text-xs font-bold rounded transition-colors ${variant === 'modern' ? 'bg-[#003399] hover:bg-blue-800' : 'bg-[#1e293b] hover:bg-slate-700'}`}>
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 xl:px-4 xl:py-2 text-white text-xs font-bold rounded transition-colors ${variant === 'modern' ? 'bg-[#003399] hover:bg-blue-800' : 'bg-[#1e293b] hover:bg-slate-700'}`}>
                                     <Eye className="h-3.5 w-3.5" /> Detail
                                 </Link>
-                                <button className={`flex items-center gap-1.5 px-4 py-2 border border-slate-200 text-slate-600 text-xs font-bold rounded transition-colors ${variant === 'modern' ? 'hover:border-[#003399] hover:text-[#003399]' : 'hover:border-[#0d9488] hover:text-[#0d9488]'}`}>
+                                <button className={`flex items-center gap-1.5 px-3 py-1.5 xl:px-4 xl:py-2 border border-slate-200 text-slate-600 text-xs font-bold rounded transition-colors ${variant === 'modern' ? 'hover:border-[#003399] hover:text-[#003399]' : 'hover:border-[#0d9488] hover:text-[#0d9488]'}`}>
                                     <Download className="h-3.5 w-3.5" /> PDF
                                 </button>
                             </div>
