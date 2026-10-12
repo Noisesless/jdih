@@ -23,6 +23,14 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        User::updateOrCreate(
+            ['email' => 'admin.jdih@banjarnegarakab.go.id'],
+            [
+                'name' => 'Admin JDIH Banjarnegara',
+                'password' => \Illuminate\Support\Facades\Hash::make('JDIH#Banjarnegara26'),
+            ]
+        );
+
         $this->call([
             DummyDataSeeder::class,
         ]);
