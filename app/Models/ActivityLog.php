@@ -64,28 +64,30 @@ class ActivityLog extends Model
     public function getActionLabelAttribute(): string
     {
         return match ($this->action) {
-            'created'  => 'Dibuat',
-            'updated'  => 'Diubah',
-            'deleted'  => 'Dihapus',
-            'login'    => 'Login',
-            'logout'   => 'Logout',
-            'viewed'   => 'Dilihat',
-            'exported' => 'Diekspor',
-            'printed'  => 'Dicetak',
-            default    => ucfirst($this->action),
+            'created'      => 'Dibuat',
+            'updated'      => 'Diubah',
+            'deleted'      => 'Dihapus',
+            'login'        => 'Login',
+            'logout'       => 'Logout',
+            'failed_login' => 'Gagal Login',
+            'viewed'       => 'Dilihat',
+            'exported'     => 'Diekspor',
+            'printed'      => 'Dicetak',
+            default        => ucfirst($this->action),
         };
     }
 
     public function getActionColorAttribute(): string
     {
         return match ($this->action) {
-            'created'  => 'success',
-            'updated'  => 'warning',
-            'deleted'  => 'danger',
-            'login'    => 'info',
-            'logout'   => 'gray',
-            'printed'  => 'primary',
-            default    => 'gray',
+            'created'      => 'success',
+            'updated'      => 'warning',
+            'deleted'      => 'danger',
+            'login'        => 'info',
+            'logout'       => 'gray',
+            'failed_login' => 'danger',
+            'printed'      => 'primary',
+            default        => 'gray',
         };
     }
 }

@@ -47,22 +47,24 @@ class ActivityLogResource extends Resource
                     ->label('Aksi')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'created'  => 'success',
-                        'updated'  => 'warning',
-                        'deleted'  => 'danger',
-                        'login'    => 'info',
-                        'logout'   => 'gray',
-                        'printed'  => 'primary',
-                        default    => 'gray',
+                        'created'      => 'success',
+                        'updated'      => 'warning',
+                        'deleted'      => 'danger',
+                        'login'        => 'info',
+                        'logout'       => 'gray',
+                        'failed_login' => 'danger',
+                        'printed'      => 'primary',
+                        default        => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'created'  => '+ Dibuat',
-                        'updated'  => '~ Diubah',
-                        'deleted'  => '× Dihapus',
-                        'login'    => '→ Login',
-                        'logout'   => '← Logout',
-                        'printed'  => '⎙ Cetak',
-                        default    => ucfirst($state),
+                        'created'      => '+ Dibuat',
+                        'updated'      => '~ Diubah',
+                        'deleted'      => '× Dihapus',
+                        'login'        => '→ Login',
+                        'logout'       => '← Logout',
+                        'failed_login' => '⚠ Gagal Login',
+                        'printed'      => '⎙ Cetak',
+                        default        => ucfirst($state),
                     }),
 
                 TextColumn::make('model_type')
