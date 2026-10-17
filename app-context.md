@@ -1,5 +1,5 @@
 # APP CONTEXT — JDIH KABUPATEN BANJARNEGARA
-# Last Updated: 2026-10-12
+# Last Updated: 2026-10-17
 # State Snapshot untuk Vibes Coding Workflow / Antigravity IDE
 
 [APP]
@@ -29,6 +29,7 @@ real_ip_support = "Cloudflare CF-Connecting-IP & X-Real-IP forwarded"
 nginx_hardened = "Dotfiles (.env, .git, etc.) diblokir return 404"
 ssl_setup = "Cloudflare Origin CA / Custom SSL Pemda via Nginx vhost"
 rate_limiting = "Filament default 5 attempts/minute pada /admin/login"
+https_scheme_guard = "Otomatis paksa HTTPS di produksi, bypass pada localhost / 127.0.0.1 / *.test via AppServiceProvider"
 
 [AI_ASSISTANT]
 primary_llm = "Google Gemini API via GeminiService.php (Multi-Key Pool rotation, withoutVerifying SSL)"
@@ -36,6 +37,14 @@ fallback_pool = "gemini-2.5-flash, gemini-2.0-flash, gemini-1.5-flash"
 offline_rag = "App\Services\OfflineLegalRagService.php (100% Native PHP in-process, tanpa dependensi python/subprocess/shell)"
 cli_helper = "rag_search.py (Dynamic OS detection: python3 on Linux, python on Windows)"
 error_sanitizer = "CLI execution failure masked; fallback mulus ke OfflineLegalRagService tanpa leak pesan terminal"
+desktop_ui = "Aktif pada DetailDokumen.tsx (modal popup)"
+mobile_ui = "Aktif pada Mobile/DetailDokumen.tsx (bottom-sheet drawer 85vh)"
+
+[PWA_AND_MOBILE]
+manifest = "public/manifest.json (start_url: /mobile, theme: #0d9488, bg: #ffffff)"
+service_worker = "public/sw.js (network-first navigation, cache fallback, auto-cleanup)"
+registration = "resources/views/app.blade.php"
+mobile_routes = "/mobile, /mobile/pencarian, /mobile/dokumen/{id}, /mobile/berita, /mobile/info"
 
 [RESPONSIVE_STANDARDS]
 primary_desktop = "1366x768 (Standar Laptop Layanan Pemerintahan & Display 125% scaling ~1092px)"

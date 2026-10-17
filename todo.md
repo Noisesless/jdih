@@ -40,6 +40,15 @@ Daftar progres pekerjaan dan roadmap operasional sistem JDIH Kabupaten Banjarneg
 - [x] Setup precompiled frontend assets deployment workflow untuk server tanpa Node.js/NPM
 - [x] Sinkronisasi dokumentasi Blueprint Brainvibes (`/.docs/` 9 file + `prd.md` + `todo.md` + `handover.md` + `app-context.md`)
 
+## [x] Fase 6.1: Optimasi PWA, Mobile AI, Viewer PDF & Dynamic Environment
+- [x] Aktivasi widget pencarian dokumen di sidebar `DetailDokumen.tsx` dengan integrasi Inertia `router.get` ke `/katalog`
+- [x] Dynamic HTTPS Scheme Guard di `AppServiceProvider.php` (mencegah `ERR_CONNECTION_CLOSED` pada dev server lokal)
+- [x] Integrasi Fitur Pintar "Tanya Asisten AI JDIH" pada Mobile Detail Dokumen (`Mobile/DetailDokumen.tsx`) dengan drawer bottom-sheet 85vh
+- [x] Pembuatan PWA Service Worker (`public/sw.js`) dan pendaftaran di `app.blade.php` untuk offline fallback dan kriteria installability
+- [x] Sinkronisasi `public/manifest.json` (`start_url: /mobile`, theme `#0d9488`, background `#ffffff`)
+- [x] Resolusi error PDF viewer "Browser Anda tidak mendukung preview PDF langsung": symlink `public/storage`, perbaikan accessor URL relatif `/storage/...` ter-encode di `LegalDocument.php`, dan penambahan `iframe` fallback di dalam `<object>`
+- [x] Pembaruan rute unduh dokumen (`/dokumen/{id}/unduh`) menjadi direct streaming download via `Storage::disk('public')->download($path)`
+
 ## [ ] Fase 7: Sinkronisasi Keterkaitan Antar-Peraturan (Mencabut & Mengubah)
 - [ ] Buat Artisan Command Auto-Linker (`php artisan jdih:link-relations`) untuk menautkan otomatis 179+ relasi (16 pencabutan & 163 perubahan) dari teks judul peraturan ke tabel `legal_document_relations`
 - [ ] Perbarui status keberlakuan dokumen yang dicabut dari `'Berlaku'` menjadi `'Dicabut'` / `'Tidak Berlaku'` serta isi catatan `status_note` secara otomatis

@@ -813,11 +813,14 @@ Route::get('/unduh', function () {
 // ---------------------------------------------------------------
 // TRACKING & PROFILE
 // ---------------------------------------------------------------
-Route::get('/dokumen/{id}/unduh', function (int $id) {
+Route::get('/dokumen/{id}/unduh', function (int $id, \Illuminate\Http\Request $request) {
     $document = \App\Models\LegalDocument::findOrFail($id);
-    if (!$document->file_path) abort(404);
+    $path = $request->get('type') === 'abstract' ? $document->abstract_file_path : $document->file_path;
+    if (!$path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+        abort(404, 'File dokumen tidak ditemukan.');
+    }
     $document->increment('download_count');
-    return redirect()->away(Storage::disk('public')->url($document->file_path));
+    return \Illuminate\Support\Facades\Storage::disk('public')->download($path);
 })->name('dokumen.unduh');
 
 Route::get('/dashboard', function () {

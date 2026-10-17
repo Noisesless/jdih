@@ -1,33 +1,35 @@
 {
-  "name": "JDIH Banjarnegara",
+  "name": "JDIH Kabupaten Banjarnegara",
   "short_name": "JDIH BNA",
   "description": "Jaringan Dokumentasi dan Informasi Hukum Kabupaten Banjarnegara",
-  "start_url": "/",
+  "start_url": "/mobile",
   "display": "standalone",
-  "background_color": "#003399",
-  "theme_color": "#003399",
+  "background_color": "#ffffff",
+  "theme_color": "#0d9488",
   "orientation": "portrait",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
     {
       "name": "Cari Dokumen",
-      "url": "/katalog",
+      "url": "/mobile/pencarian",
       "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Berita",
-      "url": "/berita",
+      "name": "Berita Hukum",
+      "url": "/mobile/berita",
       "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ]

@@ -137,5 +137,16 @@
                 }
             }
         </script>
+
+        <script>
+            // Register PWA Service Worker
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').catch(function(err) {
+                        console.warn('[PWA] Service Worker registration skipped/failed:', err);
+                    });
+                });
+            }
+        </script>
     </body>
 </html>

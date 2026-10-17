@@ -27,8 +27,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
 
-        if (config('app.env') !== 'local') {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+        if (config('app.env') !== 'local' && !app()->runningInConsole()) {
+            $host = request()->getHost();
+            if (!in_array($host, ['localhost', '127.0.0.1']) && !str_ends_with($host, '.test')) {
+                \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
         }
 
         // 1. Catat log aktivitas saat user login berhasil (Frontend & Filament Admin)

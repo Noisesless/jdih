@@ -16,8 +16,19 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 | `/aspirasi` | `Closure -> Inertia::render('Aspirasi/Index')` | Forum Konsultasi & Aspirasi | Public | Active |
 | `/desa` | `ProdukHukumDesaController@index` | Integrasi Produk Hukum Desa | Public | Active |
 | `/qrcode` | `Closure -> SVG Stream` | QR Code Generator Aman (SSRF Guard)| Public | Active |
+| `/dokumen/{id}/unduh` | `Storage::disk('public')->download($path)` | Unduh Langsung PDF Dokumen / Abstrak | Public | Active |
 
-## 2. Admin Backoffice Routes (Filament v3)
+## 2. Mobile & PWA Routes (`/mobile/*`)
+
+| Route Path | File / Handler | Page Title | Auth | Status |
+|---|---|---|---|---|
+| `/mobile` | `Closure -> Inertia::render('Mobile/Home')` | Beranda Mobile JDIH | Public | Active |
+| `/mobile/pencarian` | `Closure -> Inertia::render('Mobile/Pencarian')` | Pencarian Dokumen Mobile | Public | Active |
+| `/mobile/dokumen/{id}` | `Closure -> Inertia::render('Mobile/DetailDokumen')` | Detail Dokumen + Fitur Pintar AI | Public | Active |
+| `/mobile/berita` | `Closure -> Inertia::render('Mobile/Berita')` | Warta Hukum Mobile | Public | Active |
+| `/mobile/info` | `Closure -> Inertia::render('Mobile/InfoJdih')` | Informasi JDIH Mobile | Public | Active |
+
+## 3. Admin Backoffice Routes (Filament v3)
 
 | Route Path | Handler | Auth Guard | Purpose |
 |---|---|---|---|

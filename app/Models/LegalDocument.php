@@ -111,7 +111,9 @@ class LegalDocument extends Model
             return null;
         }
 
-        return \Illuminate\Support\Facades\Storage::disk('public')->url($this->file_path);
+        $segments = explode('/', ltrim($this->file_path, '/'));
+        $encoded = implode('/', array_map('rawurlencode', $segments));
+        return '/storage/' . $encoded;
     }
 
     /**
@@ -126,7 +128,9 @@ class LegalDocument extends Model
             return null;
         }
 
-        return \Illuminate\Support\Facades\Storage::disk('public')->url($this->abstract_file_path);
+        $segments = explode('/', ltrim($this->abstract_file_path, '/'));
+        $encoded = implode('/', array_map('rawurlencode', $segments));
+        return '/storage/' . $encoded;
     }
 
     /**

@@ -61,3 +61,28 @@ php artisan migrate --force
 # 4. Bersihkan cache aplikasi agar template dan aset baru langsung terbaca
 php artisan optimize:clear
 ```
+
+---
+
+## 4. Status Sesi Terkini (17 Oktober 2026)
+
+### Sesi Bagian 3: Aktivasi Pencarian, Dynamic Scheme, AI Mobile & PWA Engine
+*   **Aktivasi Widget Pencarian Dokumen Desktop**:
+    *   Form dan tombol "Cari Dokumen" pada sidebar `DetailDokumen.tsx` telah diaktifkan dengan event submit dan integrasi Inertia `router.get` ke `/katalog?namaDokumen=...`.
+*   **Dynamic HTTPS Scheme Guard (`AppServiceProvider.php`)**:
+    *   Mengatasi error `net::ERR_CONNECTION_CLOSED` pada dev server lokal dengan mengecualikan `localhost`, `127.0.0.1`, dan `*.test` dari pemaksaan `URL::forceScheme('https')`. Domain server produksi tetap aman dengan pemaksaan HTTPS otomatis.
+*   **Aktivasi Fitur Pintar "Tanya Asisten AI JDIH" pada Mobile**:
+    *   Menambahkan tombol kartu pintar gradien Teal `#0d9488` dan drawer modal *bottom-sheet* interaktif (tinggi 85vh) pada `resources/js/Pages/Mobile/DetailDokumen.tsx`.
+    *   Mendukung perbincangan real-time, format Markdown, dan terhubung langsung ke backend `/ai/ask`.
+*   **Kesiapan Standar PWA (Progressive Web App)**:
+    *   Membuat Service Worker `public/sw.js` dengan strategi caching *network-first navigation* dan offline fallback.
+    *   Mendaftarkan Service Worker pada template induk `resources/views/app.blade.php`.
+    *   Memperbarui `public/manifest.json`: menyelaraskan `start_url` ke `/mobile`, `theme_color` ke `#0d9488`, `background_color` ke `#ffffff`, dan menambahkan shortcut navigasi mobile.
+*   **Resolusi Error PDF Viewer "Browser Anda tidak mendukung preview PDF langsung"**:
+    *   Menghubungkan symlink `public/storage` ke `storage/app/public` via `php artisan storage:link`.
+    *   Memperbaiki accessor `getFileAttribute()` dan `getAbstractFileAttribute()` pada `LegalDocument.php` agar menghasilkan path relatif `/storage/...` yang ter-encode per segmen (`rawurlencode`), mencegah ketergantungan pada domain luar `https://jdih.rapidnet.id` yang menghasilkan 404.
+    *   Menambahkan fallback `<iframe>` di dalam tag `<object>` pada `DetailDokumen.tsx` untuk kompatibilitas peramban desktop yang lebih luas.
+    *   Mengalihkan rute unduhan `/dokumen/{id}/unduh` menggunakan `Storage::disk('public')->download($path)` langsung tanpa redirect eksternal.
+*   **Kompilasi Aset Frontend Produksi**:
+    *   Menjalankan `npm run build` sehingga seluruh bundle di `public/build/` terkompilasi mutakhir dan siap di-deploy langsung ke server tanpa Node.js.
+

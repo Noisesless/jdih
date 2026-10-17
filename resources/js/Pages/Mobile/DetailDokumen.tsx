@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import MobileLayout from '@/Layouts/MobileLayout';
 import { Head } from '@inertiajs/react';
+import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
     ArrowLeft, Download, Eye, Calendar, Hash, Tag, FileText,
     Monitor, AlertCircle, User, Globe, BookOpen, MapPin,
-    Building2, ChevronDown, ChevronUp, Link2, FileSearch
+    Building2, ChevronDown, ChevronUp, Link2, FileSearch,
+    Bot, Zap, ChevronRight, ChevronLeft, X
 } from 'lucide-react';
 
 interface Document {
@@ -40,6 +44,10 @@ function MetaRow({ icon: Icon, label, value }: { icon: any; label: string; value
 export default function DetailDokumen({ document: doc }: Props) {
     const [showMeta, setShowMeta] = useState(false);
     const [showRegulations, setShowRegulations] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([]);
+    const [userInput, setUserInput] = useState('');
+    const [isAiLoading, setIsAiLoading] = useState(false);
 
     const statusColor = (s: string) => {
         if (!s) return 'bg-slate-400';
@@ -107,6 +115,33 @@ export default function DetailDokumen({ document: doc }: Props) {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Fitur Pintar AI Assistant Card */}
+            <div className="px-5 pb-4">
+                <button 
+                    onClick={() => {
+                        setIsChatOpen(true);
+                        if (chatMessages.length === 0) {
+                            setChatMessages([{ 
+                                role: 'ai', 
+                                text: `Halo! Saya Asisten AI JDIH Banjarnegara. Saya telah membaca dokumen "${doc.title}". Ada poin, pasal, atau ketentuan yang ingin Anda tanyakan?` 
+                            }]);
+                        }
+                    }}
+                    className="w-full group flex items-center justify-between p-4 bg-gradient-to-r from-[#0d9488] to-[#0f766e] text-white rounded-3xl shadow-xl shadow-teal-900/15 active:scale-95 transition-all"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-white/20 rounded-2xl shrink-0">
+                            <Zap className="h-5 w-5 fill-white text-white" />
+                        </div>
+                        <div className="text-left">
+                            <p className="text-[9px] font-black opacity-80 uppercase tracking-widest leading-none mb-1">Fitur Pintar</p>
+                            <p className="text-sm font-black tracking-tight">Tanya ASISTEN AI JDIH</p>
+                        </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 opacity-60 group-hover:opacity-100 transition-opacity" />
+                </button>
             </div>
 
             {/* Informasi Dasar */}
@@ -268,6 +303,110 @@ export default function DetailDokumen({ document: doc }: Props) {
                     </div>
                 )}
             </div>
+
+            {/* AI CHAT MODAL (MOBILE BOTTOM-SHEET / FULLSCREEN DRAWER) */}
+            {isChatOpen && (
+                <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex flex-col justify-end animate-in fade-in duration-200">
+                    <div className="bg-white rounded-t-[2.5rem] h-[85vh] max-h-[85vh] flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
+                        {/* Header */}
+                        <div className="bg-[#0d9488] p-5 text-white flex justify-between items-center shrink-0">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-white/20 p-2 rounded-2xl">
+                                    <Bot className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h4 className="font-black text-sm uppercase tracking-tight">Asisten AI JDIH</h4>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="h-2 w-2 bg-emerald-400 rounded-full animate-pulse" />
+                                        <span className="text-[10px] font-bold opacity-90 uppercase">Online & Siap Membantu</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setIsChatOpen(false)} 
+                                className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
+                                aria-label="Tutup Chat"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {/* Messages Area */}
+                        <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-slate-50">
+                            {chatMessages.map((msg, idx) => (
+                                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-[88%] p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+                                        msg.role === 'user'
+                                            ? 'bg-[#0d9488] text-white rounded-tr-none font-medium'
+                                            : 'bg-white text-slate-800 shadow-sm border border-slate-100 rounded-tl-none'
+                                    }`}>
+                                        {msg.role === 'ai' ? (
+                                            <div className="prose prose-sm max-w-none prose-headings:font-bold prose-headings:text-slate-800 prose-strong:text-slate-800 prose-ul:text-slate-600 prose-ol:text-slate-600 prose-li:text-slate-600 prose-p:text-slate-700 prose-code:text-[#0d9488] prose-code:bg-slate-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs">
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                    {msg.text}
+                                                </ReactMarkdown>
+                                            </div>
+                                        ) : (
+                                            <span className="font-medium">{msg.text}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                            {isAiLoading && (
+                                <div className="flex justify-start">
+                                    <div className="bg-white p-3.5 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 flex gap-1.5 items-center">
+                                        <div className="h-2 w-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                        <div className="h-2 w-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                        <div className="h-2 w-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Chat Input */}
+                        <form 
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                if (!userInput.trim() || isAiLoading) return;
+                                const question = userInput.trim();
+                                setUserInput('');
+                                setChatMessages(prev => [...prev, { role: 'user', text: question }]);
+                                setIsAiLoading(true);
+
+                                try {
+                                    const response = await axios.post('/ai/ask', {
+                                        document_id: doc.id,
+                                        question: question,
+                                        chat_history: chatMessages
+                                    });
+                                    setChatMessages(prev => [...prev, { role: 'ai', text: response.data.answer }]);
+                                } catch (error) {
+                                    setChatMessages(prev => [...prev, { role: 'ai', text: 'Maaf, terjadi kendala saat menghubungi Asisten AI. Silakan coba lagi.' }]);
+                                } finally {
+                                    setIsAiLoading(false);
+                                }
+                            }}
+                            className="p-3.5 bg-white border-t border-slate-100 flex gap-2 items-center"
+                        >
+                            <input 
+                                type="text" 
+                                value={userInput}
+                                onChange={(e) => setUserInput(e.target.value)}
+                                placeholder="Tanya pasal, maksud, sanksi dokumen ini..."
+                                className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-[#0d9488] focus:border-transparent outline-none"
+                            />
+                            <button 
+                                type="submit"
+                                disabled={isAiLoading || !userInput.trim()}
+                                className="bg-[#0d9488] text-white p-3 rounded-2xl hover:bg-[#0b7a6f] transition-all disabled:opacity-40 shrink-0 cursor-pointer"
+                                aria-label="Kirim Pertanyaan"
+                            >
+                                <ChevronRight className="h-5 w-5" />
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </MobileLayout>
     );
 }

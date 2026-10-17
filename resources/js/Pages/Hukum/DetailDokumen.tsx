@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -41,6 +41,17 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
     const [chatMessages, setChatMessages] = useState<{role: 'user'|'ai', text: string}[]>([]);
     const [userInput, setUserInput] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        const query = searchQuery.trim();
+        if (query) {
+            router.get('/katalog', { namaDokumen: query });
+        } else {
+            router.get('/katalog');
+        }
+    };
     
     // Safety check for category
     const activeCategory = category || document.category || { name: 'Dokumen', slug: 'katalog' };
@@ -234,12 +245,18 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                                     type="application/pdf"
                                                     className="w-full h-full"
                                                 >
-                                                    <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
-                                                        <p className="text-sm font-bold mb-4">Browser Anda tidak mendukung preview PDF langsung.</p>
-                                                        {downloadUrl && (
-                                                            <a href={downloadUrl} className="px-6 py-2 bg-[#0d9488] rounded-lg text-xs font-bold">Download File di Sini</a>
-                                                        )}
-                                                    </div>
+                                                    <iframe 
+                                                        src={fileUrl}
+                                                        className="w-full h-full border-0"
+                                                        title={document.title}
+                                                    >
+                                                        <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
+                                                            <p className="text-sm font-bold mb-4">Browser Anda tidak mendukung preview PDF langsung.</p>
+                                                            {downloadUrl && (
+                                                                <a href={downloadUrl} className="px-6 py-2 bg-[#0d9488] rounded-lg text-xs font-bold">Download File di Sini</a>
+                                                            )}
+                                                        </div>
+                                                    </iframe>
                                                 </object>
                                             </div>
                                         ) : (
@@ -276,10 +293,16 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                                         type="application/pdf"
                                                         className="w-full h-full"
                                                     >
-                                                        <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
-                                                            <p className="text-sm font-bold mb-4">Browser Anda tidak mendukung preview PDF langsung.</p>
-                                                            <a href={abstractFileUrl} className="px-6 py-2 bg-[#0d9488] rounded-lg text-xs font-bold">Download Abstrak di Sini</a>
-                                                        </div>
+                                                        <iframe 
+                                                            src={abstractFileUrl}
+                                                            className="w-full h-full border-0"
+                                                            title="Abstrak Dokumen"
+                                                        >
+                                                            <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
+                                                                <p className="text-sm font-bold mb-4">Browser Anda tidak mendukung preview PDF langsung.</p>
+                                                                <a href={abstractFileUrl} className="px-6 py-2 bg-[#0d9488] rounded-lg text-xs font-bold">Download Abstrak di Sini</a>
+                                                            </div>
+                                                        </iframe>
                                                     </object>
                                                 </div>
                                             </>
@@ -507,16 +530,21 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                     <Search className="h-4 w-4 text-[#0d9488]" />
                                     Cari Peraturan
                                 </h4>
-                                <div className="space-y-2.5 xl:space-y-3">
+                                <form onSubmit={handleSearch} className="space-y-2.5 xl:space-y-3">
                                     <input 
                                         type="text" 
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
                                         placeholder="Judul / Kata Kunci..."
                                         className="w-full px-3.5 py-2 xl:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs xl:text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all outline-none"
                                     />
-                                    <button className="w-full py-2 xl:py-2.5 bg-[#1e293b] text-white rounded-xl font-bold text-xs xl:text-sm hover:bg-black transition-colors">
+                                    <button 
+                                        type="submit"
+                                        className="w-full py-2 xl:py-2.5 bg-[#1e293b] text-white rounded-xl font-bold text-xs xl:text-sm hover:bg-black transition-colors cursor-pointer"
+                                    >
                                         Cari Dokumen
                                     </button>
-                                </div>
+                                </form>
                             </div>
 
                             {/* Popular Documents */}
