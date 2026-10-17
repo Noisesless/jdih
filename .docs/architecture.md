@@ -34,19 +34,22 @@ graph TD
 ```
 
 ## 1. Lapisan Presentasi (Presentation Layer)
-- **Frontend Publik**: React 18 dibungkus oleh Inertia.js untuk pengalaman Single Page Application (SPA) yang dinamis tanpa perlu membangun REST API terpisah untuk setiap view.
-- **Styling**: Tailwind CSS dengan variasi tema modern sivik, typography Plus Jakarta Sans / Outfit, dan responsivitas laptop (1366×768 / scaling 125%) hingga ponsel (Android 3M).
+- **Frontend Publik Desktop**: React 18 dibungkus oleh Inertia.js untuk pengalaman Single Page Application (SPA) yang dinamis tanpa perlu membangun REST API terpisah untuk setiap view.
+- **Frontend Mobile & PWA**: Antarmuka khusus mobile (`/mobile/*`) dengan navigasi bottom-tab, sentuhan ergonomis, dan Progressive Web App (PWA) lengkap dengan Service Worker (`public/sw.js`) serta manifest standalone (`public/manifest.json`).
+- **Styling**: Tailwind CSS dengan variasi tema modern sivik Teal `#0d9488`, typography Figtree, dan responsivitas laptop (1366×768 / scaling 125%) hingga ponsel (Android 3M).
 - **Admin Panel**: Filament v3 yang terintegrasi secara modular dengan Form Builder, Table Builder, Notification, dan Actions.
 - **Aset Frontend**: Terkompilasi mandiri via Vite (`public/build`) di lingkungan pengembang lokal sehingga server produksi dapat beroperasi tanpa Node.js.
 
 ## 2. Lapisan Logika & Bisnis (Business Logic Layer)
 - **Framework**: Laravel 11 dengan struktur MVC yang bersih.
+- **Dynamic HTTPS Scheme Guard**: `AppServiceProvider.php` secara dinamis memaksakan HTTPS pada host produksi publik, dan mengecualikan `localhost`, `127.0.0.1`, dan `*.test` agar dev server lokal bebas dari error handshake SSL (`ERR_CONNECTION_CLOSED`).
 - **Audit Logging**: Event-driven menggunakan listener `Illuminate\Auth\Events\Login` dan `Logout` di `AppServiceProvider` yang merekam `user_id`, nama, email, aksi, guard, IP publik (`$http_cf_connecting_ip`), user-agent, dan waktu WIB.
-- **RAG & AI Assistant**: Layanan asisten hukum multi-tier:
+- **RAG & AI Assistant**: Layanan asisten hukum multi-tier terintegrasi pada antarmuka Desktop (modal popup) dan Mobile (bottom-sheet drawer 85vh):
   1. *Primary*: Google Gemini API dengan rotasi multi-key pool (`GEMINI_API_KEYS`) dan fallback pool model.
   2. *Secondary / Offline*: `OfflineLegalRagService` 100% Native PHP in-process via Eloquent & text matching (bebas dari subprocess Python atau kegagalan koneksi luar).
   3. *Error Masking Sanitizer*: Menjamin pesan kegagalan CLI/server internal tidak bocor ke antarmuka publik.
 
 ## 3. Lapisan Database & Storage (Data Layer)
 - **Database Engine**: MySQL 8 / MariaDB dengan engine InnoDB penuh dan collation `utf8mb4_unicode_ci`.
-- **Media Storage**: Menggunakan disk `public` di bawah `storage/app/public/` yang terhubung via symlink ke `public/storage`.
+- **Media & PDF Storage**: Menggunakan disk `public` di bawah `storage/app/public/` yang terhubung via symlink ke `public/storage`.
+- **Resilient File Accessor**: Model `LegalDocument` menghasilkan path relatif `/storage/...` ter-encode per segmen (`rawurlencode`), mencegah ketergantungan pada hostname absolut dan menjamin preview PDF render sempurna di dev server maupun domain produksi. Tag viewer membungkus `<iframe>` di dalam `<object>` untuk kompatibilitas peramban maksimal.

@@ -30,21 +30,35 @@ Dokumen spesifikasi endpoint publik, integrasi eksternal, dan antarmuka data JDI
   - **Response**: `201 Created`
 
 ### C. AI Legal Assistant (RAG Chat)
-- **POST** `/api/chat-ai`
-  - **Auth**: Public (Rate-limited: 10 req/min)
+- **POST** `/ai/ask`
+  - **Auth**: Web Session (CSRF Protected)
   - **Payload**:
     ```json
     {
-      "message": "Apa peraturan bupati yang mengatur tentang retribusi pasar?"
+      "document_id": 339,
+      "question": "Apa isi pasal 3 dokumen ini?",
+      "chat_history": [
+        { "role": "user", "text": "..." },
+        { "role": "ai", "text": "..." }
+      ],
+      "use_rag": true
     }
     ```
   - **Response**:
     ```json
     {
-      "reply": "Berdasarkan Peraturan Bupati Banjarnegara No. XX Tahun XXXX...",
-      "references": [...]
+      "answer": "Berdasarkan Peraturan Daerah Kabupaten Banjarnegara Nomor 4 Tahun 2019...",
+      "suggested_questions": ["Apa sanksi administratifnya?", "Kapan mulai berlaku?"],
+      "rag_used": true,
+      "rag_chunks": 3
     }
     ```
+
+### D. Unduh File Dokumen & Abstrak
+- **GET** `/dokumen/{id}/unduh`
+  - **Auth**: Public
+  - **Query Params**: `type` (`abstract` | opsional)
+  - **Response**: Binary file stream (Content-Disposition: attachment) langsung dari disk publik.
 
 ## 2. External Integration Endpoints (JDIHN & Desa)
 

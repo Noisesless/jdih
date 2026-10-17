@@ -26,6 +26,8 @@ Panduan teknis penerapan (deployment), environment variables, dan strategi rollb
 ## 3. Pre-Deploy Checklist (Di Komputer Pengembang Lokal)
 - [x] Jalankan `npm run build` di workstation lokal untuk mengompilasi aset `public/build`.
 - [x] Pastikan seluruh file di `public/build/` ter-commit ke git (`git add public/build/`).
+- [x] Pastikan `public/sw.js` dan `public/manifest.json` ter-commit untuk dukungan Progressive Web App (PWA).
+- [x] Pastikan symlink `public/storage` terhubung (`php artisan storage:link`) agar preview dokumen PDF tidak 404.
 - [x] Pastikan `APP_DEBUG=false` pada `.env` server produksi.
 - [x] Pastikan vhost Nginx memblokir file dotfiles (`.env`, `.git`) dan meneruskan `CF-Connecting-IP`.
 
