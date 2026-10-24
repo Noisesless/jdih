@@ -86,3 +86,23 @@ php artisan optimize:clear
 *   **Kompilasi Aset Frontend Produksi**:
     *   Menjalankan `npm run build` sehingga seluruh bundle di `public/build/` terkompilasi mutakhir dan siap di-deploy langsung ke server tanpa Node.js.
 
+---
+
+## 5. Status Sesi Terkini (24 Oktober 2026)
+
+### Sesi Bagian 4: Sanitasi Repositori Produksi & Pembersihan File Ad-hoc/Test/Temp
+*   **Pembersihan File Uji & Ad-Hoc di Root**:
+    *   Menghapus seluruh file debug/test: `check_doc.php`, `check_problematic.php`, `test2.php`, `test_map.php`, `test_pie.php`, `dummy.pdf`.
+    *   Menghapus script perbaikan ad-hoc satu kali: `fix_issues.php`, `fix_missing_files.php`, `link_abstracts.php`, `optimize_logo.php`, `deploy_jdih_updates.php`.
+    *   Menghapus log dan dump data lama: `build_output.txt`, `belum-ada-file.txt`, `index-jdih-asli.txt`.
+    *   Menghapus duplikat lama `manifest.json` di root (SSOT aktif berada di `public/manifest.json`).
+*   **Hardening Keamanan Publik (`public/`)**:
+    *   Menghapus `public/security-audit.md` dan `public/security-audit-fix.md` dari web root publik guna mencegah kebocoran informasi teknis audit celah keamanan ke publik.
+*   **Pembersihan Direktori `scratch/`**:
+    *   Menghapus folder `scratch/` (berisi 19 file temporary HTML dump dan skrip CJS pengujian).
+*   **Reorganisasi Berkas Laporan**:
+    *   Memindahkan berkas laporan ke folder dokumentasi resmi `docs/`: `Matriks_Ceklis_JDIH.xlsx`, `laporan-upgrade-jdih.md`, dan `laporan-pengembangan.md`.
+*   **Sinkronisasi GitHub**:
+    *   Seluruh perubahan telah di-commit (`0185dba`) dan di-push ke remote `origin main`.
+
+
