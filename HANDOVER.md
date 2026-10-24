@@ -27,8 +27,8 @@ Dokumen historis serah terima dan catatan operasional sistem JDIH Kabupaten Banj
 ## 2. Kredensial & Lingkungan
 *   **URL Produksi**: `https://jdih.banjarnegarakab.go.id`
 *   **Panel Admin**: `https://jdih.banjarnegarakab.go.id/admin`
-*   **Admin Utama**: `admin@jdih.test`
-*   **Admin Dinas**: `admin.jdih@banjarnegarakab.go.id` (Password: `JDIH#Banjarnegara26`)
+*   **Akses Administrator**: Dikelola secara terpusat oleh Bagian Hukum Setda Kabupaten Banjarnegara (Kredensial disimpan aman pada Password Vault internal instansi).
+
 
 ---
 
