@@ -20,8 +20,17 @@ Dokumen historis serah terima dan catatan operasional sistem JDIH Kabupaten Banj
     *   File diperbarui: `PublicLayout.tsx`, `Welcome.tsx`, `DetailDokumen.tsx`, `DaftarDokumen.tsx`.
     *   Menerapkan horizontal scrollbar pada tab peraturan, container proporsional `max-w-[1366px]`, dan dynamic viewport height `min-h-[calc(100vh-140px)]`.
 *   **Precompiled Assets Deployment Protocol**: Mengingat server produksi `nargaroth` tidak memiliki Node.js/NPM, aset frontend di-bundle di komputer pengembang via Vite (`public/build`) dan di-commit langsung ke repository Git.
-*   **Audit Keterkaitan Antar-Peraturan**: Menemukan 179 regulasi yang mencabut/mengubah peraturan lain namun tabel relasi masih kosong (0 baris). Celah ini telah didokumentasikan di `todo.md` untuk penanganan terpisah.
-
+### Sesi Bagian 3: Hardening CloudPanel & Isolasi Document Root
+*   **Isolasi Web Root ke `/public`**: Melalui CloudPanel (Sites -> Settings -> Root Directory), Document Root resmi diarahkan ke `/home/jdih1bna/htdocs/jdih.banjarnegarakab.go.id/public`.
+*   **Penyempurnaan Vhost Nginx Dua Layer**:
+    *   Layer Reverse Proxy (Port 80/443) & Backend FastCGI (Port 8080) dilengkapi rule penolakan HTTP 404 ketat untuk file ekstensi sensitif: `\.env|\.git|composer\.(json|lock)|package(-lock)?\.json|\.lock|\.sql|\.bak|\.log|\.sh|\.md|web\.config`.
+    *   Routing Laravel di port 8080 dibakukan menggunakan `location / { try_files $uri $uri/ /index.php?$query_string; }`.
+    *   Aset statis dilengkapi `try_files $uri =404;` untuk efisiensi beban backend.
+*   **Verifikasi Status Akses**:
+    *   `https://jdih.banjarnegarakab.go.id/todo.md` -> HTTP 404 (Terisolasi total).
+    *   `https://jdih.banjarnegarakab.go.id/docs/SECURITY-AUDIT-REPORT.md` -> HTTP 404 (Terisolasi total).
+    *   `https://jdih.banjarnegarakab.go.id/` -> HTTP 200 (Berjalan normal).
+    *   `https://jdih.banjarnegarakab.go.id/admin` -> HTTP 200 (Filament Admin berjalan normal).
 ---
 
 ## 2. Kredensial & Lingkungan

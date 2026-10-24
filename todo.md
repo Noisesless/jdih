@@ -55,6 +55,7 @@ Daftar progres pekerjaan dan roadmap operasional sistem JDIH Kabupaten Banjarneg
 - [x] Reorganisasi berkas laporan teknis & matriks pemenuhan Permenkumham ke direktori terpusat `/docs/`
 - [x] Verifikasi kekebalan aplikasi terhadap CVE-2026-114509 (Laravel TokenGuard Auth Bypass) pada framework v12.69.2
 - [x] Konfirmasi mitigasi dan patch runtime server terhadap ancaman PHP2Shell (CVE-2026-109618/19)
+- [x] Hardening CloudPanel: Pemindahan Document Root ke direktori `/public` dan penyempurnaan Vhost Nginx dua layer (memblokir file `.md`, `.sql`, `.bak`, `.log`, `.sh`, `.env`, dotfiles) serta routing resmi Laravel. Verifikasi faktual: `todo.md` & `/docs/` terisolasi 100% (HTTP 404).
 
 ## [ ] Fase 7: Sinkronisasi Keterkaitan Antar-Peraturan (Mencabut & Mengubah)
 - [ ] Buat Artisan Command Auto-Linker (`php artisan jdih:link-relations`) untuk menautkan otomatis 179+ relasi (16 pencabutan & 163 perubahan) dari teks judul peraturan ke tabel `legal_document_relations`
