@@ -2,6 +2,7 @@ import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import MobileLayout from '@/Layouts/MobileLayout';
 import { ChevronLeft, Calendar, Clock, Newspaper, ArrowRight } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 interface RelatedNews {
     id: number;
@@ -73,13 +74,14 @@ export default function MobileDetailBerita({ post, related }: Props) {
                 {/* Isi Berita */}
                 <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
                     <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Isi Berita</h3>
+                    {/* SECURITY FIX: [VULN-003] (SP-002 Output Escaping & XSS Sanitization) */}
                     <div
                         className="prose prose-sm prose-slate max-w-none
                             prose-headings:font-black prose-headings:text-slate-800
                             prose-p:text-slate-600 prose-p:leading-relaxed
                             prose-a:text-teal-600
                             prose-img:rounded-2xl"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
                     />
                 </div>
 

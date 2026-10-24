@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import DOMPurify from 'dompurify';
 import PublicLayout from '@/Layouts/PublicLayout';
 import PageHeader from '@/Components/PageHeader';
 import { 
@@ -313,10 +314,11 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                                     <FileText className="h-16 w-16 text-slate-300 mx-auto mb-6" />
                                                     <h4 className="text-slate-900 font-black text-xl mb-4">Abstrak Dokumen</h4>
                                                     {document.abstract ? (
+                                                        /* SECURITY FIX: [VULN-003] (SP-002 Output Escaping & XSS Sanitization) */
                                                         <div 
                                                             className="text-slate-500 text-sm leading-relaxed mb-8 prose prose-slate max-w-none text-justify"
                                                             dangerouslySetInnerHTML={{ 
-                                                                __html: document.abstract || '' 
+                                                                __html: DOMPurify.sanitize(document.abstract || '') 
                                                             }}
                                                         />
                                                     ) : (

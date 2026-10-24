@@ -3,6 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import PageHeader from '@/Components/PageHeader';
 import { Calendar, Tag, ArrowLeft, Share2, Newspaper } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 function fmtDate(d: any) {
     if (!d) return '-';
@@ -76,7 +77,8 @@ export default function DetailBerita({ post, relatedNews = [] }: { post: any; re
                                     </h1>
                                     
                                     <div className="profile-content-premium text-slate-700 leading-relaxed text-base">
-                                        <div dangerouslySetInnerHTML={{ __html: artikel.isi }} />
+                                        {/* SECURITY FIX: [VULN-003] (SP-002 Output Escaping & XSS Sanitization) */}
+                                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artikel.isi) }} />
                                     </div>
 
                                     {/* Tags & Share */}

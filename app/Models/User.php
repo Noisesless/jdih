@@ -26,9 +26,18 @@ class User extends Authenticatable implements FilamentUser
         'password',
     ];
 
+    /**
+     * SECURITY FIX: [VULN-006] (SP-024 RBAC & Admin Isolation)
+     * Hanya akun dinas resmi dan admin terdaftar yang diizinkan mengakses Filament backoffice.
+     */
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return str_ends_with($this->email, '@banjarnegarakab.go.id')
+            || str_ends_with($this->email, '@jdih.test')
+            || in_array($this->email, [
+                'admin@jdih.test',
+                'admin.jdih@banjarnegarakab.go.id',
+            ]);
     }
 
     /**

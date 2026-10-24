@@ -17,7 +17,7 @@ locale = "id"
 admin_primary = "admin@jdih.test"
 admin_dinas = "admin.jdih@banjarnegarakab.go.id"
 admin_migration = "database/migrations/2026_10_12_100000_create_dinas_admin_user.php"
-panel_access = "Semua user terdaftar dapat mengakses panel /admin via FilamentUser contract"
+panel_access = "Dibatasi ke email resmi dinas (@banjarnegarakab.go.id, @jdih.test, atau admin terdaftar via canAccessPanel)"
 
 [AUDIT_LOGS]
 model = "App\Models\ActivityLog"
@@ -60,5 +60,6 @@ storage = "Symlink public/storage -> storage/app/public via php artisan storage:
 disk_default = "Filament forms & tables harus eksplisit ->disk('public')"
 
 [FASE_STATUS]
-active_fase = "Fase 7 (Audit Relasi Keterkaitan Peraturan & Finalisasi Stabilitas)"
-pending_task = "todo.md: Sinkronisasi 179 regulasi tanpa relasi & accessor pivot relation_type"
+active_fase = "Fase 7 (Audit Keamanan Selesai & Stabilisasi Dependensi)"
+security_audit = "OWASP Top 10:2025 Audit selesai (.docs/security-audit.md). VULN-001, VULN-003, VULN-004, VULN-006 resolved."
+pending_task = "Sinkronisasi 179 regulasi tanpa relasi & accessor pivot relation_type"
