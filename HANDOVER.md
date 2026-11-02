@@ -161,6 +161,15 @@ php artisan optimize:clear
 *   **Penyempurnaan Grafik Statistik Mobile (ISSUE-017)**:
     *   Mengintegrasikan passing data agregasi `dataJenisMini` dan `dataTahunMini` di route `/mobile` ke dalam props `Inertia::render('Mobile/Home')`.
     *   Memperbaiki evaluasi fallback array data di `resources/js/Components/StatistikMiniSection.tsx`, menyelaraskan key data `year` + `tahun`, serta menambahkan prop `isMobileCompact` untuk tampilan mobile yang proporsional tanpa kontainer ganda.
+*   **Konsolidasi SSOT Dokumentasi & Eliminasi Redundansi (`/.docs/`)**:
+    *   Menyatukan folder `docs/` dan `.docs/` menjadi satu direktori kanonikal tunggal `/.docs/` sesuai arsitektur Single Source of Truth (SSOT) Vibes Coding Workflow.
+    *   Memindahkan berkas aset penting dan bernilai unik dari `docs/`:
+        - Konfigurasi Nginx vhost: `.docs/nginx/jdih.banjarnegarakab.go.id.conf`
+        - Berkas Inovasi Produk Hukum Desa: `.docs/integrasi-desa/` (`API-PRODUK-HUKUM-DESA.md`, `INOVASI-UNIK-INTEGRASI-DESA.md`, `DATA-DUKUNG-INOVASI-JDIH.md`)
+        - Matriks Pemenuhan Regulasi: `.docs/permenkumham/` (`CEKLIS_PEMENUHAN_PERMENKUMHAM_8_2019.md`, `Matriks_Ceklis_JDIH.xlsx`)
+        - Laporan Resmi Historis Klien: `.docs/arsip-laporan/` (`laporan_migrasi_jdih.md`, `laporan_optimasi_database.md`, `laporan-upgrade-jdih.md`, `laporan-pengembangan.md`)
+    *   Menghapus berkas duplikat/usang yang isinya telah tercakup penuh dalam SSOT 10 berkas blueprint (`.docs/security-audit.md`, `.docs/issues.md`, `.docs/quality_review.md`): `docs/SECURITY-AUDIT-REPORT.md`, `docs/securities.md`, `docs/laporan_pentest_jdih.md`, `docs/laporan-hardening-keamanan-oktober-2026.md`, `docs/BUG-FINDING-REPORT.md`, `docs/BUG.md`, `docs/analisa_akhir_aplikasi.md`, `docs/TEST-RESULTS.md`, `docs/NOTES_PENGEMBANGAN_DOKUMEN_HUKUM.md`, dan `docs/README.md`.
+    *   Menghapus direktori `docs/` secara menyeluruh, membersihkan ~200KB duplikasi teks markdown dan meniadakan kebingungan navigasi dokumen.
 
 
 

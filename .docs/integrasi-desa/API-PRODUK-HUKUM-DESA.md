@@ -539,8 +539,8 @@ Route::get('/api/produk-hukum-desa', [ProdukHukumDesaController::class, 'proxy']
 Untuk pertanyaan atau dukungan terkait API ini, silakan hubungi:
 
 - **Email:** jdih@banjarnegara.go.id
-- **Documentation:** [docs/README.md](./README.md)
-- **Repository:** [i:\jdih-banjarnegara](file:///i:/jdih-banjarnegara)
+- **Documentation:** [.docs/api-spec.md](../api-spec.md)
+- **Repository:** https://github.com/bangrey/jdih-main
 
 ---
 
