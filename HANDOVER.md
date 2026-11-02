@@ -133,5 +133,24 @@ php artisan optimize:clear
 *   **Kompilasi Aset Produksi**:
     *   Menjalankan `npm run build` sehingga seluruh bundle di `public/build/` terkompilasi bersih tanpa error dan siap di-deploy langsung ke server Linux tanpa Node.js.
 
+---
+
+## 7. Status Sesi Terkini (2 November 2026)
+
+### Sesi Bagian 6: Hardening Produksi, Rekonfigurasi Backup WireGuard & Audit Security Patterns
+*   **Profil SSH & Otomasi Infrastruktur**:
+    *   Membuat konfigurasi `~/.ssh/config` lokal untuk host `nargaroth` (port `64001`) dan `freenas` (port `55001` via ProxyJump over WireGuard `10.200.200.2`).
+    *   Mengintegrasikan keyless authentication antar-server Linux (`nargaroth` $\rightarrow$ `freenas`) via key `ed25519`.
+*   **Restorasi & Perbaikan Remote Backup CloudPanel**:
+    *   Memperbaiki konfigurasi CloudPanel (`db.sq3` & `rclone.conf`) yang sebelumnya gagal dengan *permission denied* ke host lama. Target diarahkan langsung ke FreeNAS WireGuard (`10.200.200.2:55001`, user `root`, directory `/mnt/data/backup/nargaroth`).
+    *   Memperbaiki bug syntax escaping `awk` di script cron FreeNAS `/mnt/data/backup/.wg/daily-incremental-sync.sh` baris 40 & 48.
+*   **Hardening Nginx Reverse Proxy (SP-023 & SP-031)**:
+    *   Menerapkan *Single Layer Emission* di Nginx port 443 via `proxy_hide_header` untuk mengeliminasi duplikasi header `X-Frame-Options` dan `X-Content-Type-Options`.
+    *   Menyamarkan fingerprint webserver menjadi `Server: JDIH-Portal` (SP-031 cloaking).
+*   **Pembersihan Working Tree Produksi**:
+    *   Mengarsipkan symlink warisan ke `/home/jdih1bna/backup_legacy_symlinks_20261102.tar.gz` dan membersihkan symlink rekursif di `storage/` serta stub di root.
+    *   Sinkronisasi branch `main` produksi ke commit `886f829` (`working tree clean`).
+
+
 
 

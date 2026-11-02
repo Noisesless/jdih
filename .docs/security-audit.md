@@ -195,6 +195,22 @@ Tambahkan kolom `role` atau periksa email domain resmi:
 | **VULN-003** | 2026-10-24 | `DetailBerita.tsx`, `Mobile/DetailBerita.tsx`, `DetailDokumen.tsx` | ✅ Tested (DOMPurify integration, `npm run build` exit code 0) |
 | **VULN-004** | 2026-10-24 | `app/Models/Katalog.php` | ✅ Tested (Explicit `$fillable` array, `php -l` passed) |
 | **VULN-006** | 2026-10-24 | `app/Models/User.php` | ✅ Tested (Hardened `canAccessPanel`, `php -l` passed) |
+| **SP-023** | 2026-11-02 | `/etc/nginx/sites-enabled/jdih.banjarnegarakab.go.id.conf` | ✅ Tested (Header deduplication via Nginx `proxy_hide_header` + `always`) |
+| **SP-031** | 2026-11-02 | `/etc/nginx/sites-enabled/jdih.banjarnegarakab.go.id.conf` | ✅ Tested (Server fingerprint cloaked to `Server: JDIH-Portal`) |
+| **CLEANUP** | 2026-11-02 | Production root & storage directory | ✅ Tested (Archived legacy symlinks, working tree 100% clean) |
+
+---
+
+## Verifikasi Hardening Produksi (2026-11-02)
+
+1. **Header Hygiene (SP-023)**:
+   - Duplikasi `X-Frame-Options` dan `X-Content-Type-Options` telah dieliminasi melalui reverse-proxy single emission di blok port 443.
+   - `Referrer-Policy` disatukan ke `strict-origin-when-cross-origin`.
+   - `X-Permitted-Cross-Domain-Policies` dinaikkan ke standar modern `none`.
+2. **Server Cloaking (SP-031)**:
+   - Header software `Server: nginx` telah disamarkan menjadi `Server: JDIH-Portal`.
+3. **Pembersihan Root & Working Tree**:
+   - Symlink rekursif di `storage/` dan symlink usang di root project telah dibersihkan dan diarsipkan ke `/home/jdih1bna/backup_legacy_symlinks_20261102.tar.gz`. Working tree git di production kini bersih tanpa untracked debris.
 
 ---
 

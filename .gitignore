@@ -26,3 +26,9 @@ Thumbs.db
 /scratch
 *.sql
 *.sql.gz
+
+# Presentations & personal draft notes
+*.pptx
+fonnte.md
+panduan_sidang_sempro.txt
+scripts/generate_ppt.py
