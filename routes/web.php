@@ -88,21 +88,23 @@ Route::post('/aspirations', [\App\Http\Controllers\AspirationController::class, 
 
 Route::get('/', function () {
     // ⚡ Cache semua query berat — TTL 5 menit untuk konten dinamis, 10 menit untuk statistik
-    $latestNews = \Illuminate\Support\Facades\Cache::remember('home.news', 300, function () {
+    $latestNews = \Illuminate\Support\Facades\Cache::remember('home.news.desktop', 300, function () {
         return \App\Models\News::where('status', 'published')
             ->orderBy('published_at', 'desc')
             ->take(4)
             ->get()
             ->map(function ($article) {
+                $imagePath = $article->image
+                    ? (Str::startsWith($article->image, 'images/') ? '/' . $article->image : '/storage/' . $article->image)
+                    : '/images/hero.webp';
                 return [
-                    'id'       => $article->id,
-                    'slug'     => $article->slug,
-                    'title'    => $article->title,
-                    'date'     => $article->published_at ? $article->published_at->format('Y-m-d') : null,
-                    'category' => $article->category ?? 'Berita',
-                    'image'    => $article->image
-                        ? (Str::startsWith($article->image, 'images/') ? '/' . $article->image : '/storage/' . $article->image)
-                        : '/images/hero.webp',
+                    'id'        => $article->id,
+                    'slug'      => $article->slug,
+                    'title'     => $article->title,
+                    'date'      => $article->published_at ? $article->published_at->format('Y-m-d') : null,
+                    'category'  => $article->category ?? 'Berita',
+                    'image'     => $imagePath,
+                    'thumbnail' => $imagePath,
                 ];
             });
     });
@@ -231,6 +233,11 @@ Route::get('/', function () {
         ->limit(7)
         ->get()
         ->reverse()
+        ->map(fn($d) => [
+            'year'   => (string) $d->year,
+            'tahun'  => (string) $d->year,
+            'jumlah' => (int) $d->jumlah,
+        ])
         ->values();
 
     // Deteksi Mobile Sederhana
@@ -245,11 +252,11 @@ Route::get('/', function () {
     if ($isMobile) {
         return Inertia::render('Mobile/Home', [
             'latestNews'      => collect($latestNews)->map(fn($n) => [
-                'id' => $n['id'],
-                'slug' => $n['slug'],
-                'title' => $n['title'],
-                'date' => $n['date'],
-                'thumbnail' => $n['image']
+                'id'        => $n['id'] ?? null,
+                'slug'      => $n['slug'] ?? null,
+                'title'     => $n['title'] ?? '',
+                'date'      => $n['date'] ?? null,
+                'thumbnail' => $n['image'] ?? $n['thumbnail'] ?? '/images/hero.webp',
             ])->toArray(),
             'infographics'    => $infographics,
             'latestDocs'      => $latestDocs,
@@ -847,16 +854,28 @@ Route::prefix('mobile')->group(function () use ($renderMobileBeritaDetail) {
 
     // Landing Mobile
     Route::get('/', function () {
-        $latestNews = \Illuminate\Support\Facades\Cache::remember('home.news', 300, function () {
+        // Auto-redirect jika dibuka dari browser desktop tanpa override ?mode=mobile
+        $userAgent = request()->header('User-Agent', '');
+        $isMobile = preg_match('/Mobile|Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile/i', $userAgent)
+                    && !preg_match('/iPad/i', $userAgent);
+        if (!$isMobile && request()->query('mode') !== 'mobile') {
+            return redirect('/');
+        }
+
+        $latestNews = \Illuminate\Support\Facades\Cache::remember('home.news.mobile', 300, function () {
             return \App\Models\News::where('status', 'published')
                 ->orderBy('published_at', 'desc')->take(4)->get()
-                ->map(fn($a) => [
-                    'id'        => $a->id,
-                    'slug'      => $a->slug,
-                    'title'     => $a->title,
-                    'date'      => $a->published_at?->format('d M Y'),
-                    'thumbnail' => $a->image ? (\Illuminate\Support\Str::startsWith($a->image, 'images/') ? '/'.$a->image : '/storage/'.$a->image) : null,
-                ]);
+                ->map(function ($a) {
+                    $img = $a->image ? (\Illuminate\Support\Str::startsWith($a->image, 'images/') ? '/'.$a->image : '/storage/'.$a->image) : '/images/hero.webp';
+                    return [
+                        'id'        => $a->id,
+                        'slug'      => $a->slug,
+                        'title'     => $a->title,
+                        'date'      => $a->published_at?->format('d M Y'),
+                        'thumbnail' => $img,
+                        'image'     => $img,
+                    ];
+                });
         });
         $latestDocs = \Illuminate\Support\Facades\Cache::remember('home.latest_docs', 300, function () {
             return \App\Models\LegalDocument::with('category')->orderBy('year','desc')
@@ -879,13 +898,40 @@ Route::prefix('mobile')->group(function () use ($renderMobileBeritaDetail) {
                     'image' => $i->image_path ? (\Illuminate\Support\Str::startsWith($i->image_path, 'infographics/') ? '/storage/'.$i->image_path : $i->image_path) : null,
                 ]);
         });
+
+        // Data untuk grafik mini di mobile
+        $categories = \App\Models\Category::withCount('legalDocuments')->get();
+        $dataJenisMini = $categories->map(fn($cat) => [
+            'name'   => $cat->code ?? $cat->name,
+            'jumlah' => $cat->legal_documents_count,
+        ])->sortByDesc('jumlah')->take(8)->values();
+
+        $dataTahunMini = \App\Models\LegalDocument::selectRaw('year, count(*) as jumlah')
+            ->groupBy('year')
+            ->orderBy('year', 'desc')
+            ->limit(7)
+            ->get()
+            ->reverse()
+            ->map(fn($d) => [
+                'year'   => (string) $d->year,
+                'tahun'  => (string) $d->year,
+                'jumlah' => (int) $d->jumlah,
+            ])
+            ->values();
+
         return Inertia::render('Mobile/Home', [
-            'latestNews'   => $latestNews,
-            'latestDocs'   => $latestDocs,
-            'videos'       => $videos,
-            'infographics' => $infographics,
-            'relatedLinks' => [],
-            'stats'        => ['total'=>array_sum($counts),'perda'=>$counts['Peraturan Daerah']??0,'perbup'=>$counts['Peraturan Bupati']??0],
+            'latestNews'      => $latestNews,
+            'latestDocs'      => $latestDocs,
+            'videos'          => $videos,
+            'infographics'    => $infographics,
+            'dataJenisMini'   => $dataJenisMini,
+            'dataTahunMini'   => $dataTahunMini,
+            'relatedLinks'    => [
+                ['label' => 'Pemkab Banjarnegara', 'href' => 'http://banjarnegarakab.go.id', 'image' => '/images/pemerintah kab .webp'],
+                ['label' => 'Kemendagri RI', 'href' => 'http://www.kemendagri.go.id', 'image' => '/images/kemendagri.webp'],
+                ['label' => 'JDIHN', 'href' => 'https://www.jdihn.go.id', 'image' => '/images/jdihn.webp'],
+            ],
+            'stats'           => ['total'=>array_sum($counts),'perda'=>$counts['Peraturan Daerah']??0,'perbup'=>$counts['Peraturan Bupati']??0],
         ]);
     })->name('mobile.home');
 

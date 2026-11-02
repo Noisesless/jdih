@@ -20,7 +20,10 @@ Daftar isu teknis, bug yang telah diselesaikan, dan pemantauan perbaikan sistem.
 | **ISSUE-013** | 2026-10-17 | Mobile / PWA | Versi mobile (`/mobile/dokumen/{id}`) belum memiliki fitur Asisten AI dan PWA belum terpasang Service Worker | Diimplementasikan drawer chat AI bottom-sheet di `Mobile/DetailDokumen.tsx`, dibuat `public/sw.js`, didaftarkan di `app.blade.php`, dan diselaraskan `public/manifest.json` | ✅ RESOLVED |
 | **ISSUE-014** | 2026-10-17 | PDF Preview / Storage | Viewer PDF desktop memunculkan "Browser Anda tidak mendukung preview PDF langsung" karena symlink `public/storage` belum terhubung dan URL storage mengarah ke domain luar | Dijalankan `php artisan storage:link`, dibuat accessor `getFileAttribute()` mengembalikan path relatif `/storage/...` yang ter-encode, dan ditambahkan `iframe` fallback di dalam `<object>` | ✅ RESOLVED |
 | **ISSUE-015** | 2026-10-24 | Security / Sanitasi | Residu berkas ad-hoc debug/test (`check_doc.php`, `fix_*.php`, folder `scratch/`, file audit di `public/`) dan kekhawatiran eksposur terhadap CVE PHP2Shell & CVE Laravel | Dilakukan sanitasi penuh: 24 berkas pengujian & duplikat dihapus dari Git, folder `scratch/` dibersihkan, laporan dipindah ke `docs/`, dan verifikasi kebal terhadap CVE-2026-114509 serta mitigasi PHP2Shell terdokumentasi | ✅ RESOLVED |
+| **ISSUE-016** | 2026-11-02 | Routing / Cache | Error 500 pada `GET /` karena tabrakan cache key `home.news` antara desktop dan mobile (`Undefined array key "image"`) | Cache key dipisah menjadi `home.news.desktop` dan `home.news.mobile`, mapping menyertakan `image` & `thumbnail`, serta ditambahkan null-coalescing guard `$n['image'] ?? $n['thumbnail'] ?? null` | ✅ RESOLVED |
+| **ISSUE-017** | 2026-11-02 | Mobile / Charts | Dua card grafik statistik di landing page mobile terlihat kosong | Menambahkan passing `dataJenisMini` dan `dataTahunMini` di route `/mobile`, memperbaiki fallback data array kosong di `StatistikMiniSection.tsx`, menyelaraskan key `year`, dan menambahkan mode `isMobileCompact` | ✅ RESOLVED |
 
 ## 🔴 Open Issues
 *(Saat ini tidak ada isu kritis yang belum terselesaikan)*
+
 
