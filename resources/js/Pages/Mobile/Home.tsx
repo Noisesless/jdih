@@ -4,7 +4,8 @@ import { Head, Link } from '@inertiajs/react';
 import { 
     Search, Newspaper, Gavel, 
     ArrowRight, Clock, ChevronRight, Image as ImageIcon,
-    CheckCircle2, Play, ExternalLink, BarChart3, Quote
+    CheckCircle2, Play, ExternalLink, BarChart3, Quote,
+    X, ZoomIn, Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -151,6 +152,7 @@ export default function MobileHome({
     stats 
 }: Props) {
     const [currentSlide, setCurrentIndex] = useState(0);
+    const [selectedInfographic, setSelectedInfographic] = useState<{ image: string; title: string } | null>(null);
     const displayBanners = banners.length > 0 ? banners : [{
         image: '/images/hero.webp',
         title: 'JDIH',
@@ -253,18 +255,23 @@ export default function MobileHome({
 
                 {/* 2. Infografik Section */}
                 {infographics && infographics.length > 0 && (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <div className="px-6 flex items-center justify-between">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Infografis Terbaru</h3>
+                            <div>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-[#0d9488]">Media Visual</span>
+                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800">Infografis Terbaru</h3>
+                            </div>
+                            <span className="text-[10px] font-bold text-slate-400">{infographics.length} Gambar</span>
                         </div>
-                        <div className="flex gap-4 overflow-x-auto px-6 pb-2 no-scrollbar">
+                        <div className="flex gap-3.5 overflow-x-auto px-6 pb-2 pt-1 snap-x snap-mandatory no-scrollbar">
                             {infographics.map((info, i) => (
                                 <motion.div 
                                     key={i}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="min-w-[280px] bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm flex-shrink-0"
+                                    whileTap={{ scale: 0.97 }}
+                                    onClick={() => setSelectedInfographic({ image: info.image, title: info.title })}
+                                    className="w-[155px] min-w-[155px] flex-shrink-0 snap-start bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm flex flex-col cursor-pointer active:shadow-md transition-all"
                                 >
-                                    <div className="aspect-[4/3] relative bg-slate-100">
+                                    <div className="aspect-[3/4] relative bg-slate-100 overflow-hidden">
                                         {info.image ? (
                                             <img 
                                                 src={info.image} 
@@ -279,12 +286,20 @@ export default function MobileHome({
                                             />
                                         ) : (
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <ImageIcon className="h-10 w-10 text-slate-200" />
+                                                <ImageIcon className="h-8 w-8 text-slate-200" />
                                             </div>
                                         )}
+                                        <div className="absolute top-2 right-2 h-6 w-6 rounded-full bg-black/45 backdrop-blur-sm flex items-center justify-center text-white shadow-sm">
+                                            <ZoomIn className="h-3 w-3" />
+                                        </div>
                                     </div>
-                                    <div className="p-5">
-                                        <p className="text-xs font-bold text-slate-700 line-clamp-1">{info.title}</p>
+                                    <div className="p-3 bg-white flex flex-col justify-between flex-1">
+                                        <p className="text-[11px] font-bold text-slate-800 line-clamp-2 leading-snug">
+                                            {info.title}
+                                        </p>
+                                        <span className="text-[9px] font-black uppercase tracking-wider text-[#0d9488] mt-2 flex items-center gap-1">
+                                            Buka Info
+                                        </span>
                                     </div>
                                 </motion.div>
                             ))}
@@ -413,6 +428,63 @@ export default function MobileHome({
                 </div>
 
             </div>
+
+            {/* Infographic Lightbox Modal */}
+            <AnimatePresence>
+                {selectedInfographic && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} 
+                        animate={{ opacity: 1 }} 
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-md flex flex-col justify-between p-4"
+                        onClick={() => setSelectedInfographic(null)}
+                    >
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between pt-2 px-2" onClick={(e) => e.stopPropagation()}>
+                            <div className="pr-4">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-teal-400">Infografis</span>
+                                <h4 className="text-xs font-bold text-white line-clamp-1">{selectedInfographic.title}</h4>
+                            </div>
+                            <button 
+                                onClick={() => setSelectedInfographic(null)}
+                                className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors shrink-0"
+                                aria-label="Tutup"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {/* Modal Image */}
+                        <div className="flex-1 flex items-center justify-center my-4 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                            <motion.img 
+                                initial={{ scale: 0.9, y: 10 }} 
+                                animate={{ scale: 1, y: 0 }} 
+                                exit={{ scale: 0.9, y: 10 }}
+                                src={selectedInfographic.image} 
+                                alt={selectedInfographic.title}
+                                className="max-h-[72vh] max-w-full w-auto object-contain rounded-xl shadow-2xl" 
+                            />
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="pb-4 px-2 flex items-center justify-between gap-3" onClick={(e) => e.stopPropagation()}>
+                            <p className="text-[11px] text-slate-300 font-medium line-clamp-2 flex-1">
+                                {selectedInfographic.title}
+                            </p>
+                            <a 
+                                href={selectedInfographic.image} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                download
+                                className="px-4 py-2 bg-[#0d9488] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-lg shadow-teal-900/30 shrink-0"
+                            >
+                                <Download className="h-3.5 w-3.5" />
+                                Unduh
+                            </a>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </MobileLayout>
     );
 }
