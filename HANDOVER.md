@@ -155,6 +155,13 @@ php artisan optimize:clear
     *   Menambahkan interaktivitas *Fullscreen Lightbox Modal* saat card diklik, lengkap dengan tombol close (`X`), zoom preview, dan tombol unduh.
     *   Mengaktifkan scroll snapping (`snap-x snap-mandatory`) yang mulus pada perangkat mobile.
     *   Mengompilasi ulang aset bundle produksi via `npm run build` dan menyinkronkan langsung ke server produksi.
+*   **Penyelesaian Tabrakan Cache Berita & Proteksi Desktop (ISSUE-016)**:
+    *   Memisahkan cache key berita menjadi `home.news.desktop` dan `home.news.mobile` dengan penambahan mapping ganda `image` & `thumbnail` serta *null-coalescing guard* `$n['image'] ?? $n['thumbnail'] ?? '/images/hero.webp'` pada `routes/web.php` untuk mencegah fatal error 500 (`Undefined array key "image"`).
+    *   Menerapkan *Auto-Redirect* `302` di route `/mobile`: Pengguna yang membuka `/mobile` dari komputer/desktop otomatis dialihkan kembali ke beranda desktop `/`, menjaga isolasi tampilan desktop vs mobile.
+*   **Penyempurnaan Grafik Statistik Mobile (ISSUE-017)**:
+    *   Mengintegrasikan passing data agregasi `dataJenisMini` dan `dataTahunMini` di route `/mobile` ke dalam props `Inertia::render('Mobile/Home')`.
+    *   Memperbaiki evaluasi fallback array data di `resources/js/Components/StatistikMiniSection.tsx`, menyelaraskan key data `year` + `tahun`, serta menambahkan prop `isMobileCompact` untuk tampilan mobile yang proporsional tanpa kontainer ganda.
+
 
 
 
