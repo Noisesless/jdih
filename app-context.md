@@ -48,6 +48,7 @@ manifest = "public/manifest.json (start_url: /mobile, theme: #0d9488, bg: #fffff
 service_worker = "public/sw.js (network-first navigation, cache fallback, auto-cleanup)"
 registration = "resources/views/app.blade.php"
 mobile_routes = "/mobile, /mobile/pencarian, /mobile/dokumen/{id}, /mobile/berita, /mobile/info"
+infographic_ui = "Mobile optimized w-[155px], aspect-[3/4] portrait poster, fullscreen lightbox modal"
 
 [RESPONSIVE_STANDARDS]
 primary_desktop = "1366x768 (Standar Laptop Layanan Pemerintahan & Display 125% scaling ~1092px)"

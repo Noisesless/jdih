@@ -150,6 +150,12 @@ php artisan optimize:clear
 *   **Pembersihan Working Tree Produksi**:
     *   Mengarsipkan symlink warisan ke `/home/jdih1bna/backup_legacy_symlinks_20261102.tar.gz` dan membersihkan symlink rekursif di `storage/` serta stub di root.
     *   Sinkronisasi branch `main` produksi ke commit `886f829` (`working tree clean`).
+*   **Optimalisasi Tampilan Infografis Mobile (`Mobile/Home.tsx`)**:
+    *   Memperbaiki dimensi card infografis dari ukuran desktop `min-w-[280px]` menjadi ukuran proporsional mobile `w-[155px]` dengan poster aspect ratio `aspect-[3/4]` (menggantikan `aspect-[4/3]` landscape yang sebelumnya memotong gambar).
+    *   Menambahkan interaktivitas *Fullscreen Lightbox Modal* saat card diklik, lengkap dengan tombol close (`X`), zoom preview, dan tombol unduh.
+    *   Mengaktifkan scroll snapping (`snap-x snap-mandatory`) yang mulus pada perangkat mobile.
+    *   Mengompilasi ulang aset bundle produksi via `npm run build` dan menyinkronkan langsung ke server produksi.
+
 
 
 
