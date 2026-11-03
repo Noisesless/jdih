@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        if (!Schema::hasTable('visitors')) {
+            Schema::create('visitors', function (Blueprint $table) {
+                $table->id();
+                $table->string('ip_address', 45);
+                $table->date('visited_date');
+                $table->unsignedInteger('hits')->default(1);
+                $table->string('user_agent', 500)->nullable();
+                $table->timestamps();
+
+                $table->unique(['ip_address', 'visited_date'], 'uniq_visitor_ip_date');
+                $table->index('visited_date');
+            });
+        }
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('visitors');
+    }
+};

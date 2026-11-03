@@ -220,3 +220,20 @@ php artisan optimize:clear
         - Mengintegrasikan konten profil kelembagaan (Visi Misi, Dasar Hukum, Tupoksi Bagian Hukum, dan SOP) ke dalam komponen expandable accordion interaktif langsung di dalam antarmuka mobile.
     *   **Build & Deployment Produksi**:
         - Dikompilasi via `npm run build` bebas error dan dideploy ke server Nargaroth dengan verifikasi HTTP 200 OK.
+
+*   **Penyempurnaan Statistik Dokumen & Pencatatan Trafik Pengunjung Portal (Desktop & Mobile) (3 November 2026)**:
+    *   **Perbaikan Card "Dokumen per Jenis" di `Mobile/Statistik.tsx`**:
+        - Mengatasi kendala data tidak tampil akibat kontainer terlalu sempit dan dataKey `short` undefined pada rute mobile.
+        - Memperbesar kontainer grafik dari `h-[250px]` menjadi `h-[340px]` dan margin bawah lega (`bottom: 65px`) agar label rotasi -45° terbaca jelas tanpa terpotong.
+        - Menyediakan toggle filter interaktif `[Top 8 | Semua]` di header card untuk kenyamanan navigasi layar ponsel.
+        - Menambahkan `minPointSize={4}` pada komponen `Bar` agar kategori dengan jumlah sedikit tetap terlihat jelas.
+    *   **Pencatatan Trafik Pengunjung Otomatis (`RecordVisitor` Middleware)**:
+        - Membuat middleware non-blocking `RecordVisitor` di `bootstrap/app.php` untuk mencatat pengunjung unik harian dan hits secara aman tanpa membebani database (throttling 60 detik via cache).
+        - Membuat migrasi tabel `visitors` (`database/migrations/2026_11_03_160000_create_visitors_table.php`) dengan unique key `(ip_address, visited_date)` dan tracking hits.
+        - Menghitung indikator pengguna aktif online (sliding window 5 menit via cache) dan agregasi total pembaca dokumen hukum (`view_count`).
+    *   **Penambahan Card Statistik Pengunjung pada Desktop & Mobile**:
+        - Desktop (`Pages/Statistik.tsx`): Menambahkan card section "Statistik Pengunjung & Akses Portal" dengan 4 metrik utama (Hari Ini, Bulan Ini, Total Kunjungan, Dokumen Dibaca) serta badge live status "Online Saat Ini".
+        - Mobile (`Pages/Mobile/Statistik.tsx`): Menambahkan card terpadu "Pengunjung Portal" di bawah ringkasan utama dengan metrik hari ini, bulan ini, total kunjungan, dokumen dibaca, dan live online indicator.
+    *   **Penyelarasan Endpoint Backend (`routes/web.php`)**:
+        - Memperkenalkan helper terpusat `getStatistikPayload()` yang digunakan bersama oleh rute desktop (`/statistik`) dan mobile (`/mobile/statistik`).
+        - Menjamin ketersediaan properti `name`, `short`, `jumlah`, `href`, `color`, serta array metrik `visitorStats` pada kedua platform.

@@ -77,6 +77,15 @@ jdih_db_villages_synced = "63 desa terverifikasi & aktif di jdihdb1.villages (is
 rate_limiting = "JDIH proxy rate limited via throttle:30,1 pada /api/produk-hukum-desa"
 tmp_maintenance = "Pembersihan harian /etc/cron.daily/cleanup-opensid-sessions terpasang (Inode /tmp stabil di 20%)"
 
+[VISITOR_ANALYTICS]
+middleware = "App\Http\Middleware\RecordVisitor"
+table = "visitors (ip_address, visited_date, hits, user_agent, unique ip+date)"
+throttling = "60s per IP via cache"
+online_tracking = "Cache sliding window 5 min (active_online_visitors)"
+ui_desktop = "Card section Statistik Pengunjung & Akses Portal pada Pages/Statistik.tsx (Hari Ini, Bulan Ini, Total Kunjungan, Dokumen Dibaca, Online Live)"
+ui_mobile = "Card Pengunjung Portal pada Mobile/Statistik.tsx (4 Metrik + Online Live Badge)"
+chart_mobile_fix = "Container h-[340px], bottom margin 65px, toggle filter Top 8 vs Semua, minPointSize=4"
+
 [FASE_STATUS]
 active_fase = "Fase 7 (Audit Keamanan Selesai & Stabilisasi Dependensi)"
 security_audit = "OWASP Top 10:2025 Audit selesai (.docs/security-audit.md). VULN-001, VULN-003, VULN-004, VULN-006 resolved."

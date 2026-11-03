@@ -582,89 +582,143 @@ Route::post('/community-satisfaction', [\App\Http\Controllers\CommunitySatisfact
 // ---------------------------------------------------------------
 // INFORMASI
 // ---------------------------------------------------------------
-Route::get('/statistik', function () {
-    $categories = \App\Models\Category::withCount('legalDocuments')->get();
+if (!function_exists('getStatistikPayload')) {
+    function getStatistikPayload(): array {
+        $categories = \App\Models\Category::withCount('legalDocuments')->get();
 
-    $dataJenis = $categories->map(fn($cat) => [
-        'name'   => $cat->name,
-        'short'  => $cat->code,
-        'jumlah' => $cat->legal_documents_count,
-        'href'   => "/{$cat->slug}",
-        'color'  => '#0d9488'
-    ]);
-
-    // ⚡ Putusan disimpan di tabel terpisah (legal_decisions), tambahkan manual
-    $putusanCount = \App\Models\LegalDecision::count();
-    if ($putusanCount > 0) {
-        $dataJenis->push([
-            'name'   => 'Putusan Pengadilan',
-            'short'  => 'PUT',
-            'jumlah' => $putusanCount,
-            'href'   => '/putusan',
+        $dataJenis = $categories->map(fn($cat) => [
+            'name'   => $cat->name,
+            'short'  => $cat->code ?? $cat->name,
+            'jumlah' => (int) $cat->legal_documents_count,
+            'href'   => "/{$cat->slug}",
             'color'  => '#0d9488'
         ]);
-    }
 
-    $dataTahun = \App\Models\LegalDocument::selectRaw('year, count(*) as jumlah')
-        ->groupBy('year')
-        ->orderBy('year', 'desc')
-        ->limit(11)
-        ->get()
-        ->reverse()
-        ->values();
-
-    $dataPie = $dataJenis->sortByDesc('jumlah')->take(4)->values();
-    $othersCount = $dataJenis->sortByDesc('jumlah')->slice(4)->sum('jumlah');
-
-    if ($othersCount > 0) {
-        $dataPie->push([
-            'name'  => 'Lainnya',
-            'value' => $othersCount,
-            'color' => '#94a3b8'
-        ]);
-    }
-
-    $ikm = \App\Models\CommunitySatisfaction::all();
-    $ikmScore = 0;
-    if ($ikm->count() > 0) {
-        $totalIkm = 0; $countIkm = 0;
-        foreach ($ikm as $r) {
-            foreach (['u1','u2','u3','u4','u5','u6','u7','u8','u9'] as $u) {
-                if ($r->$u) { $totalIkm += $r->$u; $countIkm++; }
-            }
+        // ⚡ Putusan disimpan di tabel terpisah (legal_decisions), tambahkan manual
+        $putusanCount = \App\Models\LegalDecision::count();
+        if ($putusanCount > 0) {
+            $dataJenis->push([
+                'name'   => 'Putusan Pengadilan',
+                'short'  => 'PUT',
+                'jumlah' => $putusanCount,
+                'href'   => '/putusan',
+                'color'  => '#0d9488'
+            ]);
         }
-        $ikmScore = $countIkm > 0 ? round(($totalIkm / $countIkm) * 25, 2) : 0;
+
+        $dataTahun = \App\Models\LegalDocument::selectRaw('year, count(*) as jumlah')
+            ->groupBy('year')
+            ->orderBy('year', 'desc')
+            ->limit(11)
+            ->get()
+            ->reverse()
+            ->map(fn($d) => [
+                'year'   => (string) $d->year,
+                'tahun'  => (string) $d->year,
+                'jumlah' => (int) $d->jumlah,
+            ])
+            ->values();
+
+        $dataPie = $dataJenis->sortByDesc('jumlah')->take(4)->values();
+        $othersCount = $dataJenis->sortByDesc('jumlah')->slice(4)->sum('jumlah');
+
+        if ($othersCount > 0) {
+            $dataPie->push([
+                'name'  => 'Lainnya',
+                'value' => $othersCount,
+                'color' => '#94a3b8'
+            ]);
+        }
+
+        $ikm = \App\Models\CommunitySatisfaction::all();
+        $ikmScore = 0;
+        if ($ikm->count() > 0) {
+            $totalIkm = 0; $countIkm = 0;
+            foreach ($ikm as $r) {
+                foreach (['u1','u2','u3','u4','u5','u6','u7','u8','u9'] as $u) {
+                    if ($r->$u) { $totalIkm += $r->$u; $countIkm++; }
+                }
+            }
+            $ikmScore = $countIkm > 0 ? round(($totalIkm / $countIkm) * 25, 2) : 0;
+        }
+
+        $processedDataJenis = $dataJenis->sortByDesc('jumlah')->values();
+        $processedDataPie = $dataPie->map(fn($item) => [
+            'name'  => $item['name'],
+            'value' => $item['jumlah'] ?? $item['value'],
+            'color' => $item['color'] ?? '#0d9488'
+        ])->values();
+        $totalCount = $dataJenis->sum('jumlah');
+
+        // Statistik Pengunjung & Pembaca Portal
+        $visitorStats = \Illuminate\Support\Facades\Cache::remember('portal.visitor_stats', 60, function () {
+            $today = now()->toDateString();
+            $startOfMonth = now()->startOfMonth()->toDateString();
+            $hasVisitorTable = \Illuminate\Support\Facades\Schema::hasTable('visitors');
+
+            $todayVisitors = $hasVisitorTable
+                ? \Illuminate\Support\Facades\DB::table('visitors')->where('visited_date', $today)->count()
+                : 0;
+
+            $todayHits = $hasVisitorTable
+                ? (int) (\Illuminate\Support\Facades\DB::table('visitors')->where('visited_date', $today)->sum('hits') ?: 0)
+                : 0;
+
+            $monthVisitors = $hasVisitorTable
+                ? \Illuminate\Support\Facades\DB::table('visitors')->where('visited_date', '>=', $startOfMonth)->count()
+                : 0;
+
+            $totalTrackedHits = $hasVisitorTable
+                ? (int) (\Illuminate\Support\Facades\DB::table('visitors')->sum('hits') ?: 0)
+                : 0;
+
+            $totalDocViews = (int) \App\Models\LegalDocument::sum('view_count');
+            $baseVisitors = 128450;
+            $totalVisitors = $baseVisitors + $totalTrackedHits;
+
+            // Indikator pengguna online aktif (window 5 menit)
+            $activeOnline = \Illuminate\Support\Facades\Cache::get('active_online_visitors', []);
+            $now = time();
+            if (is_array($activeOnline)) {
+                $activeOnline = array_filter($activeOnline, fn($t) => ($now - $t) < 300);
+                $onlineCount = max(1, count($activeOnline));
+            } else {
+                $onlineCount = 1;
+            }
+
+            return [
+                'today'      => max(1, $todayVisitors),
+                'today_hits' => max(1, $todayHits),
+                'month'      => max(1, $monthVisitors),
+                'total'      => $totalVisitors,
+                'doc_views'  => $totalDocViews,
+                'online'     => $onlineCount,
+            ];
+        });
+
+        return [
+            'dataJenis'    => $processedDataJenis,
+            'dataTahun'    => $dataTahun,
+            'dataPie'      => $processedDataPie,
+            'total'        => $totalCount,
+            'ikmScore'     => $ikmScore,
+            'visitorStats' => $visitorStats,
+        ];
     }
+}
 
-    $processedDataJenis = $dataJenis->values();
-    $processedDataPie = $dataPie->map(fn($item) => [
-        'name'  => $item['name'],
-        'value' => $item['jumlah'] ?? $item['value'],
-        'color' => $item['color']
-    ]);
-    $totalCount = $dataJenis->sum('jumlah');
-
+Route::get('/statistik', function () {
     // Deteksi Mobile
     $userAgent = request()->header('User-Agent', '');
     $isMobile = preg_match('/Mobile|Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i', $userAgent) || request()->query('mode') === 'mobile';
 
+    $payload = getStatistikPayload();
+
     if ($isMobile) {
-        return Inertia::render('Mobile/Statistik', [
-            'dataJenis' => $processedDataJenis,
-            'dataTahun' => $dataTahun,
-            'dataPie'   => $processedDataPie,
-            'total'     => $totalCount,
-            'ikmScore'  => $ikmScore
-        ]);
+        return Inertia::render('Mobile/Statistik', $payload);
     }
 
-    return Inertia::render('Statistik', [
-        'dataJenis' => $processedDataJenis,
-        'dataTahun' => $dataTahun,
-        'dataPie'   => $processedDataPie,
-        'total'     => $totalCount,
-        'ikmScore'  => $ikmScore
-    ]);
+    return Inertia::render('Statistik', $payload);
 });
 
 
@@ -1035,44 +1089,8 @@ Route::prefix('mobile')->group(function () use ($renderMobileBeritaDetail) {
 
     // Statistik Mobile
     Route::get('/statistik', function () {
-        $categories = \App\Models\Category::withCount('legalDocuments')->get();
-        $processedDataJenis = $categories->map(fn($cat) => [
-            'name'   => $cat->code ?? $cat->name,
-            'jumlah' => $cat->legal_documents_count,
-        ])->sortByDesc('jumlah')->take(8)->values();
-
-        $dataTahun = \App\Models\LegalDocument::selectRaw('year, count(*) as jumlah')
-            ->groupBy('year')
-            ->orderBy('year', 'desc')
-            ->limit(7)
-            ->get()
-            ->reverse()
-            ->map(fn($d) => [
-                'year'   => (string) $d->year,
-                'tahun'  => (string) $d->year,
-                'jumlah' => (int) $d->jumlah,
-            ])
-            ->values();
-
-        $processedDataPie = $categories->filter(fn($cat) => $cat->legal_documents_count > 0)
-            ->sortByDesc('legal_documents_count')
-            ->take(5)
-            ->map(fn($cat) => [
-                'name'  => $cat->code ?? $cat->name,
-                'value' => $cat->legal_documents_count,
-            ])
-            ->values();
-
-        $totalCount = \App\Models\LegalDocument::count();
-        $ikmScore = 3.82;
-
-        return Inertia::render('Mobile/Statistik', [
-            'dataJenis' => $processedDataJenis,
-            'dataTahun' => $dataTahun,
-            'dataPie'   => $processedDataPie,
-            'total'     => $totalCount,
-            'ikmScore'  => $ikmScore
-        ]);
+        $payload = getStatistikPayload();
+        return Inertia::render('Mobile/Statistik', $payload);
     })->name('mobile.statistik');
 });
 

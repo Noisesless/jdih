@@ -13,7 +13,7 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 | `/berita` | `Closure -> Inertia::render('Informasi/Berita')` | Berita & Artikel Hukum | Public | Active |
 | `/berita/{slug}` | `Closure -> Inertia::render('Informasi/DetailBerita')` | Baca Berita | Public | Active |
 | `/visi-misi` s/d `/sop` | `Closure -> Inertia::render('Profil/*')` | Profil & Kelembagaan JDIH | Public | Active |
-| `/statistik` | `Closure -> Inertia::render('Statistik')` / Mobile | Statistik & Grafik Produk Hukum | Public | Active |
+| `/statistik` | `Closure -> Inertia::render('Statistik')` / Mobile | Statistik & Grafik Produk Hukum, Trafik Pengunjung | Public | Active |
 | `/produk-hukum-desa` | `ProdukHukumDesaController@index` | Integrasi Produk Hukum Desa (OpenSID) | Public | Active |
 | `/api/produk-hukum-desa` | `ProdukHukumDesaController@proxy` | Reverse-Proxy OpenSID API (`throttle:30,1`, SSRF Guard) | Public | Active |
 | `/qrcode` | `Closure -> SVG Stream` | QR Code Generator Aman (SSRF Guard)| Public | Active |
@@ -29,7 +29,7 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 | `/mobile/berita` | `Closure -> Inertia::render('Mobile/Berita')` | Warta Hukum Mobile | Public | Active |
 | `/mobile/berita/{slug}` | `Closure -> Inertia::render('Mobile/DetailBerita')` | Baca Berita Mobile | Public | Active |
 | `/mobile/produk-hukum-desa` | `ProdukHukumDesaController@index` -> `Mobile/ProdukHukumDesa` | Produk Hukum Desa OpenSID (Unified Action) | Public | Active |
-| `/mobile/statistik` | `Closure -> Inertia::render('Mobile/Statistik')` | Visualisasi Data & Tren Regulasi | Public | Active |
+| `/mobile/statistik` | `Closure -> Inertia::render('Mobile/Statistik')` | Visualisasi Data, Tren Regulasi & Trafik Pengunjung | Public | Active |
 | `/mobile/info` | `Closure -> Inertia::render('Mobile/InfoJdih')` | Informasi & Profil Interaktif (Accordion) | Public | Active |
 
 ## 3. Admin Backoffice Routes (Filament v3)

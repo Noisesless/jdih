@@ -59,7 +59,18 @@ Dokumen arsitektur basis data, skema tabel, indeks, dan relasi data sistem JDIH 
 | `is_active` | TINYINT(1) | Default: 1 | Status aktif integrasi (1 = Aktif, 0 = Nonaktif) |
 | `created_at` / `updated_at` | TIMESTAMP | Nullable | Waktu registrasi dan pembaruan |
 
-### E. Tabel Pendukung Lainnya
+### E. `visitors` (Pencatatan Trafik & Statistik Pengunjung)
+| Kolom | Tipe | Index / Constraint | Keterangan |
+|---|---|---|---|
+| `id` | BIGINT UNSIGNED | PK, Auto Increment | ID Kunjungan |
+| `ip_address` | VARCHAR(45) | Index | Alamat IP Pengunjung |
+| `visited_date` | DATE | Index | Tanggal Kunjungan (Y-m-d) |
+| `hits` | INT UNSIGNED | Default: 1 | Jumlah hit / halaman yang dilihat hari itu |
+| `user_agent` | VARCHAR(500) | Nullable | User agent browser / perangkat |
+| `created_at` / `updated_at` | TIMESTAMP | Nullable | Waktu pertama dan terakhir kunjungan hari itu |
+| *Constraint* | UNIQUE (`ip_address`, `visited_date`) | - | 1 baris per IP per hari (agregasi hits) |
+
+### F. Tabel Pendukung Lainnya
 - `categories`: Kategori/tipe peraturan daerah.
 - `legal_document_relations`: Relasi antar-peraturan (mencabut, diubah oleh, dsb).
 - `news`: Berita dan artikel hukum.
