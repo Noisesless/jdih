@@ -35,8 +35,18 @@ graph TD
 
 ## 1. Lapisan Presentasi (Presentation Layer)
 - **Frontend Publik Desktop**: React 18 dibungkus oleh Inertia.js untuk pengalaman Single Page Application (SPA) yang dinamis tanpa perlu membangun REST API terpisah untuk setiap view.
-- **Frontend Mobile & PWA**: Antarmuka khusus mobile (`/mobile/*`) dengan navigasi bottom-tab, sentuhan ergonomis, dan Progressive Web App (PWA) lengkap dengan Service Worker (`public/sw.js`) serta manifest standalone (`public/manifest.json`).
-- **Styling**: Tailwind CSS dengan variasi tema modern sivik Teal `#0d9488`, typography Figtree, dan responsivitas laptop (1366×768 / scaling 125%) hingga ponsel (Android 3M).
+- **Frontend Mobile & PWA (`/mobile/*`)**: 
+  - **Sticky Bottom Navigation (5 Tabs)**: `Home`, `Peraturan` (trigger Action Sheet), `Cari` (elevated teal button), `Berita`, dan `Menu` (trigger Action Sheet).
+  - **Action Sheet Drawers (`framer-motion`)**:
+    - *Drawer Peraturan*: Akses cepat ke Perda, Perbup, SK Bupati, Produk Hukum Desa (OpenSID), Putusan, dan Monografi Hukum.
+    - *Drawer Menu*: Akses ke Statistik Dokumen (`/mobile/statistik`), Konsultasi & Aspirasi (`/mobile#aspirasi`), Modal Survei Kepuasan (IKM), Profil JDIH, Portal Nasional JDIHN, dan Linktree.
+  - **8-Sektor Selang-Seling Beranda (`Mobile/Home.tsx`)**: Menghilangkan visual monoton dengan ritme palet dinamis: Sektor 1 Hero Navy/Teal, Sektor 2 Soft Canvas Kategori, Sektor 3 Mint Infografis, Sektor 4 Pure White Produk Hukum, Sektor 5 Midnight Slate Statistik, Sektor 6 Slate Warta JDIH, Sektor 7 Cyan Video Edukasi, dan Sektor 8 Tautan Lembaga.
+  - **Halaman Khusus Mobile Terintegrasi**:
+    - `Mobile/ProdukHukumDesa.tsx`: Antarmuka mobile integrasi 63 OpenSID dengan filter kecamatan, desa, kategori, pencarian, dan tombol aksi terpadu *"Lihat / Unduh"*.
+    - `Mobile/InfoJdih.tsx`: Pusat profil lembaga mobile dengan accordion expandable interaktif (Visi Misi, Dasar Hukum, Tupoksi, SOP).
+    - `Mobile/Statistik.tsx`: Visualisasi tren data dan volume dokumen regulasi via Recharts.
+  - **Progressive Web App (PWA)**: Dilengkapi Service Worker (`public/sw.js`) dan manifest standalone (`public/manifest.json`).
+- **Styling**: Tailwind CSS dengan variasi tema modern sivik Teal `#0d9488`, typography Figtree, dan responsivitas laptop (1366×768 / scaling 125%) hingga ponsel (Android 3M: 360px, 393px, 412px).
 - **Admin Panel**: Filament v3 yang terintegrasi secara modular dengan Form Builder, Table Builder, Notification, dan Actions.
 - **Aset Frontend**: Terkompilasi mandiri via Vite (`public/build`) di lingkungan pengembang lokal sehingga server produksi dapat beroperasi tanpa Node.js.
 

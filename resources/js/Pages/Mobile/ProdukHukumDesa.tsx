@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MobileLayout from '@/Layouts/MobileLayout';
 import { Head, Link } from '@inertiajs/react';
-import { 
-    Search, Building2, MapPin, Loader2, AlertCircle, 
+import {
+    Search, Building2, MapPin, Loader2, AlertCircle,
     Book, Calendar, Download, ExternalLink, ChevronRight,
     RefreshCw, Filter, FileText, ArrowLeft
 } from 'lucide-react';
@@ -44,8 +44,8 @@ interface Props {
 
 export default function MobileProdukHukumDesa({ villagesMapping = [] }: Props) {
     const initialKec = villagesMapping.length > 0 ? villagesMapping[0].kecamatan : '';
-    const initialDesa = (villagesMapping.length > 0 && villagesMapping[0].desa.length > 0) 
-        ? villagesMapping[0].desa[0] 
+    const initialDesa = (villagesMapping.length > 0 && villagesMapping[0].desa.length > 0)
+        ? villagesMapping[0].desa[0]
         : { name: '', url: '' };
 
     const [selectedKec, setSelectedKec] = useState(initialKec);
@@ -167,8 +167,8 @@ export default function MobileProdukHukumDesa({ villagesMapping = [] }: Props) {
                 {/* 1. Top Header */}
                 <div className="px-5 pt-6 pb-5 bg-gradient-to-b from-slate-900 to-slate-850 text-white">
                     <div className="flex items-center gap-3 mb-3">
-                        <Link 
-                            href="/mobile" 
+                        <Link
+                            href="/mobile"
                             className="h-9 w-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white active:scale-95 transition-all"
                         >
                             <ArrowLeft className="h-4 w-4" />
@@ -254,11 +254,10 @@ export default function MobileProdukHukumDesa({ villagesMapping = [] }: Props) {
                             <button
                                 type="button"
                                 onClick={() => { setActiveCat(''); setTimeout(fetchProducts, 50); }}
-                                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0 transition-all ${
-                                    activeCat === '' 
-                                        ? 'bg-[#0d9488] text-white shadow-sm' 
+                                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0 transition-all ${activeCat === ''
+                                        ? 'bg-[#0d9488] text-white shadow-sm'
                                         : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                                }`}
+                                    }`}
                             >
                                 Semua
                             </button>
@@ -267,11 +266,10 @@ export default function MobileProdukHukumDesa({ villagesMapping = [] }: Props) {
                                     key={c.id}
                                     type="button"
                                     onClick={() => { setActiveCat(c.nama); setTimeout(fetchProducts, 50); }}
-                                    className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0 transition-all ${
-                                        activeCat === c.nama 
-                                            ? 'bg-[#0d9488] text-white shadow-sm' 
+                                    className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0 transition-all ${activeCat === c.nama
+                                            ? 'bg-[#0d9488] text-white shadow-sm'
                                             : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                                    }`}
+                                        }`}
                                 >
                                     {c.nama}
                                 </button>
@@ -303,7 +301,7 @@ export default function MobileProdukHukumDesa({ villagesMapping = [] }: Props) {
                                 Menghubungi portal resmi Desa {selectedDesa.name}
                             </p>
                             <div className="w-full max-w-xs h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                <div 
+                                <div
                                     className="h-full bg-[#0d9488] transition-all duration-300"
                                     style={{ width: `${progress}%` }}
                                 />
@@ -337,7 +335,7 @@ export default function MobileProdukHukumDesa({ villagesMapping = [] }: Props) {
                                 const fileUrl = attr.url_file || attr.satuan || '';
                                 const categoryName = attr.kategori || attr.satuan || 'Peraturan Desa';
                                 return (
-                                    <div 
+                                    <div
                                         key={p.id || idx}
                                         className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm space-y-2.5 active:border-teal-200 transition-all"
                                     >

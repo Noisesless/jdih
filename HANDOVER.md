@@ -201,3 +201,22 @@ php artisan optimize:clear
         - Menghapus 845.243 file sesi kadaluarsa (>24 jam) sehingga inode `/tmp` turun drastis ke 20% (tersedia 845.195 inode kosong).
         - Memasang skrip pemeliharaan otomatis harian `/etc/cron.daily/cleanup-opensid-sessions` agar file `ci_session*` kadaluarsa otomatis terhapus tanpa perlu intervensi manual.
         - Memvalidasi bahwa seluruh 63 desa terdaftar aktif di `jdihdb1.villages` kini merespons `200 OK` secara stabil dan cepat.
+
+*   **Overhaul Mobile Navigation, Visual Alternating Rhythm & Modul Desa Terpadu (3 November 2026)**:
+    *   **Overhaul Sticky Navigation Bawah (5 Tabs + 2 Action Sheet Drawers)**:
+        - Mengganti navigasi 4 tab standar menjadi 5 elevated tabs: `Home`, `Peraturan` (trigger Action Sheet), `Cari` (elevated teal button), `Berita`, dan `Menu` (trigger Action Sheet).
+        - *Drawer Peraturan*: Memberikan akses instan ke Perda, Perbup, SK Bupati, Produk Hukum Desa, Putusan, Monografi, dan Semua Katalog Dokumen.
+        - *Drawer Menu*: Mengarahkan ke Statistik Dokumen (`/mobile/statistik`), Konsultasi/Aspirasi (`/mobile#aspirasi`), Modal Survei IKM native, Profil Lembaga, Portal JDIHN, dan Linktree.
+    *   **Kombinasi Warna Ritmik Selang-Seling (8 Sektor) pada `Mobile/Home.tsx`**:
+        - Mengeliminasi tampilan monoton/plain dengan menerapkan kontras bergradasi selang-seling: Sektor 1 Hero Navy/Teal, Sektor 2 Soft Canvas Kategori, Sektor 3 Mint Infografis, Sektor 4 Pure White Produk Hukum, Sektor 5 Midnight Slate Statistik, Sektor 6 Slate Warta JDIH, Sektor 7 Cyan Video Edukasi, dan Sektor 8 Tautan Lembaga.
+    *   **Pembuatan Halaman Khusus Mobile `Mobile/ProdukHukumDesa.tsx`**:
+        - Membangun antarmuka mobile-first khusus untuk produk hukum desa terintegrasi 63 OpenSID dengan filter kecamatan, desa, kategori pills, pencarian instan, dan status sinkronisasi.
+        - Menambahkan deteksi otomatis User-Agent mobile pada `ProdukHukumDesaController@index` sehingga pengguna mobile otomatis mendapatkan tampilan mobile tanpa kehilangan sticky bottom bar.
+    *   **Penyatuan Tombol "Lihat" dan "Unduh" Menjadi 1 Aksi Terpadu**:
+        - Menyederhanakan kolom aksi dokumen pada desktop (`Hukum/ProdukHukumDesa.tsx`) dan mobile (`Mobile/ProdukHukumDesa.tsx`) dari sebelumnya 2 tombol redundan menjadi 1 tombol elegan *"Lihat / Unduh"*.
+    *   **Resolusi Thumbnail Video Audiovisual Mobile**:
+        - Memperbaiki mapping data backend `home.videos.mobile` di `routes/web.php` dan menambahkan fallback cover resmi terverifikasi di server (`/images/covers/cover_perbup_54_2025.webp`) dengan handler `onError` otomatis.
+    *   **Pusat Profil Kelembagaan All-in-One (`Mobile/InfoJdih.tsx`)**:
+        - Mengintegrasikan konten profil kelembagaan (Visi Misi, Dasar Hukum, Tupoksi Bagian Hukum, dan SOP) ke dalam komponen expandable accordion interaktif langsung di dalam antarmuka mobile.
+    *   **Build & Deployment Produksi**:
+        - Dikompilasi via `npm run build` bebas error dan dideploy ke server Nargaroth dengan verifikasi HTTP 200 OK.
