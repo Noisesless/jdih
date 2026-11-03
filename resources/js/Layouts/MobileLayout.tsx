@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import {
     Home, Search, Info, ExternalLink,
@@ -8,6 +8,8 @@ import {
     ChevronRight, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const IKMSurveyModal = lazy(() => import('@/Components/IKMSurveyModal'));
 
 interface Props {
     children: React.ReactNode;
@@ -68,7 +70,7 @@ export default function MobileLayout({ children }: Props) {
     };
 
     const isPeraturanActive = url.includes('kategori=') || url.includes('produk-hukum-desa') || activeDrawer === 'peraturan';
-    const isMenuDrawerActive = url.startsWith('/mobile/info') || activeDrawer === 'menu';
+    const isMenuDrawerActive = url.startsWith('/mobile/info') || url.startsWith('/mobile/statistik') || activeDrawer === 'menu';
     const isCariActive = url.startsWith('/mobile/pencarian') && !url.includes('kategori=');
 
     // Menu Item Peraturan untuk Action Sheet
@@ -103,7 +105,7 @@ export default function MobileLayout({ children }: Props) {
             desc: 'Perkades & Perdes integrasi 63 desa OpenSID',
             icon: <Building2 className="h-5 w-5 text-sky-600" />,
             badgeBg: 'bg-sky-50 text-sky-700 border-sky-200',
-            href: '/produk-hukum-desa'
+            href: '/mobile/produk-hukum-desa'
         },
         {
             title: 'Putusan Pengadilan',
@@ -129,7 +131,7 @@ export default function MobileLayout({ children }: Props) {
             title: 'Statistik & Tren Regulasi',
             desc: 'Grafik jenis dan tren tahunan produk hukum',
             icon: <BarChart3 className="h-5 w-5 text-teal-600" />,
-            href: '/mobile#statistik',
+            href: '/mobile/statistik',
             isExternal: false
         },
         {
@@ -143,7 +145,8 @@ export default function MobileLayout({ children }: Props) {
             title: 'Survei Kepuasan (IKM)',
             desc: 'Indeks Kepuasan Masyarakat layanan JDIH',
             icon: <CheckCircle2 className="h-5 w-5 text-amber-600" />,
-            href: '/survei',
+            href: '#',
+            isIkm: true,
             isExternal: false
         },
         {
@@ -362,6 +365,22 @@ export default function MobileLayout({ children }: Props) {
                                     </div>
                                 );
 
+                                if (item.isIkm) {
+                                    return (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            onClick={() => {
+                                                setActiveDrawer(null);
+                                                window.dispatchEvent(new CustomEvent('open-ikm-survey'));
+                                            }}
+                                            className="w-full text-left"
+                                        >
+                                            {Content}
+                                        </button>
+                                    );
+                                }
+
                                 if (item.isExternal) {
                                     return (
                                         <a
@@ -457,6 +476,11 @@ export default function MobileLayout({ children }: Props) {
                     <span className="text-[9px] font-black uppercase tracking-wider">Menu</span>
                 </button>
             </nav>
+
+            {/* IKM Survey Modal on Mobile */}
+            <Suspense fallback={null}>
+                <IKMSurveyModal />
+            </Suspense>
         </div>
     );
 }

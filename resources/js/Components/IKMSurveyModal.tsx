@@ -29,6 +29,16 @@ export default function IKMSurveyModal() {
         '/galeri'
     ];
 
+    // Event listener untuk memicu modal secara manual dari menu navigasi
+    useEffect(() => {
+        const handleOpen = () => {
+            setStep(0);
+            setIsOpen(true);
+        };
+        window.addEventListener('open-ikm-survey', handleOpen);
+        return () => window.removeEventListener('open-ikm-survey', handleOpen);
+    }, []);
+
     useEffect(() => {
         // Hanya tampilkan di halaman tertentu
         const currentPath = window.location.pathname;

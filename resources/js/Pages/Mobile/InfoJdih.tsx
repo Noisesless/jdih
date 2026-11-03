@@ -1,150 +1,349 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MobileLayout from '@/Layouts/MobileLayout';
-import { Head } from '@inertiajs/react';
-import { MapPin, Phone, Mail, ExternalLink, Scale, Globe, Clock, ChevronRight, Building2, Users } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { 
+    MapPin, Phone, Mail, ExternalLink, Scale, Globe, Clock, 
+    ChevronRight, ChevronDown, Building2, Users, Target, FileText,
+    Shield, BookOpen, CheckCircle, Info
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function InfoJdih() {
+interface Props {
+    profileItems?: Record<string, any>;
+}
+
+const DEFAULT_VISI =
+    '"Profesional dan Proporsional dalam penyusunan produk hukum daerah, pemberian bantuan hukum dan hak asasi manusia, pelayanan informasi dan dokumentasi hukum serta pengawasan produk hukum daerah kabupaten/kota"';
+
+const DEFAULT_MISI = [
+    'Menyusun Produk Hukum daerah selaras dengan kepentingan umum dan peraturan perundang-undangan yang lebih tinggi.',
+    'Menyelesaikan penanganan perkara dan pemberian bantuan serta perlindungan hukum berdasarkan kebenaran dan keadilan.',
+    'Melayani penyebarluasan dan publikasi informasi serta dokumentasi hukum secara transparan dan akuntabel.',
+    'Mewujudkan sumber daya manusia yang profesional dan handal di bidang hukum.',
+];
+
+const DEFAULT_DASAR_HUKUM = [
+    { no: 1, peraturan: 'UU No. 12 Tahun 2011', tentang: 'Pembentukan Peraturan Perundang-Undangan' },
+    { no: 2, peraturan: 'Perpres No. 33 Tahun 2012', tentang: 'Jaringan Dokumentasi dan Informasi Hukum Nasional' },
+    { no: 3, peraturan: 'Permenkumham No. 8 Tahun 2019', tentang: 'Standar Pengelolaan Dokumen dan Informasi Hukum' },
+    { no: 4, peraturan: 'Perda Kab. Banjarnegara No. 1 Tahun 2024', tentang: 'Perangkat Daerah Kabupaten Banjarnegara' },
+    { no: 5, peraturan: 'Perbup Banjarnegara No. 54 Tahun 2021', tentang: 'Tupoksi dan Tata Kerja Setda Banjarnegara' },
+];
+
+export default function InfoJdih({ profileItems = {} }: Props) {
+    const [openSection, setOpenSection] = useState<string | null>(null);
+
+    const toggleSection = (id: string) => {
+        setOpenSection(prev => prev === id ? null : id);
+    };
+
     const links = [
-        { label: 'JDIHN Nasional',       href: 'https://www.jdihn.go.id',                    icon: Globe },
-        { label: 'JDIH Prov. Jateng',    href: 'https://jdih.jatengprov.go.id/',              icon: Globe },
-        { label: 'Pemkab Banjarnegara',  href: 'http://banjarnegarakab.go.id',                icon: Building2 },
-        { label: 'Sekretariat Daerah',   href: 'https://setda.banjarnegarakab.go.id',         icon: Building2 },
-        { label: 'DPRD Banjarnegara',    href: 'https://dprd.banjarnegarakab.go.id',          icon: Users },
-        { label: 'Kemendagri RI',        href: 'http://www.kemendagri.go.id',                 icon: Globe },
+        { label: 'JDIHN Nasional (BPHN)', href: 'https://www.jdihn.go.id', icon: Globe },
+        { label: 'JDIH Prov. Jateng', href: 'https://jdih.jatengprov.go.id/', icon: Globe },
+        { label: 'Pemkab Banjarnegara', href: 'http://banjarnegarakab.go.id', icon: Building2 },
+        { label: 'Sekretariat Daerah', href: 'https://setda.banjarnegarakab.go.id', icon: Building2 },
+        { label: 'DPRD Banjarnegara', href: 'https://dprd.banjarnegarakab.go.id', icon: Users },
+        { label: 'Kemendagri RI', href: 'http://www.kemendagri.go.id', icon: Globe },
     ];
 
-    const menuItems = [
-        { label: 'Visi & Misi',            href: '/visi-misi' },
-        { label: 'Dasar Hukum',            href: '/dasar-hukum' },
-        { label: 'Struktur Organisasi',    href: '/struktur-organisasi' },
-        { label: 'Tupoksi Bagian Hukum',   href: '/tupoksi-bag-hukum' },
-        { label: 'Anggota JDIH',           href: '/anggota-jdih' },
-        { label: 'Kedudukan & Alamat',     href: '/kedudukan-dan-alamat' },
-        { label: 'SOP',                    href: '/sop' },
-    ];
+    const visiMisiData = profileItems['visi-misi']?.content || {};
+    const visi = visiMisiData.visi || DEFAULT_VISI;
+    const misi = (Array.isArray(visiMisiData.misi) && visiMisiData.misi.length > 0)
+        ? visiMisiData.misi.map((m: any) => typeof m === 'string' ? m : (m.value || String(m)))
+        : DEFAULT_MISI;
+
+    const dasarHukumData = profileItems['dasar-hukum']?.content || {};
+    const dasarHukum = (Array.isArray(dasarHukumData.items) && dasarHukumData.items.length > 0)
+        ? dasarHukumData.items
+        : DEFAULT_DASAR_HUKUM;
 
     return (
         <MobileLayout>
-            <Head title="Informasi JDIH — Banjarnegara" />
+            <Head title="Informasi & Profil JDIH — Banjarnegara" />
 
-            {/* Hero */}
-            <div className="px-5 pt-6 pb-4">
-                <div className="bg-gradient-to-br from-[#0f172a] to-[#1e293b] rounded-[2rem] p-6 text-white shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-8 opacity-5">
-                        <Scale className="h-32 w-32" />
-                    </div>
-                    <div className="relative z-10 flex items-center gap-4 mb-6">
-                        <div className="h-16 w-16 rounded-2xl bg-[#0d9488] flex items-center justify-center shadow-lg shrink-0">
-                            <img src="/logo_jdih.webp" alt="JDIH" className="h-12 w-12 object-contain" onError={e => { (e.target as HTMLImageElement).style.display='none'; }} />
+            <div className="flex flex-col gap-5 pb-12">
+                {/* 1. Header Banner */}
+                <div className="px-5 pt-6">
+                    <div className="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0d9488]/40 rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden border border-white/10">
+                        <div className="relative z-10 flex items-center gap-4 mb-4">
+                            <div className="h-14 w-14 rounded-2xl bg-[#0d9488] flex items-center justify-center shadow-lg shrink-0 border border-teal-300/30">
+                                <img src="/logo_jdih.webp" alt="JDIH" className="h-10 w-10 object-contain" onError={e => { (e.target as HTMLImageElement).style.display='none'; }} />
+                            </div>
+                            <div>
+                                <span className="text-[9px] font-black text-teal-300 uppercase tracking-widest block">
+                                    Pemerintah Kab. Banjarnegara
+                                </span>
+                                <h1 className="text-xl font-black text-white leading-tight">
+                                    Profil & Info JDIH
+                                </h1>
+                                <p className="text-[10px] font-medium text-slate-300 mt-0.5">
+                                    Bagian Hukum Sekretariat Daerah
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-[9px] font-black text-teal-400 uppercase tracking-widest">Kabupaten Banjarnegara</p>
-                            <h1 className="text-lg font-black text-white leading-tight">JDIH</h1>
-                            <p className="text-[10px] font-bold text-slate-400 mt-0.5">Jaringan Dokumentasi & Informasi Hukum</p>
+                        <p className="text-xs text-slate-200 leading-relaxed">
+                            Wadah pendayagunaan bersama atas dokumen hukum secara tertib, terpadu, dan berkesinambungan di lingkungan Pemerintah Kabupaten Banjarnegara.
+                        </p>
+                        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/10">
+                            <Clock className="h-3.5 w-3.5 text-teal-300 shrink-0" />
+                            <span className="text-[10px] font-medium text-slate-300">Senin – Jumat, 07.30 – 16.00 WIB</span>
                         </div>
-                    </div>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                        Wadah pendayagunaan bersama atas dokumen hukum secara tertib, terpadu, dan berkesinambungan di lingkungan Pemerintah Kabupaten Banjarnegara.
-                    </p>
-                    <div className="flex items-center gap-2 mt-4">
-                        <Clock className="h-3.5 w-3.5 text-teal-400 shrink-0" />
-                        <span className="text-[10px] font-bold text-slate-400">Senin – Jumat, 08.00 – 15.00 WIB</span>
                     </div>
                 </div>
-            </div>
 
-            {/* Linktree CTA */}
-            <div className="px-5 pb-4">
-                <a href="https://linktr.ee/PUUBAGIANHUKUMBNA" target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-between w-full p-5 bg-[#0d9488] text-white rounded-[2rem] shadow-lg shadow-teal-900/20 active:scale-[0.98] transition-all">
-                    <div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-teal-100 mb-1">Semua Link Penting</p>
-                        <p className="text-base font-black">Linktree JDIH Banjarnegara</p>
-                        <p className="text-[10px] text-teal-100 mt-0.5">linktr.ee/PUUBAGIANHUKUMBNA</p>
-                    </div>
-                    <div className="h-12 w-12 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center shrink-0">
-                        <ExternalLink className="h-5 w-5 text-white" />
-                    </div>
-                </a>
-            </div>
-
-            {/* Kontak */}
-            <div className="px-5 pb-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Kontak</p>
-                <div className="bg-white border border-slate-100 rounded-3xl divide-y divide-slate-50 shadow-sm overflow-hidden">
-                    <div className="flex items-center gap-4 p-4">
-                        <div className="h-10 w-10 rounded-2xl bg-teal-50 flex items-center justify-center shrink-0">
-                            <MapPin className="h-5 w-5 text-[#0d9488]" />
-                        </div>
+                {/* 2. Linktree CTA */}
+                <div className="px-5">
+                    <a 
+                        href="https://linktr.ee/PUUBAGIANHUKUMBNA" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between w-full p-4 bg-[#0d9488] text-white rounded-2xl shadow-lg shadow-teal-900/10 active:scale-[0.98] transition-all"
+                    >
                         <div>
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Alamat</p>
-                            <p className="text-sm font-bold text-slate-800 leading-snug">Jl. Ahmad Yani No. 16, Krandegan, Banjarnegara</p>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-teal-100 block mb-0.5">
+                                Kanal Tautan Resmi
+                            </span>
+                            <p className="text-sm font-black">Linktree JDIH Banjarnegara</p>
+                            <p className="text-[10px] text-teal-100/90 mt-0.5">linktr.ee/PUUBAGIANHUKUMBNA</p>
                         </div>
-                    </div>
-                    <a href="tel:02865912181" className="flex items-center gap-4 p-4 active:bg-slate-50 transition-all">
-                        <div className="h-10 w-10 rounded-2xl bg-teal-50 flex items-center justify-center shrink-0">
-                            <Phone className="h-5 w-5 text-[#0d9488]" />
+                        <div className="h-10 w-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center shrink-0">
+                            <ExternalLink className="h-5 w-5 text-white" />
                         </div>
-                        <div className="flex-1">
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Telepon</p>
-                            <p className="text-sm font-bold text-slate-800">(0286) 591218</p>
-                        </div>
-                        <ChevronRight className="h-4 w-4 text-slate-300" />
-                    </a>
-                    <a href="mailto:jdihbanjarnegara@gmail.com" className="flex items-center gap-4 p-4 active:bg-slate-50 transition-all">
-                        <div className="h-10 w-10 rounded-2xl bg-teal-50 flex items-center justify-center shrink-0">
-                            <Mail className="h-5 w-5 text-[#0d9488]" />
-                        </div>
-                        <div className="flex-1">
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Email</p>
-                            <p className="text-sm font-bold text-slate-800">jdihbanjarnegara@gmail.com</p>
-                        </div>
-                        <ChevronRight className="h-4 w-4 text-slate-300" />
                     </a>
                 </div>
-            </div>
 
-            {/* Maps */}
-            <div className="px-5 pb-4">
-                <div className="rounded-3xl overflow-hidden border border-slate-100 shadow-sm">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.624220178036!2d109.69379512548414!3d-7.395934914095323!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7aa91649242607%3A0x7cf16e25160c9389!2sSekretariat%20Daerah%20Kabupaten%20Banjarnegara!5e0!3m2!1sid!2sid!4v1777905689780!5m2!1sid!2sid"
-                        width="100%" height="200" style={{ border: 0 }} allowFullScreen={false} loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade" className="w-full"
-                    />
+                {/* 3. Profil Kelembagaan Expandable Accordion */}
+                <div className="px-5 space-y-2.5">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block px-1">
+                        Profil & Ketentuan Lembaga
+                    </span>
+
+                    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm divide-y divide-slate-100 overflow-hidden">
+                        
+                        {/* Visi & Misi */}
+                        <div>
+                            <button
+                                type="button"
+                                onClick={() => toggleSection('visi-misi')}
+                                className="w-full flex items-center justify-between p-4 text-left active:bg-slate-50 transition-colors"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="h-8 w-8 rounded-xl bg-teal-50 text-[#0d9488] flex items-center justify-center shrink-0">
+                                        <Target className="h-4 w-4" />
+                                    </div>
+                                    <span className="text-xs font-black text-slate-800">Visi & Misi</span>
+                                </div>
+                                <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${openSection === 'visi-misi' ? 'rotate-180' : ''}`} />
+                            </button>
+                            <AnimatePresence>
+                                {openSection === 'visi-misi' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="px-5 pb-5 pt-1 space-y-3 text-xs bg-slate-50/50"
+                                    >
+                                        <div className="p-3 bg-white rounded-xl border border-teal-100 shadow-sm">
+                                            <span className="text-[9px] font-black uppercase tracking-wider text-teal-600 block mb-1">Visi</span>
+                                            <p className="text-slate-700 italic leading-relaxed">{visi}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-2">Misi</span>
+                                            <div className="space-y-2">
+                                                {misi.map((m: string, idx: number) => (
+                                                    <div key={idx} className="flex items-start gap-2 text-slate-600">
+                                                        <CheckCircle className="h-3.5 w-3.5 text-teal-600 mt-0.5 shrink-0" />
+                                                        <span className="leading-snug">{m}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Dasar Hukum */}
+                        <div>
+                            <button
+                                type="button"
+                                onClick={() => toggleSection('dasar-hukum')}
+                                className="w-full flex items-center justify-between p-4 text-left active:bg-slate-50 transition-colors"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="h-8 w-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                        <FileText className="h-4 w-4" />
+                                    </div>
+                                    <span className="text-xs font-black text-slate-800">Dasar Hukum</span>
+                                </div>
+                                <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${openSection === 'dasar-hukum' ? 'rotate-180' : ''}`} />
+                            </button>
+                            <AnimatePresence>
+                                {openSection === 'dasar-hukum' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="px-5 pb-5 pt-1 space-y-2.5 text-xs bg-slate-50/50"
+                                    >
+                                        {dasarHukum.map((item: any, idx: number) => (
+                                            <div key={idx} className="p-3 bg-white rounded-xl border border-slate-200/80 shadow-sm">
+                                                <p className="font-black text-slate-800 text-[11px] mb-0.5">{item.peraturan}</p>
+                                                <p className="text-[10px] text-slate-500 leading-snug">{item.tentang}</p>
+                                            </div>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Tupoksi Bagian Hukum */}
+                        <div>
+                            <button
+                                type="button"
+                                onClick={() => toggleSection('tupoksi')}
+                                className="w-full flex items-center justify-between p-4 text-left active:bg-slate-50 transition-colors"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="h-8 w-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                                        <Scale className="h-4 w-4" />
+                                    </div>
+                                    <span className="text-xs font-black text-slate-800">Tupoksi Bagian Hukum</span>
+                                </div>
+                                <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${openSection === 'tupoksi' ? 'rotate-180' : ''}`} />
+                            </button>
+                            <AnimatePresence>
+                                {openSection === 'tupoksi' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="px-5 pb-5 pt-1 space-y-3 text-xs bg-slate-50/50"
+                                    >
+                                        <div className="p-3 bg-white rounded-xl border border-indigo-100 shadow-sm">
+                                            <span className="text-[9px] font-black uppercase tracking-wider text-indigo-600 block mb-1">Tugas Utama</span>
+                                            <p className="text-slate-700 leading-relaxed text-[11px]">
+                                                Melaksanakan penyiapan pengoordinasian perumusan kebijakan daerah, pengoordinasian pelaksanaan tugas Perangkat Daerah, pemantauan dan evaluasi di bidang perundang-undangan, bantuan hukum, dan dokumentasi informasi hukum.
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* SOP & Prosedur */}
+                        <div>
+                            <button
+                                type="button"
+                                onClick={() => toggleSection('sop')}
+                                className="w-full flex items-center justify-between p-4 text-left active:bg-slate-50 transition-colors"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="h-8 w-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                                        <Shield className="h-4 w-4" />
+                                    </div>
+                                    <span className="text-xs font-black text-slate-800">SOP Pelayanan</span>
+                                </div>
+                                <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${openSection === 'sop' ? 'rotate-180' : ''}`} />
+                            </button>
+                            <AnimatePresence>
+                                {openSection === 'sop' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="px-5 pb-5 pt-1 space-y-2 text-xs bg-slate-50/50"
+                                    >
+                                        <div className="p-3 bg-white rounded-xl border border-amber-100 shadow-sm space-y-1">
+                                            <p className="font-black text-slate-800 text-[11px]">SOP Permohonan Informasi Hukum</p>
+                                            <p className="text-[10px] text-slate-500">Maksimal 3 hari kerja untuk permohonan salinan regulasi publik.</p>
+                                        </div>
+                                        <div className="p-3 bg-white rounded-xl border border-amber-100 shadow-sm space-y-1">
+                                            <p className="font-black text-slate-800 text-[11px]">SOP Harmonisasi Produk Hukum Daerah</p>
+                                            <p className="text-[10px] text-slate-500">Penelaahan materi muatan rancangan peraturan perundang-undangan daerah.</p>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
 
-            {/* Profil Menu */}
-            <div className="px-5 pb-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Profil Kelembagaan</p>
-                <div className="bg-white border border-slate-100 rounded-3xl divide-y divide-slate-50 shadow-sm overflow-hidden">
-                    {menuItems.map((m, i) => (
-                        <a key={i} href={m.href} className="flex items-center justify-between px-4 py-3.5 active:bg-slate-50 transition-all">
-                            <span className="text-sm font-bold text-slate-700">{m.label}</span>
+                {/* 4. Kontak & Alamat Kantor */}
+                <div className="px-5 space-y-2.5">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block px-1">
+                        Kontak & Alamat
+                    </span>
+                    <div className="bg-white border border-slate-200/80 rounded-2xl divide-y divide-slate-100 shadow-sm overflow-hidden">
+                        <div className="flex items-center gap-3.5 p-4">
+                            <div className="h-9 w-9 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 text-[#0d9488]">
+                                <MapPin className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Alamat Kantor</span>
+                                <p className="text-xs font-bold text-slate-800 leading-snug">
+                                    Jl. Ahmad Yani No. 16, Krandegan, Banjarnegara
+                                </p>
+                            </div>
+                        </div>
+
+                        <a href="tel:0286591218" className="flex items-center justify-between p-4 active:bg-slate-50 transition-colors">
+                            <div className="flex items-center gap-3.5">
+                                <div className="h-9 w-9 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 text-[#0d9488]">
+                                    <Phone className="h-4 w-4" />
+                                </div>
+                                <div>
+                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Telepon</span>
+                                    <p className="text-xs font-bold text-slate-800">(0286) 591218</p>
+                                </div>
+                            </div>
                             <ChevronRight className="h-4 w-4 text-slate-300" />
                         </a>
-                    ))}
-                </div>
-            </div>
 
-            {/* Related Links */}
-            <div className="px-5 pb-8">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Tautan Terkait</p>
-                <div className="grid grid-cols-2 gap-3">
-                    {links.map((link, i) => {
-                        const Icon = link.icon;
-                        return (
-                            <a key={i} href={link.href} target="_blank" rel="noreferrer"
-                                className="flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm active:scale-95 transition-all">
-                                <div className="h-8 w-8 rounded-xl bg-teal-50 flex items-center justify-center shrink-0">
-                                    <Icon className="h-4 w-4 text-[#0d9488]" />
+                        <a href="mailto:jdihbanjarnegara@gmail.com" className="flex items-center justify-between p-4 active:bg-slate-50 transition-colors">
+                            <div className="flex items-center gap-3.5">
+                                <div className="h-9 w-9 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 text-[#0d9488]">
+                                    <Mail className="h-4 w-4" />
                                 </div>
-                                <span className="text-[10px] font-black text-slate-700 leading-snug line-clamp-2">{link.label}</span>
-                            </a>
-                        );
-                    })}
+                                <div>
+                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Email Resmi</span>
+                                    <p className="text-xs font-bold text-slate-800">jdihbanjarnegara@gmail.com</p>
+                                </div>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-slate-300" />
+                        </a>
+                    </div>
                 </div>
+
+                {/* 5. Tautan Terkait */}
+                <div className="px-5 space-y-2.5">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block px-1">
+                        Jaringan Portal Eksternal
+                    </span>
+                    <div className="grid grid-cols-2 gap-2.5">
+                        {links.map((link, i) => {
+                            const Icon = link.icon;
+                            return (
+                                <a 
+                                    key={i} 
+                                    href={link.href} 
+                                    target="_blank" 
+                                    rel="noreferrer"
+                                    className="flex items-center gap-3 p-3.5 bg-white border border-slate-200/80 rounded-2xl shadow-sm active:scale-95 transition-all"
+                                >
+                                    <div className="h-8 w-8 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 text-[#0d9488]">
+                                        <Icon className="h-4 w-4" />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-slate-700 leading-snug line-clamp-2">
+                                        {link.label}
+                                    </span>
+                                </a>
+                            );
+                        })}
+                    </div>
+                </div>
+
             </div>
         </MobileLayout>
     );

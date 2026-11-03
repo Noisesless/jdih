@@ -29,6 +29,17 @@ class ProdukHukumDesaController extends Controller
             })
             ->values();
 
+        $userAgent = request()->header('User-Agent', '');
+        $isMobile = preg_match('/Mobile|Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i', $userAgent) 
+                    || request()->query('mode') === 'mobile' 
+                    || request()->is('mobile/*');
+
+        if ($isMobile) {
+            return Inertia::render('Mobile/ProdukHukumDesa', [
+                'villagesMapping' => $villages
+            ]);
+        }
+
         return Inertia::render('Hukum/ProdukHukumDesa', [
             'villagesMapping' => $villages
         ]);

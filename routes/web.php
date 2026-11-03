@@ -887,9 +887,24 @@ Route::prefix('mobile')->group(function () use ($renderMobileBeritaDetail) {
             $c['Putusan'] = \App\Models\LegalDecision::count();
             return $c;
         });
-        $videos = \Illuminate\Support\Facades\Cache::remember('home.videos', 600, fn() =>
-            \App\Models\VideoContent::latest()->take(3)->get()->map(fn($v)=>['id'=>$v->id,'title'=>$v->title,'href'=>$v->video_url,'image'=>$v->thumbnail_path?'/storage/'.$v->thumbnail_path:null])
-        );
+        $videos = \Illuminate\Support\Facades\Cache::remember('home.videos.mobile', 300, function () {
+            return \App\Models\VideoContent::latest()->take(6)->get()->map(function ($v) {
+                $thumb = $v->thumbnail_path;
+                $imageUrl = $thumb 
+                    ? (str_starts_with($thumb, 'http') ? $thumb : (str_starts_with($thumb, '/') ? $thumb : '/images/' . $thumb))
+                    : '/images/covers/cover_perbup_54_2025.webp';
+                return [
+                    'id'             => $v->id,
+                    'title'          => $v->title,
+                    'video_url'      => $v->video_url,
+                    'href'           => $v->video_url,
+                    'thumbnail_path' => $thumb,
+                    'image'          => $imageUrl,
+                    'platform'       => $v->platform,
+                    'duration'       => $v->duration,
+                ];
+            });
+        });
         $infographics = \Illuminate\Support\Facades\Cache::remember('home.infographics', 600, function () {
             return \App\Models\Infographic::latest()->take(5)->get()
                 ->map(fn($i) => [
@@ -1008,7 +1023,57 @@ Route::prefix('mobile')->group(function () use ($renderMobileBeritaDetail) {
     Route::get('/berita/{slug}', $renderMobileBeritaDetail)->name('mobile.berita.detail');
 
     // Info JDIH
-    Route::get('/info', fn() => Inertia::render('Mobile/InfoJdih'))->name('mobile.info');
+    Route::get('/info', function () {
+        $profileItems = \App\Models\ProfileItem::all()->keyBy('slug');
+        return Inertia::render('Mobile/InfoJdih', [
+            'profileItems' => $profileItems,
+        ]);
+    })->name('mobile.info');
+
+    // Produk Hukum Desa Mobile
+    Route::get('/produk-hukum-desa', [\App\Http\Controllers\ProdukHukumDesaController::class, 'index'])->name('mobile.desa');
+
+    // Statistik Mobile
+    Route::get('/statistik', function () {
+        $categories = \App\Models\Category::withCount('legalDocuments')->get();
+        $processedDataJenis = $categories->map(fn($cat) => [
+            'name'   => $cat->code ?? $cat->name,
+            'jumlah' => $cat->legal_documents_count,
+        ])->sortByDesc('jumlah')->take(8)->values();
+
+        $dataTahun = \App\Models\LegalDocument::selectRaw('year, count(*) as jumlah')
+            ->groupBy('year')
+            ->orderBy('year', 'desc')
+            ->limit(7)
+            ->get()
+            ->reverse()
+            ->map(fn($d) => [
+                'year'   => (string) $d->year,
+                'tahun'  => (string) $d->year,
+                'jumlah' => (int) $d->jumlah,
+            ])
+            ->values();
+
+        $processedDataPie = $categories->filter(fn($cat) => $cat->legal_documents_count > 0)
+            ->sortByDesc('legal_documents_count')
+            ->take(5)
+            ->map(fn($cat) => [
+                'name'  => $cat->code ?? $cat->name,
+                'value' => $cat->legal_documents_count,
+            ])
+            ->values();
+
+        $totalCount = \App\Models\LegalDocument::count();
+        $ikmScore = 3.82;
+
+        return Inertia::render('Mobile/Statistik', [
+            'dataJenis' => $processedDataJenis,
+            'dataTahun' => $dataTahun,
+            'dataPie'   => $processedDataPie,
+            'total'     => $totalCount,
+            'ikmScore'  => $ikmScore
+        ]);
+    })->name('mobile.statistik');
 });
 
 Route::get("/{category:slug}", function(string $slug, \Illuminate\Http\Request $request) {

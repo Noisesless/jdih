@@ -340,7 +340,7 @@ export default function MobileHome({
 
                         {/* PRODUK HUKUM DESA */}
                         <Link 
-                            href="/produk-hukum-desa"
+                            href="/mobile/produk-hukum-desa"
                             className="group p-4 bg-gradient-to-br from-amber-50/90 to-orange-50/40 border border-amber-100 rounded-2xl active:scale-[0.98] transition-all shadow-sm flex flex-col justify-between"
                         >
                             <div className="flex items-start justify-between mb-3">
@@ -520,25 +520,39 @@ export default function MobileHome({
                             <span className="text-[10px] font-bold text-slate-400 bg-white/80 px-2.5 py-0.5 rounded-full border border-cyan-100/60">{videos.length} Tayangan</span>
                         </div>
                         <div className="flex gap-3.5 overflow-x-auto px-5 pb-1 no-scrollbar snap-x snap-mandatory">
-                            {videos.map((v, i) => (
-                                <a 
-                                    key={i} 
-                                    href={v.video_url} 
-                                    target="_blank" 
-                                    rel="noreferrer" 
-                                    className="w-[250px] min-w-[250px] snap-start group bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 active:scale-95 transition-all"
-                                >
-                                    <div className="aspect-video relative flex items-center justify-center bg-slate-900">
-                                        <img src={v.thumbnail_path ? `/images/${v.thumbnail_path}` : '/images/video-placeholder.png'} alt={v.title} className="absolute inset-0 w-full h-full object-cover opacity-65" />
-                                        <div className="relative h-10 w-10 bg-white/25 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 shadow-lg">
-                                            <Play className="h-4 w-4 text-white fill-white" />
+                            {videos.map((v, i) => {
+                                const videoUrl = v.video_url || v.href || '#';
+                                const thumbSrc = v.image || (v.thumbnail_path ? (v.thumbnail_path.startsWith('/') ? v.thumbnail_path : `/images/${v.thumbnail_path}`) : '/images/covers/cover_perbup_54_2025.webp');
+                                return (
+                                    <a 
+                                        key={i} 
+                                        href={videoUrl} 
+                                        target="_blank" 
+                                        rel="noreferrer" 
+                                        className="w-[250px] min-w-[250px] snap-start group bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 active:scale-95 transition-all"
+                                    >
+                                        <div className="aspect-video relative flex items-center justify-center bg-slate-900 overflow-hidden">
+                                            <img 
+                                                src={thumbSrc} 
+                                                alt={v.title} 
+                                                onError={(e) => {
+                                                    const target = e.currentTarget;
+                                                    if (!target.src.includes('cover_perbup_54_2025')) {
+                                                        target.src = '/images/covers/cover_perbup_54_2025.webp';
+                                                    }
+                                                }}
+                                                className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:scale-105 transition-transform duration-500" 
+                                            />
+                                            <div className="relative h-10 w-10 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 shadow-lg">
+                                                <Play className="h-4 w-4 text-white fill-white" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="p-3.5 bg-white">
-                                        <h4 className="text-xs font-bold text-slate-800 line-clamp-2 leading-snug">{v.title}</h4>
-                                    </div>
-                                </a>
-                            ))}
+                                        <div className="p-3.5 bg-white">
+                                            <h4 className="text-xs font-bold text-slate-800 line-clamp-2 leading-snug">{v.title}</h4>
+                                        </div>
+                                    </a>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
