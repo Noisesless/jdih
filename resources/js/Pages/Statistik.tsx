@@ -92,8 +92,8 @@ export default function Statistik({
             <Head title="Statistik – JDIH Banjarnegara" />
 
             <PageHeader
-                title="Statistik Produk Hukum"
-                subtitle="Visualisasi data produk hukum dan trafik pengunjung JDIH Kabupaten Banjarnegara"
+                title="Statistik"
+                subtitle="Data produk hukum dan pengunjung JDIH Kabupaten Banjarnegara"
                 breadcrumbs={[
                     { label: 'Beranda', href: '/' },
                     { label: 'Statistik' },
@@ -155,31 +155,28 @@ export default function Statistik({
                         ))}
                     </div>
 
-                    {/* Card Pengunjung & Akses Portal (Desktop Version) */}
+                    {/* Card Pengunjung */}
                     <div className="bg-white border border-slate-200 p-6 lg:p-8 shadow-xs">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
                             <div className="flex items-center gap-3.5">
                                 <div className="h-11 w-11 bg-teal-50 rounded-xl flex items-center justify-center shrink-0">
                                     <Users className="h-6 w-6 text-[#0d9488]" />
                                 </div>
                                 <div>
                                     <h3 className="text-base font-black text-slate-900 tracking-tight">
-                                        Statistik Pengunjung & Akses Portal
+                                        Statistik Pengunjung
                                     </h3>
-                                    <p className="text-xs text-slate-500 font-medium">
-                                        Pencatatan statistik kunjungan pengguna dan interaksi dokumen secara transparan
-                                    </p>
                                 </div>
                             </div>
 
                             {/* Live Online Badge */}
-                            <div className="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 border border-emerald-200/70 rounded-full w-fit">
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200/70 rounded-full w-fit">
                                 <span className="relative flex h-2.5 w-2.5">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                                 </span>
                                 <span className="text-xs font-bold text-emerald-800 tracking-tight">
-                                    {visitorStats?.online ?? 1} Pengguna Aktif Saat Ini
+                                    {visitorStats?.online ?? 1} Online
                                 </span>
                             </div>
                         </div>
@@ -193,11 +190,8 @@ export default function Statistik({
                                     <p className="text-2xl font-black text-slate-900 leading-tight">
                                         {(visitorStats?.today ?? 0).toLocaleString('id-ID')}
                                     </p>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                                        Pengunjung Hari Ini
-                                    </p>
-                                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                                        {(visitorStats?.today_hits ?? 0).toLocaleString('id-ID')} Total Hits
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+                                        Hari Ini
                                     </p>
                                 </div>
                             </div>
@@ -210,11 +204,8 @@ export default function Statistik({
                                     <p className="text-2xl font-black text-slate-900 leading-tight">
                                         {(visitorStats?.month ?? 0).toLocaleString('id-ID')}
                                     </p>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                                        Pengunjung Bulan Ini
-                                    </p>
-                                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                                        Kunjungan Unik Bulanan
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+                                        Bulan Ini
                                     </p>
                                 </div>
                             </div>
@@ -227,11 +218,8 @@ export default function Statistik({
                                     <p className="text-2xl font-black text-slate-900 leading-tight">
                                         {(visitorStats?.total ?? 0).toLocaleString('id-ID')}
                                     </p>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                                        Total Kunjungan Portal
-                                    </p>
-                                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                                        Sejak Portal Diluncurkan
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+                                        Total Kunjungan
                                     </p>
                                 </div>
                             </div>
@@ -244,11 +232,8 @@ export default function Statistik({
                                     <p className="text-2xl font-black text-slate-900 leading-tight">
                                         {(visitorStats?.doc_views ?? 0).toLocaleString('id-ID')}
                                     </p>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                                        Total Dokumen Dibaca
-                                    </p>
-                                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                                        Akumulasi Pembacaan Dokumen
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+                                        Dokumen Dilihat
                                     </p>
                                 </div>
                             </div>
@@ -261,12 +246,9 @@ export default function Statistik({
                             <div className="flex items-center gap-3">
                                 <BarChart3 className="h-5 w-5 text-[#0d9488]" />
                                 <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                                    Jumlah Dokumen per Jenis
+                                    Dokumen per Jenis
                                 </h3>
                             </div>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                Update Otomatis
-                            </span>
                         </div>
                         <div className="p-8">
                             <ResponsiveContainer width="100%" height={400}>
@@ -314,7 +296,7 @@ export default function Statistik({
                             <div className="px-8 py-6 border-b border-slate-100 flex items-center gap-3 bg-slate-50/50">
                                 <LineChartIcon className="h-5 w-5 text-[#0d9488]" />
                                 <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                                    Tren Produk Hukum
+                                    Tren Dokumen
                                 </h3>
                             </div>
                             <div className="p-8">
@@ -423,7 +405,7 @@ export default function Statistik({
                     <div className="bg-white border border-slate-200 shadow-xs overflow-hidden">
                         <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                             <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">
-                                Rincian Data per Jenis
+                                Rincian Dokumen per Jenis
                             </h3>
                             <div className="px-3 py-1 bg-[#0d9488] text-white text-[10px] font-black rounded uppercase tracking-widest">
                                 Total {total.toLocaleString('id-ID')} Dokumen
