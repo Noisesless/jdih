@@ -334,7 +334,7 @@ export default function MobileProdukHukumDesa({ villagesMapping = [] }: Props) {
                         <div className="space-y-2.5">
                             {products.map((p, idx) => {
                                 const attr = p.attributes || {};
-                                const fileUrl = attr.url_file || '';
+                                const fileUrl = attr.url_file || attr.satuan || '';
                                 const categoryName = attr.kategori || attr.satuan || 'Peraturan Desa';
                                 return (
                                     <div 
@@ -367,10 +367,11 @@ export default function MobileProdukHukumDesa({ villagesMapping = [] }: Props) {
                                                     href={fileUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="px-2.5 py-1 bg-[#0d9488] text-white rounded-lg font-black text-[9px] uppercase tracking-wider flex items-center gap-1 active:scale-95 transition-all shadow-sm"
+                                                    className="px-3 py-1.5 bg-[#0d9488] text-white rounded-lg font-black text-[9px] uppercase tracking-wider flex items-center gap-1.5 active:scale-95 transition-all shadow-sm"
+                                                    title="Lihat / Unduh Dokumen"
                                                 >
                                                     <Download className="h-3 w-3" />
-                                                    Unduh
+                                                    <span>Lihat / Unduh</span>
                                                 </a>
                                             ) : (
                                                 <span className="text-slate-400 text-[9px] italic">Tanpa Berkas</span>

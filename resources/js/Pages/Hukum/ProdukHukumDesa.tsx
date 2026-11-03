@@ -367,26 +367,21 @@ export default function ProdukHukumDesa({ villagesMapping }: Props) {
                                                     <td className="px-6 py-4 text-center text-sm font-bold text-slate-600">
                                                         {product.attributes.tahun}
                                                     </td>
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center justify-center gap-2">
+                                                    <td className="px-6 py-4 text-center">
+                                                        {(product.attributes.satuan || product.attributes.url_file) ? (
                                                             <a 
                                                                 href={product.attributes.satuan || product.attributes.url_file}
                                                                 target="_blank"
                                                                 rel="noreferrer"
-                                                                className="flex items-center gap-2 px-3 py-1.5 bg-[#0d9488] text-white text-[9px] font-black uppercase tracking-widest rounded hover:bg-teal-700 transition-all shadow-md shadow-teal-900/10"
-                                                                title="Buka Dokumen"
+                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#0d9488] text-white text-[10px] font-black uppercase tracking-wider rounded-lg hover:bg-teal-700 active:scale-95 transition-all shadow-md shadow-teal-900/10"
+                                                                title="Lihat / Unduh Dokumen"
                                                             >
-                                                                <Eye className="h-3.5 w-3.5" /> LIHAT
+                                                                <Download className="h-3.5 w-3.5" />
+                                                                <span>Lihat / Unduh</span>
                                                             </a>
-                                                            <a 
-                                                                href={product.attributes.satuan || product.attributes.url_file}
-                                                                download
-                                                                className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 text-slate-600 text-[9px] font-black uppercase tracking-widest rounded hover:bg-slate-200 transition-all"
-                                                                title="Unduh Dokumen"
-                                                            >
-                                                                <Download className="h-3.5 w-3.5" /> UNDUH
-                                                            </a>
-                                                        </div>
+                                                        ) : (
+                                                            <span className="text-slate-400 text-xs italic">Tanpa Berkas</span>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             ))}
