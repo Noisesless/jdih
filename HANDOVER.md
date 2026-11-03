@@ -176,3 +176,28 @@ php artisan optimize:clear
 
 
 
+
+
+*   **Integrasi & Hardening Modul Produk Hukum Desa — OpenSID Server Nargaroth (3 November 2026)**:
+    *   **Hardening Keamanan API Kependudukan (`apiasmara.php`)**:
+        - Menerapkan sliding-window rate limiting maksimal 10 request/menit per IP via `/tmp/rate_limit_asmara/` mengembalikan `HTTP 429 Too Many Requests`.
+        - Membatasi header CORS (`Access-Control-Allow-Origin`) secara ketat hanya untuk `https://posyandu-sijenggung.smartdesa.net` dan `https://jdih.banjarnegarakab.go.id`.
+        - Mengganti perbandingan kunci biasa dengan fungsi kebal timing attacks `hash_equals()`.
+    *   **Global Nginx Rewrite untuk 98 Vhost OpenSID**:
+        - Mengonfigurasi `/etc/nginx/global_settings` dengan directive rewrite `location /internal_api/ { rewrite ^/internal_api/(.*)$ /index.php/internal_api/$1 last; }` sehingga seluruh 98 vhost OpenSID otomatis dapat melayani request API produk hukum tanpa mengubah vhost satu per satu.
+    *   **Inter-Server Loopback Resolution (`/etc/hosts`)**:
+        - Memetakan seluruh domain `.desa.id` yang di-host lokal pada Nargaroth ke `103.255.133.227` pada `/etc/hosts`.
+        - Mengeliminasi blokir Cloudflare Bot Challenge / Under Attack Mode secara lokal sekaligus tetap lolos validasi SSRF (`isPrivateOrInternalIp()`).
+    *   **Sinkronisasi Database JDIH (`jdihdb1.villages`)**:
+        - Mengoreksi URL Majatengah (ID 248) ke domain resmi `https://majatengah-banjarmangu.desa.id/` dan mengaktifkannya (`is_active = 1`).
+        - Mendaftarkan dan mengaktifkan 14 desa lokal baru: Majatengah (Kalibening), Tribuana, Badakarya, Bondolharjo, Klapa, Gumingsir (Pagentan), Gumingsir (Wanadadi), Karangkemiri, Medayu, Plorengan, Pagergunung, Sampang, Madukara, Clapar.
+        - Memverifikasi 20 endpoint desa target merespons `200 OK` via proxy JDIH.
+    *   **Pemetaan Menyeluruh 78 Desa OpenSID Lainnya di Nargaroth**:
+        - Mengaudit seluruh 78 vhost OpenSID tambahan di Nargaroth.
+        - Mengidentifikasi 21 desa non-DB yang sudah memiliki dokumen Perdes terbit di OpenSID (siap diaktifkan ke JDIH kapan saja).
+        - Menyusun dokumentasi lengkap SSOT pada `.docs/integrasi-desa/STATUS-INTEGRASI-DESA-NARGAROTH.md`.
+    *   **Resolusi Inode `/tmp` Server Nargaroth & Otomasi Pemeliharaan Harian (ISSUE-018)**:
+        - Mengidentifikasi akar masalah error `HTTP 500` (`No space left on device`) pada OpenSID karena kehabisan 100% Inode `tmpfs /tmp` (`1.048.576` files) akibat penumpukan 1M+ file sesi lawas CodeIgniter (`ci_session*`).
+        - Menghapus 845.243 file sesi kadaluarsa (>24 jam) sehingga inode `/tmp` turun drastis ke 20% (tersedia 845.195 inode kosong).
+        - Memasang skrip pemeliharaan otomatis harian `/etc/cron.daily/cleanup-opensid-sessions` agar file `ci_session*` kadaluarsa otomatis terhapus tanpa perlu intervensi manual.
+        - Memvalidasi bahwa seluruh 63 desa terdaftar aktif di `jdihdb1.villages` kini merespons `200 OK` secara stabil dan cepat.

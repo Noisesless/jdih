@@ -67,7 +67,22 @@ Dokumen spesifikasi endpoint publik, integrasi eksternal, dan antarmuka data JDI
   - **Auth**: Bearer Token (JDIHN API Key)
   - **Response**: JSON metadata berstandar BPHN / JDIHN pusat untuk indexing nasional.
 
-### B. Integrasi Produk Hukum Desa
-- **GET** `/api/desa/documents`
-  - **Auth**: API Key per Desa
-  - **Response**: Daftar peraturan desa terintegrasi dari Sistem Informasi Desa (SID).
+### B. Integrasi Produk Hukum Desa (Reverse Proxy OpenSID)
+- **GET** `/api/produk-hukum-desa`
+  - **Auth**: Public (Rate-limited: `throttle:30,1` per IP)
+  - **Query Params**:
+    - `url` (string, required): URL domain resmi desa yang terdaftar aktif di tabel `villages` (contoh: `https://sijenggung-banjarnegara.desa.id/`).
+    - `endpoint` (string, default: `internal_api/produk-hukum`): Sub-path API OpenSID yang diizinkan (`internal_api/produk-hukum`, `internal_api/informasi-umum`, `internal_api/transparansi-publik`).
+    - `page[number]` (int, opsional): Paginasi data dokumen desa.
+  - **Security & Privacy Filters**:
+    - **Whitelist Guard**: Hanya domain desa terdaftar dengan status `is_active = 1` yang diproses.
+    - **SSRF Defense**: Memvalidasi IP hasil resolve via `isPrivateOrInternalIp()` dan menolak akses ke subnet internal/privat (`10.0.0.0/8`, `127.0.0.0/8`, `192.168.0.0/16`, dll).
+    - **Path Traversal Guard**: Endpoint dibatasi ketat pada whitelist `internal_api/*`.
+    - **Privacy Filter**: Otomatis menyaring dan menyembunyikan Surat Keputusan (SK) internal yang memuat data pribadi perangkat desa.
+    - **Regulasi Prioritization**: Peraturan Kepala Desa (Perkades) dan Perdes otomatis diurutkan di posisi teratas.
+  - **Response Status**:
+    - `200 OK`: JSON payload dokumen regulasi desa (format JSON:API Fractal).
+    - `400 Bad Request`: `{"error": "Village URL is required"}`
+    - `403 Forbidden`: `{"error": "URL desa tidak terdaftar atau tidak valid."}` atau `{"error": "Akses ke IP privat/internal tidak diizinkan."}`
+    - `429 Too Many Requests`: Limit 30 req/min terlampaui.
+    - `502 Bad Gateway`: Server desa tujuan unreachable / timeout (>10 detik).

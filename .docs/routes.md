@@ -14,7 +14,8 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 | `/profil` | `Closure -> Inertia::render('Profil/Index')` | Profil JDIH Banjarnegara | Public | Active |
 | `/statistik` | `Closure -> Inertia::render('Statistik/Index')` | Statistik & Grafik Produk Hukum | Public | Active |
 | `/aspirasi` | `Closure -> Inertia::render('Aspirasi/Index')` | Forum Konsultasi & Aspirasi | Public | Active |
-| `/desa` | `ProdukHukumDesaController@index` | Integrasi Produk Hukum Desa | Public | Active |
+| `/produk-hukum-desa` | `ProdukHukumDesaController@index` | Integrasi Produk Hukum Desa (OpenSID) | Public | Active |
+| `/api/produk-hukum-desa` | `ProdukHukumDesaController@proxy` | Reverse-Proxy OpenSID API (`throttle:30,1`, SSRF Guard) | Public | Active |
 | `/qrcode` | `Closure -> SVG Stream` | QR Code Generator Aman (SSRF Guard)| Public | Active |
 | `/dokumen/{id}/unduh` | `Storage::disk('public')->download($path)` | Unduh Langsung PDF Dokumen / Abstrak | Public | Active |
 

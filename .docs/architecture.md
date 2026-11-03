@@ -53,3 +53,9 @@ graph TD
 - **Database Engine**: MySQL 8 / MariaDB dengan engine InnoDB penuh dan collation `utf8mb4_unicode_ci`.
 - **Media & PDF Storage**: Menggunakan disk `public` di bawah `storage/app/public/` yang terhubung via symlink ke `public/storage`.
 - **Resilient File Accessor**: Model `LegalDocument` menghasilkan path relatif `/storage/...` ter-encode per segmen (`rawurlencode`), mencegah ketergantungan pada hostname absolut dan menjamin preview PDF render sempurna di dev server maupun domain produksi. Tag viewer membungkus `<iframe>` di dalam `<object>` untuk kompatibilitas peramban maksimal.
+
+## 4. Lapisan Integrasi Desa & Inter-Server (OpenSID Integration Layer)
+- **Inter-Server Loopback Resolution (`/etc/hosts`)**: Memetakan domain desa lokal (`*.desa.id`) langsung ke IP publik server Nargaroth `103.255.133.227`. Memungkinkan komunikasi loopback in-process berkecepatan tinggi, bebas pemblokiran Cloudflare Bot Fight Mode / Under Attack Mode, dan tetap lolos verifikasi SSRF (`isPrivateOrInternalIp`).
+- **Global Nginx FastCGI Rewrite (`/etc/nginx/global_settings`)**: Rewrite otomatis rute `/internal_api/(.*)` ke `/index.php/internal_api/$1` yang diwarisi oleh seluruh 98 vhost OpenSID di Nargaroth.
+- **SSRF & Privacy Gateway (`ProdukHukumDesaController`)**: Reverse-proxy aman dengan rate limit 30 req/min, validasi whitelist domain database `villages`, blokir IP privat/internal, penyaringan dokumen bertipe SK Kades untuk proteksi privasi, dan pengurutan prioritas Perkades/Perdes.
+- **Automated OS Maintenance (`/etc/cron.daily/cleanup-opensid-sessions`)**: Skrip pemeliharaan berkala harian yang membersihkan file sesi kadaluarsa (`ci_session*`) di folder private PHP-FPM, mencegah kepenuhan Inode `tmpfs /tmp` (1M+ limit).

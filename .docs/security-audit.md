@@ -198,6 +198,10 @@ Tambahkan kolom `role` atau periksa email domain resmi:
 | **SP-023** | 2026-11-02 | `/etc/nginx/sites-enabled/jdih.banjarnegarakab.go.id.conf` | ✅ Tested (Header deduplication via Nginx `proxy_hide_header` + `always`) |
 | **SP-031** | 2026-11-02 | `/etc/nginx/sites-enabled/jdih.banjarnegarakab.go.id.conf` | ✅ Tested (Server fingerprint cloaked to `Server: JDIH-Portal`) |
 | **CLEANUP** | 2026-11-02 | Production root & storage directory | ✅ Tested (Archived legacy symlinks, working tree 100% clean) |
+| **SP-032** | 2026-11-03 | `app/Http/Controllers/ProdukHukumDesaController.php` | ✅ Tested (SSRF defense, private IP blocker, endpoint whitelist, privacy filter) |
+| **SP-033** | 2026-11-03 | `/etc/nginx/global_settings` | ✅ Tested (Block `/desa/app_key`, webshells, dan PHP upload execution pada 98 vhost OpenSID) |
+| **SP-034** | 2026-11-03 | `apiasmara.php` | ✅ Tested (Sliding window rate limit 10 req/min, strict CORS whitelist, `hash_equals` timing defense) |
+| **SYS-001** | 2026-11-03 | `/tmp/systemd-private-*-php8.2-fpm*/tmp` & `/etc/cron.daily/` | ✅ Tested (Purge 845K session files, Inode drop dari 100% ke 20%, cron auto-cleanup terpasang) |
 
 ---
 

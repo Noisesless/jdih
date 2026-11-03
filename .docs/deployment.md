@@ -54,7 +54,18 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-## 5. Rollback Plan
+## 5. Konfigurasi Server Produksi Khusus (Nargaroth)
+1. **Penyatuan Dokumentasi SSOT (`/.docs/`)**: Seluruh arsitektur, spesifikasi API, database, rute, isu, dan panduan dirangkum terpusat dalam `/.docs/`.
+2. **Nginx Global Settings (`/etc/nginx/global_settings`)**:
+   - Rewrite rule otomatis: `location /internal_api/ { rewrite ^/internal_api/(.*)$ /index.php/internal_api/$1 last; }`
+   - Hardening anti-webshell dan proteksi file sensitif (`/desa/app_key`, `/desa/config/`, `*.php` di folder upload).
+   - Single Layer Emission SP-023 via `proxy_hide_header` & Server cloaking `Server: JDIH-Portal`.
+3. **Pembersihan Otomatis Inode Sesi (`/etc/cron.daily/cleanup-opensid-sessions`)**:
+   - Skrip harian yang otomatis menghapus `ci_session*` berumur >24 jam dari `tmpfs /tmp` private PHP-FPM, mencegah kelumpuhan sistem akibat kehabisan inode.
+4. **Remote Backup FreeNAS via WireGuard**:
+   - SFTP rclone over WireGuard `10.200.200.2:55001` menuju ZFS dataset `/mnt/data/backup/nargaroth/`.
+
+## 6. Rollback Plan
 | Skenario | Aksi Pemulihan |
 |---|---|
 | Error pada rilis terbaru | `git reset --hard HEAD~1 && php artisan optimize:clear` |

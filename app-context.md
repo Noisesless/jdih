@@ -1,5 +1,5 @@
 # APP CONTEXT — JDIH KABUPATEN BANJARNEGARA
-# Last Updated: 2026-11-02
+# Last Updated: 2026-11-03
 # State Snapshot untuk Vibes Coding Workflow / Antigravity IDE
 # Status: Production Clean & Sanitized
 
@@ -62,6 +62,15 @@ server_nature = "Linux Server tanpa Node.js / NPM"
 flow = "Local Vite Build (public/build) -> commit git -> pull di server -> composer install -> migrate -> optimize:clear"
 storage = "Symlink public/storage -> storage/app/public via php artisan storage:link"
 disk_default = "Filament forms & tables harus eksplisit ->disk('public')"
+
+[OPENSID_INTEGRATION]
+status = "Aktif & Hardened (Inter-Server Nargaroth)"
+nginx_global_rewrite = "/internal_api/ -> /index.php/internal_api/$1 pada /etc/nginx/global_settings (mewarisi ke seluruh vhost OpenSID)"
+hosts_resolution = "/etc/hosts pada Nargaroth me-resolve *.desa.id ke 103.255.133.227 (bypass Cloudflare bot-challenge secara lokal & aman SSRF)"
+apiasmara_hardening = "Rate limit 10 req/min per IP via sliding window (/tmp/rate_limit_asmara), strict CORS (posyandu & jdih only), hash_equals timing attack defense"
+jdih_db_villages_synced = "63 desa terverifikasi & aktif di jdihdb1.villages (is_active = 1, dari total 112 desa terdaftar)"
+rate_limiting = "JDIH proxy rate limited via throttle:30,1 pada /api/produk-hukum-desa"
+tmp_maintenance = "Pembersihan harian /etc/cron.daily/cleanup-opensid-sessions terpasang (Inode /tmp stabil di 20%)"
 
 [FASE_STATUS]
 active_fase = "Fase 7 (Audit Keamanan Selesai & Stabilisasi Dependensi)"

@@ -49,7 +49,17 @@ Dokumen arsitektur basis data, skema tabel, indeks, dan relasi data sistem JDIH 
 | `file_path` | VARCHAR(255) | Nullable | Path file PDF di storage |
 | `abstract_file_path`| VARCHAR(255) | Nullable | Path file lembar abstrak PDF |
 
-### D. Tabel Pendukung Lainnya
+### D. `villages` (Daftar Desa Terintegrasi & Whitelist OpenSID)
+| Kolom | Tipe | Index / Constraint | Keterangan |
+|---|---|---|---|
+| `id` | BIGINT UNSIGNED | PK, Auto Increment | ID Entitas Desa |
+| `name` | VARCHAR(255) | - | Nama Desa (misal: Sijenggung, Beji, Gumingsir) |
+| `kecamatan` | VARCHAR(255) | - | Nama Kecamatan di Kabupaten Banjarnegara |
+| `url` | VARCHAR(255) | - | URL domain OpenSID desa (`https://*.desa.id/`) |
+| `is_active` | TINYINT(1) | Default: 1 | Status aktif integrasi (1 = Aktif, 0 = Nonaktif) |
+| `created_at` / `updated_at` | TIMESTAMP | Nullable | Waktu registrasi dan pembaruan |
+
+### E. Tabel Pendukung Lainnya
 - `categories`: Kategori/tipe peraturan daerah.
 - `legal_document_relations`: Relasi antar-peraturan (mencabut, diubah oleh, dsb).
 - `news`: Berita dan artikel hukum.
