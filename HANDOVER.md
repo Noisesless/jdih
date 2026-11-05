@@ -237,3 +237,24 @@ php artisan optimize:clear
     *   **Penyelarasan Endpoint Backend (`routes/web.php`)**:
         - Memperkenalkan helper terpusat `getStatistikPayload()` yang digunakan bersama oleh rute desktop (`/statistik`) dan mobile (`/mobile/statistik`).
         - Menjamin ketersediaan properti `name`, `short`, `jumlah`, `href`, `color`, serta array metrik `visitorStats` pada kedua platform.
+
+---
+
+## 8. Status Sesi Terkini (5 November 2026)
+
+### Sesi Bagian 7: Simplifikasi Microcopy Statistik, Dinamisasi CSP Dev vs Produksi, & Investigasi Regulasi
+*   **Penyederhanaan Microcopy Card Pengunjung (Pragmatic Anti-Bloat Output)**:
+    *   Mengevaluasi dan membersihkan teks berlebihan (*slop copy*) pada Card Pengunjung di desktop (`Statistik.tsx`) dan mobile (`Mobile/Statistik.tsx`).
+    *   Menghilangkan label pelengkap yang redundan seperti *"Aktivitas pengguna tercatat"*, *"1 Hits"*, *"Pengunjung Unik"*, *"Sejak Berdiri"*, dan *"Pembacaan Produk"*.
+    *   Tampilan kartu menjadi lebih bersih, minimalis, dan langsung menampilkan angka metrik utama.
+*   **Dinamisasi Content Security Policy (`SecurityHeaders.php` — ISSUE-022)**:
+    *   Mengatasi issue browser CSP yang memblokir skrip Vite HMR (`http://127.0.0.1:5173`) saat dev server lokal dijalankan.
+    *   Menambahkan deteksi host lokal dinamis (`$isLocalHost = in_array($host, ['127.0.0.1', 'localhost', '::1']) || str_ends_with($host, '.test') || file_exists(public_path('hot'))`).
+    *   Ketika diakses dari lokal, CSP secara dinamis mengizinkan origin Vite `http://127.0.0.1:5173` dan WebSocket HMR `ws://127.0.0.1:5173`.
+    *   Ketika diakses dari lingkungan produksi (`jdih.banjarnegarakab.go.id`), CSP tetap menerapkan aturan ketat (*strict CSP*) serta HSTS enforcement.
+*   **Pemeriksaan Fisik Dokumen Perbup THR & Gaji Ketiga Belas Tahun 2026**:
+    *   Melakukan audit terhadap dokumen hukum ID `1430` (Peraturan Bupati Nomor 5 Tahun 2026).
+    *   Menemukan bahwa secara teknis dokumen tercatat di database dan file fisiknya ada di server (`produk_hukum/2026/jdih banjarnegara (3).pdf`, 17,1 KB).
+    *   Namun isi file PDF tersebut merupakan lembar pembatasan (*placeholder notice*) bertuliskan *"Dokumen Tidak Dapat Diakses Dari Website Silahkan Hubungi Staff JDIH Banjarnegara"*, yang menandakan naskah lengkap belum dibuka untuk umum oleh Bagian Hukum Setda.
+*   **Sinkronisasi Berkas Dokumentasi SSOT (`/.docs/`) & App Context**:
+    *   Menyelaraskan `database.md`, `architecture.md`, `routes.md`, `dependency-graph.md`, `issues.md` (ISSUE-022 & ISSUE-023), `quality_review.md`, `app-context.md`, dan `handover.md`.

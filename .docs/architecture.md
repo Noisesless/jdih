@@ -44,7 +44,8 @@ graph TD
   - **Halaman Khusus Mobile Terintegrasi**:
     - `Mobile/ProdukHukumDesa.tsx`: Antarmuka mobile integrasi 63 OpenSID dengan filter kecamatan, desa, kategori, pencarian, dan tombol aksi terpadu *"Lihat / Unduh"*.
     - `Mobile/InfoJdih.tsx`: Pusat profil lembaga mobile dengan accordion expandable interaktif (Visi Misi, Dasar Hukum, Tupoksi, SOP).
-    - `Mobile/Statistik.tsx`: Visualisasi tren data dan volume dokumen regulasi via Recharts.
+    - `Mobile/Statistik.tsx`: Visualisasi tren data dan volume dokumen regulasi via Recharts (kontainer `h-[340px]`, offset `bottom: 65px`, toggle filter Top 8/Semua, `minPointSize=4`) serta card statistik pengunjung.
+    - `Statistik.tsx` (Desktop): Visualisasi komprehensif produk hukum ditambah card metrik pengunjung portal (Hari Ini, Bulan Ini, Total Kunjungan, Dokumen Dibaca, dan Live Online status).
   - **Progressive Web App (PWA)**: Dilengkapi Service Worker (`public/sw.js`) dan manifest standalone (`public/manifest.json`).
 - **Styling**: Tailwind CSS dengan variasi tema modern sivik Teal `#0d9488`, typography Figtree, dan responsivitas laptop (1366×768 / scaling 125%) hingga ponsel (Android 3M: 360px, 393px, 412px).
 - **Admin Panel**: Filament v3 yang terintegrasi secara modular dengan Form Builder, Table Builder, Notification, dan Actions.
@@ -52,7 +53,10 @@ graph TD
 
 ## 2. Lapisan Logika & Bisnis (Business Logic Layer)
 - **Framework**: Laravel 11 dengan struktur MVC yang bersih.
-- **Dynamic HTTPS Scheme Guard**: `AppServiceProvider.php` secara dinamis memaksakan HTTPS pada host produksi publik, dan mengecualikan `localhost`, `127.0.0.1`, dan `*.test` agar dev server lokal bebas dari error handshake SSL (`ERR_CONNECTION_CLOSED`).
+- **Dynamic HTTPS & CSP Security Gate**:
+  - `AppServiceProvider.php` secara dinamis memaksakan HTTPS pada host produksi publik, dan mengecualikan `localhost`, `127.0.0.1`, dan `*.test` agar dev server lokal bebas dari error handshake SSL (`ERR_CONNECTION_CLOSED`).
+  - `SecurityHeaders.php` mengimplementasikan CSP dinamis: mengizinkan script dan WebSocket HMR dari Vite dev server (`http://127.0.0.1:5173`) pada lingkungan pengembang lokal, sementara pada environment produksi tetap menerapkan CSP ketat (strict CSP) dan HSTS enforcement.
+- **Traffic Analytics & Visitor Tracker (`RecordVisitor.php`)**: Middleware pencatatan trafik non-blocking ke tabel `visitors` yang merekam IP dan tanggal kunjungan harian dengan throttling cache 60 detik per IP, tracking live online user (sliding window 5 menit), serta agregasi pembacaan dokumen.
 - **Audit Logging**: Event-driven menggunakan listener `Illuminate\Auth\Events\Login` dan `Logout` di `AppServiceProvider` yang merekam `user_id`, nama, email, aksi, guard, IP publik (`$http_cf_connecting_ip`), user-agent, dan waktu WIB.
 - **RAG & AI Assistant**: Layanan asisten hukum multi-tier terintegrasi pada antarmuka Desktop (modal popup) dan Mobile (bottom-sheet drawer 85vh):
   1. *Primary*: Google Gemini API dengan rotasi multi-key pool (`GEMINI_API_KEYS`) dan fallback pool model.

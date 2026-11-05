@@ -59,7 +59,8 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 
 | Middleware | Applied To | Purpose |
 |---|---|---|
-| `App\Http\Middleware\SecurityHeaders` | Global (All Web Routes) | HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy |
+| `App\Http\Middleware\SecurityHeaders` | Global (All Web Routes) | HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Dynamic CSP (Vite dev HMR vs Production Strict) |
+| `App\Http\Middleware\RecordVisitor` | Global Web Routes | Pencatatan pengunjung harian & agregasi hits non-blocking dengan proteksi cache throttling |
 | `Illuminate\Routing\Middleware\SubstituteBindings` | Global Web | Route model binding injection |
 | `App\Http\Middleware\HandleInertiaRequests` | Web Public | Shared state Inertia (auth user, flash messages) |
 | `Filament\Http\Middleware\Authenticate` | `/admin/*` | Verifikasi sesi Filament login & proteksi akses |

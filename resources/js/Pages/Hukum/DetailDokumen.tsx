@@ -43,6 +43,24 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
     const [userInput, setUserInput] = useState('');
     const [isAiLoading, setIsAiLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isMobileDevice, setIsMobileDevice] = useState(false);
+    const [forceInlineDoc, setForceInlineDoc] = useState(false);
+    const [forceInlineAbstract, setForceInlineAbstract] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            if (typeof window === 'undefined') return;
+            const ua = navigator.userAgent;
+            const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            const isTouchScreen = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
+            const isCoarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+            const isSmallScreen = window.innerWidth < 1024;
+            setIsMobileDevice(isMobileUA || (isTouchScreen && (isCoarsePointer || isSmallScreen)));
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -229,37 +247,92 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                                 <FileType className="h-4 w-4" />
                                                 Viewer Dokumen PDF
                                             </p>
-                                            {downloadUrl ? (
-                                                <a 
-                                                    href={downloadUrl}
-                                                    className="flex items-center gap-2 px-4 py-2 bg-[#1e293b] text-white text-xs font-bold rounded-lg hover:bg-black transition-colors"
-                                                >
-                                                    <Download className="h-3.5 w-3.5" />
-                                                    Unduh Dokumen
-                                                </a>
-                                            ) : null}
+                                            <div className="flex items-center gap-2">
+                                                {fileUrl && (
+                                                    <a 
+                                                        href={fileUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-100 transition-colors"
+                                                        title="Buka Dokumen di Tab Baru"
+                                                    >
+                                                        <ExternalLink className="h-3.5 w-3.5" />
+                                                        <span className="hidden sm:inline">Buka Tab Baru</span>
+                                                    </a>
+                                                )}
+                                                {downloadUrl ? (
+                                                    <a 
+                                                        href={downloadUrl}
+                                                        className="flex items-center gap-2 px-4 py-2 bg-[#1e293b] text-white text-xs font-bold rounded-lg hover:bg-black transition-colors"
+                                                    >
+                                                        <Download className="h-3.5 w-3.5" />
+                                                        Unduh Dokumen
+                                                    </a>
+                                                ) : null}
+                                            </div>
                                         </div>
                                         {fileUrl ? (
-                                            <div className="aspect-[4/5] md:aspect-[4/5.5] w-full bg-slate-900">
-                                                <object 
-                                                    data={fileUrl}
-                                                    type="application/pdf"
-                                                    className="w-full h-full"
-                                                >
-                                                    <iframe 
-                                                        src={fileUrl}
-                                                        className="w-full h-full border-0"
-                                                        title={document.title}
+                                            isMobileDevice && !forceInlineDoc ? (
+                                                <div className="aspect-[4/5] md:aspect-[4/5.5] w-full bg-slate-900 flex flex-col items-center justify-center p-6 text-center text-white">
+                                                    <div className="w-16 h-16 rounded-2xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center mb-4">
+                                                        <FileText className="h-8 w-8 text-teal-400" />
+                                                    </div>
+                                                    <h4 className="text-sm md:text-base font-bold text-white mb-2 max-w-md line-clamp-2">
+                                                        {document.title}
+                                                    </h4>
+                                                    <p className="text-xs text-slate-300 max-w-sm mb-6 leading-relaxed">
+                                                        Peramban ponsel membatasi penampil dokumen di dalam halaman. Anda dapat membuka naskah langsung di tab baru atau mengunduhnya.
+                                                    </p>
+                                                    <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                                                        <a 
+                                                            href={fileUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center justify-center gap-2 px-5 py-3 bg-[#0d9488] text-white text-xs font-bold rounded-xl hover:bg-teal-700 active:scale-95 transition-all shadow-lg shadow-teal-900/30"
+                                                        >
+                                                            <ExternalLink className="h-4 w-4" />
+                                                            Buka di Tab Baru
+                                                        </a>
+                                                        {downloadUrl && (
+                                                            <a 
+                                                                href={downloadUrl}
+                                                                className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-xl hover:bg-slate-700 active:scale-95 transition-all"
+                                                            >
+                                                                <Download className="h-4 w-4" />
+                                                                Unduh Dokumen
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setForceInlineDoc(true)}
+                                                        className="mt-6 text-[11px] text-slate-400 underline hover:text-slate-200 transition-colors"
                                                     >
-                                                        <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
-                                                            <p className="text-sm font-bold mb-4">Browser Anda tidak mendukung preview PDF langsung.</p>
-                                                            {downloadUrl && (
-                                                                <a href={downloadUrl} className="px-6 py-2 bg-[#0d9488] rounded-lg text-xs font-bold">Download File di Sini</a>
-                                                            )}
-                                                        </div>
-                                                    </iframe>
-                                                </object>
-                                            </div>
+                                                        Coba muat penampil di halaman ini
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="aspect-[4/5] md:aspect-[4/5.5] w-full bg-slate-900">
+                                                    <object 
+                                                        data={fileUrl}
+                                                        type="application/pdf"
+                                                        className="w-full h-full"
+                                                    >
+                                                        <iframe 
+                                                            src={fileUrl}
+                                                            className="w-full h-full border-0"
+                                                            title={document.title}
+                                                        >
+                                                            <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
+                                                                <p className="text-sm font-bold mb-4">Browser Anda tidak mendukung preview PDF langsung.</p>
+                                                                {downloadUrl && (
+                                                                    <a href={downloadUrl} className="px-6 py-2 bg-[#0d9488] rounded-lg text-xs font-bold">Download File di Sini</a>
+                                                                )}
+                                                            </div>
+                                                        </iframe>
+                                                    </object>
+                                                </div>
+                                            )
                                         ) : (
                                             <div className="flex flex-col items-center justify-center p-20 text-center bg-slate-50">
                                                 <FileText className="h-16 w-16 text-slate-200 mb-4" />
@@ -279,33 +352,85 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                                         <FileText className="h-4 w-4" />
                                                         Viewer Abstrak PDF
                                                     </p>
-                                                    <a 
-                                                        href={abstractFileUrl}
-                                                        download
-                                                        className="flex items-center gap-2 px-4 py-2 bg-[#1e293b] text-white text-xs font-bold rounded-lg hover:bg-black transition-colors"
-                                                    >
-                                                        <Download className="h-3.5 w-3.5" />
-                                                        Unduh Abstrak
-                                                    </a>
-                                                </div>
-                                                <div className="aspect-[4/5] md:aspect-[4/5.5] w-full bg-slate-900">
-                                                    <object 
-                                                        data={abstractFileUrl}
-                                                        type="application/pdf"
-                                                        className="w-full h-full"
-                                                    >
-                                                        <iframe 
-                                                            src={abstractFileUrl}
-                                                            className="w-full h-full border-0"
-                                                            title="Abstrak Dokumen"
+                                                    <div className="flex items-center gap-2">
+                                                        <a 
+                                                            href={abstractFileUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-100 transition-colors"
+                                                            title="Buka Abstrak di Tab Baru"
                                                         >
-                                                            <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
-                                                                <p className="text-sm font-bold mb-4">Browser Anda tidak mendukung preview PDF langsung.</p>
-                                                                <a href={abstractFileUrl} className="px-6 py-2 bg-[#0d9488] rounded-lg text-xs font-bold">Download Abstrak di Sini</a>
-                                                            </div>
-                                                        </iframe>
-                                                    </object>
+                                                            <ExternalLink className="h-3.5 w-3.5" />
+                                                            <span className="hidden sm:inline">Buka Tab Baru</span>
+                                                        </a>
+                                                        <a 
+                                                            href={abstractFileUrl}
+                                                            download
+                                                            className="flex items-center gap-2 px-4 py-2 bg-[#1e293b] text-white text-xs font-bold rounded-lg hover:bg-black transition-colors"
+                                                        >
+                                                            <Download className="h-3.5 w-3.5" />
+                                                            Unduh Abstrak
+                                                        </a>
+                                                    </div>
                                                 </div>
+                                                {isMobileDevice && !forceInlineAbstract ? (
+                                                    <div className="aspect-[4/5] md:aspect-[4/5.5] w-full bg-slate-900 flex flex-col items-center justify-center p-6 text-center text-white">
+                                                        <div className="w-16 h-16 rounded-2xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center mb-4">
+                                                            <FileText className="h-8 w-8 text-teal-400" />
+                                                        </div>
+                                                        <h4 className="text-sm md:text-base font-bold text-white mb-2 max-w-md line-clamp-2">
+                                                            Abstrak Dokumen
+                                                        </h4>
+                                                        <p className="text-xs text-slate-300 max-w-sm mb-6 leading-relaxed">
+                                                            Peramban ponsel membatasi penampil dokumen di dalam halaman. Anda dapat membuka naskah abstrak di tab baru atau mengunduhnya.
+                                                        </p>
+                                                        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                                                            <a 
+                                                                href={abstractFileUrl}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="flex items-center justify-center gap-2 px-5 py-3 bg-[#0d9488] text-white text-xs font-bold rounded-xl hover:bg-teal-700 active:scale-95 transition-all shadow-lg shadow-teal-900/30"
+                                                            >
+                                                                <ExternalLink className="h-4 w-4" />
+                                                                Buka di Tab Baru
+                                                            </a>
+                                                            <a 
+                                                                href={abstractFileUrl}
+                                                                download
+                                                                className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-xl hover:bg-slate-700 active:scale-95 transition-all"
+                                                            >
+                                                                <Download className="h-4 w-4" />
+                                                                Unduh Abstrak
+                                                            </a>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setForceInlineAbstract(true)}
+                                                            className="mt-6 text-[11px] text-slate-400 underline hover:text-slate-200 transition-colors"
+                                                        >
+                                                            Coba muat penampil di halaman ini
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="aspect-[4/5] md:aspect-[4/5.5] w-full bg-slate-900">
+                                                        <object 
+                                                            data={abstractFileUrl}
+                                                            type="application/pdf"
+                                                            className="w-full h-full"
+                                                        >
+                                                            <iframe 
+                                                                src={abstractFileUrl}
+                                                                className="w-full h-full border-0"
+                                                                title="Abstrak Dokumen"
+                                                            >
+                                                                <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
+                                                                    <p className="text-sm font-bold mb-4">Browser Anda tidak mendukung preview PDF langsung.</p>
+                                                                    <a href={abstractFileUrl} className="px-6 py-2 bg-[#0d9488] rounded-lg text-xs font-bold">Download Abstrak di Sini</a>
+                                                                </div>
+                                                            </iframe>
+                                                        </object>
+                                                    </div>
+                                                )}
                                             </>
                                         ) : (
 

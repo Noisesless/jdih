@@ -57,6 +57,16 @@ Daftar progres pekerjaan dan roadmap operasional sistem JDIH Kabupaten Banjarneg
 - [x] Konfirmasi mitigasi dan patch runtime server terhadap ancaman PHP2Shell (CVE-2026-109618/19)
 - [x] Hardening CloudPanel: Pemindahan Document Root ke direktori `/public` dan penyempurnaan Vhost Nginx dua layer (memblokir file `.md`, `.sql`, `.bak`, `.log`, `.sh`, `.env`, dotfiles) serta routing resmi Laravel. Verifikasi faktual: `todo.md` & `/docs/` terisolasi 100% (HTTP 404).
 
+## [x] Fase 6.3: Mobile Overhaul, Integrasi 63 Desa OpenSID & Analytics Pengunjung (Selesai 3-5 Nov 2026)
+- [x] Overhaul sticky bottom bar mobile: 5 elevated tabs + 2 action sheet drawers (`framer-motion`)
+- [x] Kontras visual 8-sektor selang-seling di `Mobile/Home.tsx`
+- [x] Halaman mobile-first `Mobile/ProdukHukumDesa.tsx` dan penyatuan tombol aksi "Lihat / Unduh"
+- [x] Integrasi OpenSID Nargaroth: loopback `/etc/hosts`, rewrite global Nginx `/internal_api/`, sanitasi rate limit `apiasmara.php`, cron harian pembersihan inode `/tmp`
+- [x] Perbaikan grafik "Dokumen per Jenis" mobile (`h-[340px]`, offset 65px, toggle filter Top 8 vs Semua)
+- [x] Middleware `RecordVisitor` & migrasi tabel `visitors` (pelacakan pengunjung harian, hits, online realtime)
+- [x] Simplifikasi microcopy Card Pengunjung (menghilangkan kata-kata berlebihan/slop copy)
+- [x] Dinamisasi CSP di `SecurityHeaders.php` (mendukung local dev Vite HMR dan strict di produksi)
+
 ## [ ] Fase 7: Sinkronisasi Keterkaitan Antar-Peraturan (Mencabut & Mengubah)
 - [ ] Buat Artisan Command Auto-Linker (`php artisan jdih:link-relations`) untuk menautkan otomatis 179+ relasi (16 pencabutan & 163 perubahan) dari teks judul peraturan ke tabel `legal_document_relations`
 - [ ] Perbarui status keberlakuan dokumen yang dicabut dari `'Berlaku'` menjadi `'Dicabut'` / `'Tidak Berlaku'` serta isi catatan `status_note` secara otomatis

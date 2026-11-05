@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import PageHeader from '@/Components/PageHeader';
@@ -10,7 +10,8 @@ import {
     Scale,
     FileType,
     Clock,
-    ShieldCheck
+    ShieldCheck,
+    ExternalLink
 } from 'lucide-react';
 
 interface Props {
@@ -18,6 +19,23 @@ interface Props {
 }
 
 export default function DetailPutusan({ document }: Props) {
+    const [isMobileDevice, setIsMobileDevice] = useState(false);
+    const [forceInlineDoc, setForceInlineDoc] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            if (typeof window === 'undefined') return;
+            const ua = navigator.userAgent;
+            const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            const isTouchScreen = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
+            const isCoarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+            const isSmallScreen = window.innerWidth < 1024;
+            setIsMobileDevice(isMobileUA || (isTouchScreen && (isCoarsePointer || isSmallScreen)));
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
     const formatDate = (dateString: string) => {
         if (!dateString) return '-';
         try {
@@ -97,28 +115,80 @@ export default function DetailPutusan({ document }: Props) {
                                         Berkas Putusan
                                     </h3>
                                     {document.file_path && (
-                                        <a 
-                                            href={`/storage/${document.file_path}`} 
-                                            className="px-4 py-2 bg-teal-600 text-white text-xs font-black rounded-xl hover:bg-teal-700 transition-all flex items-center gap-2"
-                                        >
-                                            <Download className="h-4 w-4" /> UNDUH PDF
-                                        </a>
+                                        <div className="flex items-center gap-2">
+                                            <a 
+                                                href={`/storage/${document.file_path}`} 
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="px-3 py-2 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-100 transition-all flex items-center gap-1.5"
+                                                title="Buka Putusan di Tab Baru"
+                                            >
+                                                <ExternalLink className="h-3.5 w-3.5" />
+                                                <span className="hidden sm:inline">Buka Tab Baru</span>
+                                            </a>
+                                            <a 
+                                                href={`/storage/${document.file_path}`} 
+                                                className="px-4 py-2 bg-teal-600 text-white text-xs font-black rounded-xl hover:bg-teal-700 transition-all flex items-center gap-2"
+                                            >
+                                                <Download className="h-4 w-4" /> UNDUH PDF
+                                            </a>
+                                        </div>
                                     )}
                                 </div>
                                 <div className="p-0">
                                     {document.file_path ? (
-                                        <div className="aspect-[4/5.5] w-full bg-slate-900">
-                                            <object 
-                                                data={`/storage/${document.file_path}`}
-                                                type="application/pdf"
-                                                className="w-full h-full"
-                                            >
-                                                <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
-                                                    <p className="text-sm font-bold mb-4">Preview PDF tidak tersedia di browser ini.</p>
-                                                    <a href={`/storage/${document.file_path}`} className="px-6 py-2 bg-teal-600 rounded-lg text-xs font-bold">Download File</a>
+                                        isMobileDevice && !forceInlineDoc ? (
+                                            <div className="aspect-[4/5.5] w-full bg-slate-900 flex flex-col items-center justify-center p-6 text-center text-white">
+                                                <div className="w-16 h-16 rounded-2xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center mb-4">
+                                                    <FileText className="h-8 w-8 text-teal-400" />
                                                 </div>
-                                            </object>
-                                        </div>
+                                                <h4 className="text-sm md:text-base font-bold text-white mb-2 max-w-md line-clamp-2">
+                                                    {document.title || 'Naskah Putusan Pengadilan'}
+                                                </h4>
+                                                <p className="text-xs text-slate-300 max-w-sm mb-6 leading-relaxed">
+                                                    Peramban ponsel membatasi penampil dokumen di dalam halaman. Anda dapat membuka naskah putusan langsung di tab baru atau mengunduhnya.
+                                                </p>
+                                                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                                                    <a 
+                                                        href={`/storage/${document.file_path}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center justify-center gap-2 px-5 py-3 bg-[#0d9488] text-white text-xs font-bold rounded-xl hover:bg-teal-700 active:scale-95 transition-all shadow-lg shadow-teal-900/30"
+                                                    >
+                                                        <ExternalLink className="h-4 w-4" />
+                                                        Buka di Tab Baru
+                                                    </a>
+                                                    <a 
+                                                        href={`/storage/${document.file_path}`}
+                                                        download
+                                                        className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-xl hover:bg-slate-700 active:scale-95 transition-all"
+                                                    >
+                                                        <Download className="h-4 w-4" />
+                                                        Unduh PDF
+                                                    </a>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setForceInlineDoc(true)}
+                                                    className="mt-6 text-[11px] text-slate-400 underline hover:text-slate-200 transition-colors"
+                                                >
+                                                    Coba muat penampil di halaman ini
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="aspect-[4/5.5] w-full bg-slate-900">
+                                                <object 
+                                                    data={`/storage/${document.file_path}`}
+                                                    type="application/pdf"
+                                                    className="w-full h-full"
+                                                >
+                                                    <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
+                                                        <p className="text-sm font-bold mb-4">Preview PDF tidak tersedia di browser ini.</p>
+                                                        <a href={`/storage/${document.file_path}`} className="px-6 py-2 bg-teal-600 rounded-lg text-xs font-bold">Download File</a>
+                                                    </div>
+                                                </object>
+                                            </div>
+                                        )
                                     ) : (
                                         <div className="p-20 text-center">
                                             <FileText className="h-16 w-16 text-slate-200 mx-auto mb-4" />
