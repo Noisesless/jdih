@@ -26,8 +26,10 @@ Daftar isu teknis, bug yang telah diselesaikan, dan pemantauan perbaikan sistem.
 | **ISSUE-019** | 2026-11-03 | Mobile / Navigation | Sticky bottom bar mobile sebelumnya tidak memiliki akses cepat ke peraturan (Perda, Perbup, Desa, dll) maupun layanan utama | Dirombak menjadi 5 sticky elevated tabs + 2 Action Sheet Bottom Drawer interaktif berbasis `framer-motion` | ✅ RESOLVED |
 | **ISSUE-020** | 2026-11-03 | Mobile / Visual & Media | Dashboard mobile plain/monoton dan thumbnail audiovisual (video) gagal load (broken image) | Menerapkan ritme 8-sektor warna selang-seling di `Mobile/Home.tsx`, menyelaraskan mapping atribut video backend, dan memasang fallback cover resmi | ✅ RESOLVED |
 | **ISSUE-021** | 2026-11-03 | Mobile & Desktop / Desa | Membuka Produk Hukum Desa dari mobile menghilangkan sticky bottom bar, serta tombol Lihat dan Unduh terpisah redundan | Dibuat `Mobile/ProdukHukumDesa.tsx` dengan auto-detection User-Agent di controller, dan tombol aksi disatukan menjadi "Lihat / Unduh" | ✅ RESOLVED |
+| **ISSUE-022** | 2026-11-05 | Dev Server / CSP | Browser memblokir skrip Vite HMR (`127.0.0.1:5173`) akibat pelanggaran Content Security Policy (CSP) saat server lokal diakses | Memperbarui `SecurityHeaders.php` dengan deteksi host dinamis (`127.0.0.1`, `localhost`, `*.test`, `hot` file): mengizinkan origin Vite dev server & WebSocket HMR pada environment lokal, dan mempertahankan CSP ketat + HSTS pada domain produksi | ✅ RESOLVED |
 
 ## 🔴 Open Issues
 *(Saat ini tidak ada isu kritis yang belum terselesaikan)*
+
 
 
