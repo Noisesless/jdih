@@ -84,7 +84,8 @@ class ActivityLogResource extends Resource
                     ->label('Keterangan')
                     ->limit(80)
                     ->default('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
 
                 TextColumn::make('ip_address')
                     ->label('IP Address')

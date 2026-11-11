@@ -67,6 +67,13 @@ Daftar progres pekerjaan dan roadmap operasional sistem JDIH Kabupaten Banjarneg
 - [x] Simplifikasi microcopy Card Pengunjung (menghilangkan kata-kata berlebihan/slop copy)
 - [x] Dinamisasi CSP di `SecurityHeaders.php` (mendukung local dev Vite HMR dan strict di produksi)
 
+## [x] Fase 6.4: Pengerasan Autentikasi Admin, CAPTCHA Dinamis, Tiered Rate Limiting & Real IP Audit Logging (Selesai 11 Nov 2026)
+- [x] Implementasi CAPTCHA Inline SVG anti-scraping dengan verifikasi `hash_equals` dan anti-replay cache pada form Login Filament Admin (`app/Filament/Pages/Auth/Login.php`)
+- [x] Tiered Rate Limiter bertahap pada Login: Level 1 Akun/Email (5x/menit) dan Level 2 Jaringan IP (25x/menit) untuk mencegah lockout IP kantor Pemda
+- [x] Bypass masking Cloudflare/Tunnel via `AppServiceProvider::getClientIp()` dan `trustProxies('*')` di `bootstrap/app.php`
+- [x] Pelabelan terstruktur counter publik (`view_count` & `download_count`) menjadi `Pengunjung (Tamu)` dengan keterangan transparan di `LogsActivity.php`
+- [x] Visualisasi kolom Keterangan di Admin `ActivityLogResource` serta pembaruan kredensial dev admin baru di `DatabaseSeeder.php`
+
 ## [ ] Fase 7: Sinkronisasi Keterkaitan Antar-Peraturan (Mencabut & Mengubah)
 - [ ] Buat Artisan Command Auto-Linker (`php artisan jdih:link-relations`) untuk menautkan otomatis 179+ relasi (16 pencabutan & 163 perubahan) dari teks judul peraturan ke tabel `legal_document_relations`
 - [ ] Perbarui status keberlakuan dokumen yang dicabut dari `'Berlaku'` menjadi `'Dicabut'` / `'Tidak Berlaku'` serta isi catatan `status_note` secara otomatis

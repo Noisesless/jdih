@@ -12,10 +12,11 @@ graph TD
         Nginx -->|Port 8080 FastCGI| PHP[PHP-FPM 8.2+]
     end
 
-    subgraph "Application Core (Laravel 11)"
+    subgraph "Application Core (Laravel 12)"
         PHP --> Inertia[Inertia.js Middleware & React 18 SPA]
-        PHP --> Filament[Filament v3 Admin Panel]
-        PHP --> AppService[AppServiceProvider: Audit Trail Listeners]
+        PHP --> Filament[Filament v3/v5 Admin Panel]
+        PHP --> AppService[AppServiceProvider: Audit Trail & Real IP Resolver]
+        PHP --> AuthSecurity[Login Page: Inline SVG CAPTCHA & Tiered Rate Limiter]
         PHP --> AiController[AiAssistantController: Sanitizer & Router]
     end
 
@@ -52,12 +53,23 @@ graph TD
 - **Aset Frontend**: Terkompilasi mandiri via Vite (`public/build`) di lingkungan pengembang lokal sehingga server produksi dapat beroperasi tanpa Node.js.
 
 ## 2. Lapisan Logika & Bisnis (Business Logic Layer)
-- **Framework**: Laravel 11 dengan struktur MVC yang bersih.
+- **Framework**: Laravel 12 (v12.69.2) dengan struktur MVC yang bersih.
+- **Admin Authentication & Tiered Rate Limiter (`app/Filament/Pages/Auth/Login.php`)**:
+  - *Inline SVG CAPTCHA*: Tantangan matematika acak bergaya tema JDIH Teal (`#0d9488`) untuk memblokir bot DOM scraping dan serangan otomatis, dilengkapi tombol refresh instan.
+  - *Tiered Rate Limiter (Bertahap)*:
+    - **Tahap 1 (Akun/Email)**: Maksimal 5x gagal per 60 detik per email. Jika satu staf admin salah password, admin lain di jaringan LAN kantor Pemda yang sama tidak ikut terkunci.
+    - **Tahap 2 (IP Bersama)**: Maksimal 25x gagal per 60 detik per IP publik untuk menangkal brute-force masif atau *credential stuffing*.
+  - *Crypto Verification*: Validasi jawaban menggunakan `hash_equals` dan anti-replay cache guard (`used_captcha`).
 - **Dynamic HTTPS & CSP Security Gate**:
   - `AppServiceProvider.php` secara dinamis memaksakan HTTPS pada host produksi publik, dan mengecualikan `localhost`, `127.0.0.1`, dan `*.test` agar dev server lokal bebas dari error handshake SSL (`ERR_CONNECTION_CLOSED`).
   - `SecurityHeaders.php` mengimplementasikan CSP dinamis: mengizinkan script dan WebSocket HMR dari Vite dev server (`http://127.0.0.1:5173`) pada lingkungan pengembang lokal, sementara pada environment produksi tetap menerapkan CSP ketat (strict CSP) dan HSTS enforcement.
-- **Traffic Analytics & Visitor Tracker (`RecordVisitor.php`)**: Middleware pencatatan trafik non-blocking ke tabel `visitors` yang merekam IP dan tanggal kunjungan harian dengan throttling cache 60 detik per IP, tracking live online user (sliding window 5 menit), serta agregasi pembacaan dokumen.
-- **Audit Logging**: Event-driven menggunakan listener `Illuminate\Auth\Events\Login` dan `Logout` di `AppServiceProvider` yang merekam `user_id`, nama, email, aksi, guard, IP publik (`$http_cf_connecting_ip`), user-agent, dan waktu WIB.
+- **Real IP Support & Proxy Resolution**:
+  - Mengaktifkan `$middleware->trustProxies(at: '*')` di `bootstrap/app.php`.
+  - Fungsi `AppServiceProvider::getClientIp()` memprioritaskan `CF-Connecting-IP` (Cloudflare CDN/Tunnel), `X-Real-IP`, dan `X-Forwarded-For` dengan filter sanitasi `FILTER_VALIDATE_IP`.
+- **Traffic Analytics & Visitor Tracker (`RecordVisitor.php`)**: Middleware pencatatan trafik non-blocking ke tabel `visitors` yang merekam IP asli dan tanggal kunjungan harian dengan throttling cache 60 detik per IP, tracking live online user (sliding window 5 menit), serta agregasi pembacaan dokumen.
+- **Audit Logging Terstruktur (`LogsActivity.php` & `ActivityLog.php`)**:
+  - Event-driven listener `Login`, `Logout`, dan `Failed` di `AppServiceProvider`.
+  - Pemisahan pelabelan: Kunjungan baca/unduh publik otomatis dilabeli `Pengunjung (Tamu)` dengan rincian metrik (`view_count: A → B`), sementara perubahan administratif dicatat lengkap dengan akun admin penanggung jawab (`user_name`, `user_email`, dan diff atribut). Kolom sensitif (`password`, `remember_token`) mutlak diabaikan dari pencatatan log.
 - **RAG & AI Assistant**: Layanan asisten hukum multi-tier terintegrasi pada antarmuka Desktop (modal popup) dan Mobile (bottom-sheet drawer 85vh):
   1. *Primary*: Google Gemini API dengan rotasi multi-key pool (`GEMINI_API_KEYS`) dan fallback pool model.
   2. *Secondary / Offline*: `OfflineLegalRagService` 100% Native PHP in-process via Eloquent & text matching (bebas dari subprocess Python atau kegagalan koneksi luar).

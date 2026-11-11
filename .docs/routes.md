@@ -36,7 +36,7 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 
 | Route Path | Handler | Auth Guard | Purpose |
 |---|---|---|---|
-| `/admin/login` | `Filament\Pages\Auth\Login` | Public (Web Guest) | Login Panel Admin |
+| `/admin/login` | `App\Filament\Pages\Auth\Login` | Public (Web Guest) | Login Panel Admin (Inline SVG CAPTCHA & Tiered Rate Limiter: 5x/min email, 25x/min IP) |
 | `/admin` | `Filament\Pages\Dashboard` | `auth:web` + `canAccessPanel` | Dashboard Utama Admin |
 | `/admin/legal-documents` | `LegalDocumentResource` | `auth:web` | Manajemen Perda, Perbup, SK |
 | `/admin/categories` | `CategoryResource` | `auth:web` | Manajemen Kategori Hukum |
@@ -59,6 +59,7 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 
 | Middleware | Applied To | Purpose |
 |---|---|---|
+| `TrustProxies (*)` | Global (Bootstrap) | Membaca header proxy (`CF-Connecting-IP`, `X-Real-IP`, `X-Forwarded-For`) agar `request()->ip()` mencerminkan IP asli |
 | `App\Http\Middleware\SecurityHeaders` | Global (All Web Routes) | HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Dynamic CSP (Vite dev HMR vs Production Strict) |
 | `App\Http\Middleware\RecordVisitor` | Global Web Routes | Pencatatan pengunjung harian & agregasi hits non-blocking dengan proteksi cache throttling |
 | `Illuminate\Routing\Middleware\SubstituteBindings` | Global Web | Route model binding injection |

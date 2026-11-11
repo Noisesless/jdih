@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@jdih.test'],
             [
                 'name' => 'Admin JDIH',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'password' => \Illuminate\Support\Facades\Hash::make('xR8#vB2$kM6!wT9'),
             ]
         );
 

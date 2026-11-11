@@ -202,6 +202,24 @@ Tambahkan kolom `role` atau periksa email domain resmi:
 | **SP-033** | 2026-11-03 | `/etc/nginx/global_settings` | ✅ Tested (Block `/desa/app_key`, webshells, dan PHP upload execution pada 98 vhost OpenSID) |
 | **SP-034** | 2026-11-03 | `apiasmara.php` | ✅ Tested (Sliding window rate limit 10 req/min, strict CORS whitelist, `hash_equals` timing defense) |
 | **SYS-001** | 2026-11-03 | `/tmp/systemd-private-*-php8.2-fpm*/tmp` & `/etc/cron.daily/` | ✅ Tested (Purge 845K session files, Inode drop dari 100% ke 20%, cron auto-cleanup terpasang) |
+| **SP-035** | 2026-11-11 | `app/Filament/Pages/Auth/Login.php` | ✅ Tested (Inline SVG CAPTCHA, hash_equals timing defense, single-use anti-replay cache) |
+| **SP-036** | 2026-11-11 | `app/Filament/Pages/Auth/Login.php` | ✅ Tested (Tiered Rate Limiter: Level 1 Akun Email 5x/min, Level 2 IP Kantor 25x/min) |
+| **SP-037** | 2026-11-11 | `bootstrap/app.php` & `AppServiceProvider.php` | ✅ Tested (Real IP Resolution bypass Cloudflare/Tunnel, trustProxies(*) & filter_var validation) |
+
+---
+
+## Verifikasi Hardening Login & Audit Trail (2026-11-11)
+
+1. **Inline SVG CAPTCHA Anti-Bot**:
+   - Tantangan matematika dinamis yang dirender sebagai badge SVG bergaya JDIH Teal (`#0d9488`).
+   - Anti-tampering via `#[Locked]` Livewire, anti-timing attack via `hash_equals()`, dan anti-replay via cache single-use token (`used_captcha`).
+2. **Tiered Rate Limiter Bertahap**:
+   - Tahap 1: Membatasi 5 kegagalan per 60 detik per email. Mencegah lockout massal pada staf admin yang berada di IP kantor bersama.
+   - Tahap 2: Membatasi 25 kegagalan per 60 detik per IP publik untuk menangkal serangan *credential stuffing* / bot masif.
+3. **Bypass Masking Cloudflare / Tunnel**:
+   - Konfigurasi `trustProxies(at: '*')` di `bootstrap/app.php` dan fungsi `AppServiceProvider::getClientIp()` yang memprioritaskan `CF-Connecting-IP`, `X-Real-IP`, dan `X-Forwarded-For` secara aman (`FILTER_VALIDATE_IP`).
+4. **Pembersihan Log Polusi Counter Publik**:
+   - Pemisahan counter `view_count` dan `download_count` di `LogsActivity.php` sehingga dicatat terstruktur sebagai `Pengunjung (Tamu)` dengan rincian metrik, tanpa mencemari log pengeditan admin.
 
 ---
 

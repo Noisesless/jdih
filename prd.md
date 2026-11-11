@@ -25,9 +25,9 @@
 | **Avatar Shape** | `Lingkaran Sempurna rounded-full` | 🔒 IMMUTABLE |
 | **Navigasi Model** | `Top Sticky Navbar (Frontend) & Left Sidebar (Filament Admin)` | 🔒 IMMUTABLE |
 | **Hero Layout** | `Dynamic Hero Slider with Legal Quote & Quick Search` | 🔒 IMMUTABLE |
-| **Captcha** | `Native Rate-Limiting + Honeypot Protection` | 🔒 IMMUTABLE |
+| **Captcha** | `Dynamic Inline SVG CAPTCHA + Tiered Rate-Limiting (Account & IP)` | 🔒 IMMUTABLE |
 | **Fase Aktif** | `Fase 7 (Audit Keterkaitan Peraturan & Stabilitas AI/Responsive)` | 🔄 DYNAMIC |
-| **Terakhir Diperbarui** | `2026-10-12 13:45 WIB` | 🔄 DYNAMIC |
+| **Terakhir Diperbarui** | `2026-11-11 11:10 WIB` | 🔄 DYNAMIC |
 
 ---
 
@@ -44,8 +44,8 @@
   3. **Integrasi Eksternal:** Sinkronisasi API ke JDIHN Nasional dan integrasi produk hukum desa.
 
 ## 2. TECH STACK & ARSITEKTUR
-- **Backend Framework:** Laravel 11 (PHP 8.2+)
-- **Admin Engine:** Filament v3
+- **Backend Framework:** Laravel 12 (PHP 8.2+)
+- **Admin Engine:** Filament v3/v5
 - **Frontend SPA Layer:** Inertia.js (React 18)
 - **Styling Engine:** Tailwind CSS & Framer Motion
 - **Database Engine:** MySQL 8 / MariaDB (InnoDB, utf8mb4)
@@ -57,4 +57,4 @@
 - Standar Permenkumham No. 8 Tahun 2019 (Kelengkapan metadata, abstrak, uji materi, status peraturan).
 - Standar Responsivitas Laptop-First (1366×768 / 125% Windows scaling ~1092px) dan Android 3M (360px, 393px, 412px).
 - OWASP Top 10 Security Hardening (CSRF, XSS, SSRF QR bypass, Nginx dotfiles block, Zero Terminal Error Leak).
-- Audit Trail terpusat untuk setiap event autentikasi dan CRUD peraturan.
+- Audit Trail terpusat dengan resolusi Real IP (Cloudflare/Tunnel) dan pemisahan pelabelan aktivitas tamu publik vs perubahan administratif admin.

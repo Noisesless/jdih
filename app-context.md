@@ -1,5 +1,5 @@
 # APP CONTEXT — JDIH KABUPATEN BANJARNEGARA
-# Last Updated: 2026-11-05
+# Last Updated: 2026-11-11
 # State Snapshot untuk Vibes Coding Workflow / Antigravity IDE
 # Status: Production Clean & Sanitized
 
@@ -24,12 +24,12 @@ model = "App\Models\ActivityLog"
 table = "activity_logs"
 listener = "App\Providers\AppServiceProvider (Event::listen Login & Logout)"
 tracked_events = "User Login, User Logout, Model CRUD (LegalDocument, etc.)"
-real_ip_support = "Cloudflare CF-Connecting-IP & X-Real-IP forwarded"
+real_ip_support = "Cloudflare CF-Connecting-IP, X-Real-IP, & X-Forwarded-For forwarded via AppServiceProvider::getClientIp + trustProxies(*) di bootstrap/app.php"
 
 [SECURITY]
 nginx_hardened = "Dotfiles (.env, .git, etc.) diblokir return 404"
 ssl_setup = "Cloudflare Origin CA / Custom SSL Pemda via Nginx vhost"
-rate_limiting = "Filament default 5 attempts/minute pada /admin/login, route throttle pada auth/AI/surveys"
+rate_limiting = "Tiered Limiter: 5x/min per email (akun), 25x/min per IP (kantor), CAPTCHA anti-bot gate, route throttle pada auth/AI/surveys"
 https_scheme_guard = "Otomatis paksa HTTPS di produksi, bypass pada localhost / 127.0.0.1 / *.test via AppServiceProvider"
 csp_dynamic = "SecurityHeaders mengizinkan Vite dev HMR 127.0.0.1:5173 di lokal, strict CSP + HSTS di produksi"
 header_dedup = "Nginx single layer emission SP-023 via proxy_hide_header"

@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
                     'model_id'    => $event->user->id,
                     'model_label' => $event->user->name,
                     'description' => "Login berhasil (guard: {$event->guard})",
-                    'ip_address'  => request()->ip(),
+                    'ip_address'  => static::getClientIp(),
                     'user_agent'  => request()->userAgent(),
                 ]);
             } catch (\Throwable $e) {
@@ -67,7 +67,7 @@ class AppServiceProvider extends ServiceProvider
                         'model_id'    => $event->user->id,
                         'model_label' => $event->user->name,
                         'description' => "Logout dari sistem (guard: {$event->guard})",
-                        'ip_address'  => request()->ip(),
+                        'ip_address'  => static::getClientIp(),
                         'user_agent'  => request()->userAgent(),
                     ]);
                 }
@@ -89,12 +89,48 @@ class AppServiceProvider extends ServiceProvider
                     'model_id'    => $event->user?->id,
                     'model_label' => $email,
                     'description' => "Percobaan login gagal untuk email: {$email}",
-                    'ip_address'  => request()->ip(),
+                    'ip_address'  => static::getClientIp(),
                     'user_agent'  => request()->userAgent(),
                 ]);
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::warning("Gagal mencatat log login gagal: " . $e->getMessage());
             }
         });
+    }
+
+    /**
+     * Resolusi IP klien asli tanpa filter masking proxy/Cloudflare/Tunnel.
+     * Menginspeksi CF-Connecting-IP, X-Real-IP, dan X-Forwarded-For secara aman.
+     */
+    public static function getClientIp(): ?string
+    {
+        $request = request();
+        if (! $request) {
+            return null;
+        }
+
+        // 1. Header Cloudflare resmi (Edge proxy / Cloudflare Tunnel)
+        $cfIp = $request->header('CF-Connecting-IP');
+        if ($cfIp && filter_var($cfIp, FILTER_VALIDATE_IP)) {
+            return $cfIp;
+        }
+
+        // 2. Header Nginx / Ingress / Reverse Proxy
+        $xRealIp = $request->header('X-Real-IP');
+        if ($xRealIp && filter_var($xRealIp, FILTER_VALIDATE_IP)) {
+            return $xRealIp;
+        }
+
+        // 3. Header X-Forwarded-For (ambil klien terluar)
+        $forwarded = $request->header('X-Forwarded-For');
+        if ($forwarded) {
+            $ips = explode(',', $forwarded);
+            $clientIp = trim($ips[0]);
+            if (filter_var($clientIp, FILTER_VALIDATE_IP)) {
+                return $clientIp;
+            }
+        }
+
+        return $request->ip();
     }
 }

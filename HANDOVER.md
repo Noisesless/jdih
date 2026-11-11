@@ -258,3 +258,27 @@ php artisan optimize:clear
     *   Namun isi file PDF tersebut merupakan lembar pembatasan (*placeholder notice*) bertuliskan *"Dokumen Tidak Dapat Diakses Dari Website Silahkan Hubungi Staff JDIH Banjarnegara"*, yang menandakan naskah lengkap belum dibuka untuk umum oleh Bagian Hukum Setda.
 *   **Sinkronisasi Berkas Dokumentasi SSOT (`/.docs/`) & App Context**:
     *   Menyelaraskan `database.md`, `architecture.md`, `routes.md`, `dependency-graph.md`, `issues.md` (ISSUE-022 & ISSUE-023), `quality_review.md`, `app-context.md`, dan `handover.md`.
+
+---
+
+## 9. Status Sesi Terkini (11 November 2026)
+
+### Sesi Bagian 8: Penguatan Autentikasi Admin, CAPTCHA Dinamis, Tiered Rate Limiter, & Real IP Audit Logging
+*   **Komponen CAPTCHA Inline SVG Anti-Bot (`Login.php`)**:
+    *   Menerapkan tantangan matematika dinamis yang dirender sebagai badge grafis SVG bergaya JDIH Teal (`#0d9488`).
+    *   Menangkal serangan DOM text scraping, timing attacks (`hash_equals`), dan replay attacks melalui cache single-use token (`used_captcha`).
+    *   Dilengkapi tombol aksi refresh instan tanpa reload halaman dan auto-regenerate saat validasi/kredensial gagal.
+*   **Tiered Rate Limiter Bertahap (Email Dulu, Baru IP Bersama)**:
+    *   Mengatasi isu *office lockout* di mana puluhan staf admin Pemda berbagi satu IP publik yang sama.
+    *   **Tahap 1 (Akun/Email)**: Membatasi maksimal 5 percobaan gagal per menit untuk email tertentu. Rekan admin lain di IP yang sama tetap dapat login normal.
+    *   **Tahap 2 (IP Bersama)**: Membatasi maksimal 25 percobaan gagal per menit per IP jaringan untuk menangkal brute-force masif atau *credential stuffing*.
+*   **Resolusi Real IP Klien (Bypass Masking Cloudflare / Tunnel)**:
+    *   Mengaktifkan `$middleware->trustProxies(at: '*')` pada `bootstrap/app.php`.
+    *   Membuat fungsi pembaca IP asli `AppServiceProvider::getClientIp()` yang memprioritaskan `CF-Connecting-IP`, `X-Real-IP`, dan `X-Forwarded-For` dengan sanitasi `FILTER_VALIDATE_IP`.
+    *   Diterapkan ke event `Login`, `Logout`, `Failed`, `ActivityLog::log()`, dan `RecordVisitor`.
+*   **Pemisahan & Pelabelan Counter Publik di Log Aktivitas (`LogsActivity.php`)**:
+    *   Menghilangkan kebingungan log "Diubah" tanpa nama pengguna yang sebelumnya dipicu oleh pembacaan publik (`view_count`/`download_count`).
+    *   Metrik publik kini dicatat secara terpisah dan terhormat sebagai `Pengunjung (Tamu)` dengan keterangan spesifik (misal: `Kunjungan publik (view_count: 1126 → 1127)`).
+    *   Kolom Keterangan pada `ActivityLogResource` ditampilkan secara default dan dapat dicari (*searchable*).
+*   **Pembaruan Kredensial Dev Admin**:
+    *   Password akun pengembang `admin@jdih.test` diperbarui dan diselaraskan pada database serta `database/seeders/DatabaseSeeder.php`.

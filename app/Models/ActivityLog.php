@@ -34,13 +34,23 @@ class ActivityLog extends Model
         array $oldValues = [],
         array $newValues = []
     ): self {
-        $user    = auth()->user();
+        $user = auth()->user()
+            ?? (class_exists(\Filament\Facades\Filament::class) ? \Filament\Facades\Filament::auth()->user() : null);
+
+        $userName  = $user?->name;
+        $userEmail = $user?->email;
+
+        if (! $user && app()->runningInConsole()) {
+            $userName  = 'Sistem (CLI)';
+            $userEmail = 'system@cli';
+        }
+
         $request = request();
 
         return static::create([
             'user_id'     => $user?->id,
-            'user_name'   => $user?->name,
-            'user_email'  => $user?->email,
+            'user_name'   => $userName,
+            'user_email'  => $userEmail,
             'action'      => $action,
             'model_type'  => $model ? class_basename($model) : null,
             'model_id'    => $model?->getKey(),
@@ -48,7 +58,7 @@ class ActivityLog extends Model
             'description' => $description,
             'old_values'  => $oldValues ?: null,
             'new_values'  => $newValues ?: null,
-            'ip_address'  => $request?->ip(),
+            'ip_address'  => \App\Providers\AppServiceProvider::getClientIp() ?? $request?->ip(),
             'user_agent'  => $request?->userAgent(),
         ]);
     }

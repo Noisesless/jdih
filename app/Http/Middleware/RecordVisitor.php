@@ -39,7 +39,7 @@ class RecordVisitor
             return;
         }
 
-        $ip = $request->ip();
+        $ip = \App\Providers\AppServiceProvider::getClientIp() ?? $request->ip();
         if (!$ip) {
             return;
         }
