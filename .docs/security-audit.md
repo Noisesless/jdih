@@ -254,6 +254,31 @@ Tambahkan kolom `role` atau periksa email domain resmi:
    - Status `is_approved` di-lock mutlak `false` saat create. Komentar wajib lolos moderasi admin di panel Filament sebelum tampil publik.
    - Isian wajib ditambahkan: **Nama Lengkap**, **Alamat Email**, dan **No. Telp / WhatsApp** dengan validasi regex format nomor telepon Indonesia/internasional.
 
+6. **Penyaringan Karakter Input Kolom (Huruf vs Angka)**:
+   - Kolom nama dibatasi hanya untuk huruf dan tanda baca resmi (`regex:/^[\pL\s\.\'\,\-]+$/u`) dengan pencegahan pengetikan angka di frontend (`onKeyDown`) dan pembersihan otomatis saat paste (`onInput`).
+   - Kolom nomor telepon/WhatsApp dibatasi hanya angka digit murni (`regex:/^[0-9]+$/`) dengan blokir huruf pada frontend (`onKeyDown` & `onInput`).
+
+---
+
+## 9. Investigasi Insiden Lockout HTTP 429 & Mitigasi Serangan Botnet (11 November 2026)
+
+### Latar Belakang & Kronologi
+Pada 11 November 2026 pagi, dilaporkan bahwa staf admin Pemda Banjarnegara mengalami penguncian sementara dengan pesan `HTTP 429 Too Many Requests`.
+
+### Temuan Faktual Analisis Log (`/home/jdih1bna/logs/nginx/access.log`):
+1. **Aktivitas Botnet**: Terdeteksi IP luar negeri `45.148.10.9` (AS48090 - DMZHOST) melakukan probing massal rute CMS sejak 08:50 WIB dan menemukan `/admin/login` pada 10:12 WIB.
+2. **Flooding Brute-Force**: Pukul 10:13:00 - 10:13:40 WIB, bot mengirimkan **414 request POST beruntun** ke endpoint login Filament Livewire (`POST /livewire-833b0dc2/update`).
+3. **Penyebab Lockout Staf Admin (Shared IP Collapse)**: Karena reverse proxy lokal Nginx (Port 443 → 8080) belum didukung `trustProxies('*')`, Laravel menganggap semua traffic (baik bot penyerang maupun staf kantor Pemda Banjarnegara) berasal dari satu IP yang sama: `127.0.0.1`. Kuota rate limiter yang terkuras oleh botnet menyebabkan staf resmi ikut terblokir saat membuka dashboard admin.
+
+### Mitigasi & Pengamanan yang Diterapkan:
+1. **Firewall Drop**: IP `45.148.10.9` diblokir permanen pada aturan pertama firewall Linux (`ufw insert 1 deny from 45.148.10.9`).
+2. **Koreksi Real-IP Passthrough**: Header Nginx dikoreksi ke `proxy_set_header X-Real-IP $remote_addr;` dan Laravel mengaktifkan `$middleware->trustProxies(at: '*')` + `AppServiceProvider::getClientIp()` sehingga IP kantor Pemda (`103.110.4.254` / `182.253.8.0`) teridentifikasi secara mandiri.
+3. **Tiered Rate Limiter**: Pembatasan dibagi dua tahap:
+   - Tahap 1: Limit per akun email (5x salah per 60 detik).
+   - Tahap 2: Limit per IP publik (25x salah per 60 detik).
+4. **Verifikasi Keamanan CAPTCHA**: Login Filament mewajibkan perhitungan matematika dinamis anti-replay, meniadakan kemungkinan otomasi brute-force tanpa interaksi manusia.
+5. **Verifikasi Faktual**: Pemindaian log Nginx pasca-implementasi mencatat **0 kejadian error 429** dan staf admin beroperasi normal.
+
 ---
 
 ## Catatan untuk Sesi Berikutnya

@@ -311,3 +311,36 @@ php artisan optimize:clear
     *   Menambahkan status tombol pengiriman dengan animasi spinner (*"Mengirim..."*) serta disable button saat proses berlangsung untuk mencegah double-click / multiple request.
 *   **Kompilasi Frontend & Build Produksi**:
     *   Aset frontend telah dikompilasi ulang secara bersih via `npm run build` (vite v7.3.7) tanpa error.
+
+### Sesi Bagian 10: Pembatasan Ketat Tipe Karakter Form Komentar (Huruf Saja vs Angka Saja)
+*   **Backend Validation & Sanitization (`CommentController.php`)**:
+    *   `name`: Wajib hanya berisi huruf Unicode, spasi, dan tanda baca nama formal (`regex:/^[\pL\s\.\'\,\-]+$/u`). Angka, simbol liar, dan karakter eksekusi otomatis ditolak dengan pesan edukatif: *"Nama lengkap hanya boleh berisi huruf dan tanda baca nama."*
+    *   `phone`: Wajib hanya berisi digit angka murni (`regex:/^[0-9]+$/`), panjang 9-20 digit. Spasi, tanda hubung, atau huruf otomatis ditolak: *"Nomor telepon / WhatsApp hanya boleh berisi angka."*
+*   **Frontend Input Interception & Realtime Scrubbing (`DetailDokumen.tsx`)**:
+    *   **Pencegahan Pengetikan Huruf/Angka Terbalik (`onKeyDown`)**: Menangkap input keyboard secara realtime. Kolom nama memblokir pengetikan karakter angka `0-9` (kecuali tombol kontrol seperti Backspace, Tab, Delete, Arrow). Kolom telepon memblokir karakter huruf `A-Z` dan simbol selain angka.
+    *   **Pembersihan Saat Tempel / Paste (`onInput`)**: Menggunakan event input scrubbing otomatis (`e.currentTarget.value.replace(...)`) sehingga jika pengguna mencoba mem-paste teks yang mengandung angka ke kolom nama, atau huruf ke kolom telepon, karakter yang tidak sesuai langsung dibersihkan sebelum masuk ke state.
+
+### Sesi Bagian 11: Investigasi Faktual Insiden Lockout HTTP 429 & Penguatan Brute Force Defense
+*   **Analisis Bukti Log Produksi (`/home/jdih1bna/logs/nginx/access.log`)**:
+    *   Terdeteksi botnet scanner dari IP luar negeri `45.148.10.9` (AS48090 - DMZHOST) membanjiri rute login admin Filament (`/livewire-833b0dc2/update`) dengan **414 request POST beruntun** dalam rentang 40 detik pada pukul 10:13 WIB.
+    *   *Akar Masalah Lockout Staf Pemda*: Konfigurasi reverse proxy Nginx (port 443 → 8080) sebelumnya meneruskan koneksi tanpa pemetaan IP asli yang tepat, menyebabkan Laravel membaca semua traffic sebagai `127.0.0.1`. Kuota rate limiter yang dihabiskan oleh botnet mengakibatkan staf Pemda (`103.110.4.254` / `182.253.8.0`) ikut terkunci dengan respon `429 Too Many Requests`.
+*   **Langkah Remediasi & Mitigasi Berlapis**:
+    1.  **UFW Firewall Drop**: Menambahkan aturan `ufw insert 1 deny from 45.148.10.9 comment 'Block Brute Force Bot 45.148.10.9'` untuk langsung memutus paket IP penyerang di layer kernel.
+    2.  **Koreksi Nginx Real-IP Passthrough**: Memperbaiki blok proxy Nginx agar menyertakan `proxy_set_header X-Real-IP $remote_addr;` dan reload service.
+    3.  **Tiered Rate Limiter**: Membagi proteksi login menjadi dua tingkat: Level 1 per email (5x salah per 60 detik) dan Level 2 per IP publik (25x per 60 detik).
+    4.  **Inline SVG Dynamic CAPTCHA**: Menambahkan verifikasi matematika dinamis dengan token anti-replay sekali pakai pada halaman login Filament.
+    5.  **Verifikasi Faktual**: Pemantauan log mencatat 0 kemunculan error 429 pasca-pukul 10:23 WIB, dan staf admin aktif mengelola data dokumen secara lancar.
+
+### Sesi Bagian 12: Pemutakhiran Dokumentasi Sistem & Komitmen Zero-Secret Leak
+*   **Sinkronisasi 7 Dokumen Utama (`.docs/`)**:
+    *   `.docs/issues.md`: Mencatat penyelesaian ISSUE-026 (Audit & Pengerasan Komentar Katalog) dan ISSUE-027 (Lockout 429 & Serangan Botnet Login).
+    *   `.docs/database.md`: Menambahkan spesifikasi skema tabel `comments` (kolom, relasi, indeks, dan proteksi PII).
+    *   `.docs/security-audit.md`: Menambahkan Bab 8 (Audit Komentar Katalog) dan Bab 9 (Investigasi Insiden Lockout HTTP 429).
+    *   `.docs/architecture.md`: Menambahkan arsitektur sistem komentar terpadu dan mitigasi brute-force bertingkat.
+    *   `.docs/routes.md`: Menambahkan rute `POST /comments` dan admin `/admin/comments`.
+    *   `.docs/api-spec.md`: Menambahkan spesifikasi lengkap endpoint `POST /comments`.
+    *   `.docs/dependency-graph.md`: Menambahkan relasi komponen `CommentController.php` dan `Login.php`.
+    *   `.docs/quality_review.md`: Memperbarui status matriks kepatuhan audit keamanan.
+*   **Audit Sanitasi & Pencegahan Kebocoran Rahasia Produksi**:
+    *   Memverifikasi `README.md` dan seluruh berkas `.docs/` bebas dari nilai `.env`, kata sandi database/server, dan kredensial SSH.
+    *   Memastikan `.env` dan berkas backup database lokal tetap berada dalam `.gitignore`.

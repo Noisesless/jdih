@@ -44,12 +44,14 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 | `/admin/banners` | `BannerResource` | `auth:web` | Manajemen Slider Hero Beranda |
 | `/admin/surveys` | `SurveyResource` | `auth:web` | Rekap Survei IKM |
 | `/admin/aspirations` | `AspirationResource` | `auth:web` | Manajemen Aspirasi Warga |
+| `/admin/comments` | `CommentResource` | `auth:web` | Moderasi & Manajemen Komentar Katalog |
 | `/admin/activity-logs` | `ActivityLogResource` | `auth:web` | Pemantauan Audit Trail |
 
 ## 4. API & Async Routes
 
 | Method | Route Path | Handler | Auth | Purpose |
 |---|---|---|---|---|
+| `POST` | `/comments` | `CommentController@store` | Public (throttle:5,1) | Submit Komentar / Tanggapan Katalog Dokumen (Anti-Bot & Anti-XSS) |
 | `POST` | `/api/chat-ai` | `AiAssistantController@chat` | Public (Rate-limit) | Tanya Jawab AI Hukum |
 | `POST` | `/public-consultation` | `Closure -> Store Consultation` | Public | Submit Formulir Aspirasi & Konsultasi |
 | `POST` | `/api/ikm` | `Closure -> Store IKM` | Public | Submit Penilaian Survei IKM |

@@ -70,6 +70,12 @@ graph TD
 - **Audit Logging Terstruktur (`LogsActivity.php` & `ActivityLog.php`)**:
   - Event-driven listener `Login`, `Logout`, dan `Failed` di `AppServiceProvider`.
   - Pemisahan pelabelan: Kunjungan baca/unduh publik otomatis dilabeli `Pengunjung (Tamu)` dengan rincian metrik (`view_count: A → B`), sementara perubahan administratif dicatat lengkap dengan akun admin penanggung jawab (`user_name`, `user_email`, dan diff atribut). Kolom sensitif (`password`, `remember_token`) mutlak diabaikan dari pencatatan log.
+- **Sistem Komentar Katalog & Moderasi Terpadu (`CommentController.php` & `CommentResource.php`)**:
+  - *Data Model & Kolom*: Tabel `comments` menyimpan relasi `legal_document_id`, `name`, `email`, `phone`, `comment`, dan `is_approved`.
+  - *Proteksi Privasi PII*: Kolom kontak (`email` dan `phone`) dilindungi oleh `$hidden = ['email', 'phone']` pada model `Comment` dan query rute publik secara eksplisit hanya memproyeksikan data non-sensitif agar tidak terekspos ke inspeksi DOM/API.
+  - *Validasi Tipe Karakter*: Kolom nama diwajibkan hanya huruf/tanda baca nama (`regex:/^[\pL\s\.\'\,\-]+$/u`), dan kolom nomor telepon/WhatsApp diwajibkan hanya angka digit murni (`regex:/^[0-9]+$/`).
+  - *Anti-Exploit & Anti-Spam*: Sanitasi input berlapis via `strip_tags()` dan filter null-byte, perangkap honeypot tersembunyi (`b_hp_field`), route rate limiting `throttle:5,1`, serta anti-duplicate guard (jendela 5 menit).
+  - *Moderasi Penuh*: Default status `is_approved = false` dikunci mutlak di backend. Seluruh tanggapan publik wajib disetujui admin di panel Filament sebelum ditampilkan pada katalog dokumen.
 - **RAG & AI Assistant**: Layanan asisten hukum multi-tier terintegrasi pada antarmuka Desktop (modal popup) dan Mobile (bottom-sheet drawer 85vh):
   1. *Primary*: Google Gemini API dengan rotasi multi-key pool (`GEMINI_API_KEYS`) dan fallback pool model.
   2. *Secondary / Offline*: `OfflineLegalRagService` 100% Native PHP in-process via Eloquent & text matching (bebas dari subprocess Python atau kegagalan koneksi luar).

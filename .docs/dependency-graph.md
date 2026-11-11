@@ -17,8 +17,10 @@ Dokumen analisis dependensi berkas penting pada codebase JDIH Kabupaten Banjarne
 | File | Depends On | Used By | Impact Level |
 |---|---|---|---|
 | `app/Models/ActivityLog.php` | User Model, Request | AppServiceProvider, Filament Log View | Sedang-Tinggi |
+| `app/Filament/Pages/Auth/Login.php` | RateLimiter, SVG Captcha, Str | Filament Login Gate | Tinggi (Security & Auth) |
 | `app/Http/Middleware/SecurityHeaders.php` | Request, Response | Seluruh Rute Web (Global Middleware) | Tinggi (Security & Assets) |
 | `app/Http/Middleware/RecordVisitor.php` | Visitor Model, Cache | Seluruh Rute Web Publik (Trafik Tracker) | Sedang-Tinggi |
+| `app/Http/Controllers/CommentController.php` | Comment Model, LegalDocument | Routes Web, Frontend Form | Sedang (Komentar Katalog) |
 | `app/Filament/Resources/LegalDocumentResource.php` | LegalDocument, Filament Form/Table | Panel Admin Kurasi | Tinggi |
 | `resources/js/Layouts/AppLayout.jsx` | React, Inertia | Seluruh Halaman Public Frontend | Tinggi |
 | `routes/web.php` | Semua Controller | Seluruh Permintaan HTTP Web | Sangat Tinggi |

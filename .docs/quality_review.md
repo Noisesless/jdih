@@ -6,7 +6,7 @@ Laporan peninjauan kualitas kode, kepatuhan arsitektur, dan evaluasi anti-bloat 
 
 | Kategori | Status | Temuan / Catatan |
 |---|---|---|
-| **Keamanan (Security)** | 🟢 AMAN | Hardening Nginx dotfile, CSRF token aktif, SSRF QR guard terpasang, Inline SVG CAPTCHA, Tiered Rate Limiter (Account & IP), Real IP bypass Cloudflare/Tunnel, Verifikasi aman CVE-2026-114509 & mitigasi PHP2Shell, CSP dinamis dev vs produksi |
+| **Keamanan (Security)** | 🟢 AMAN | Hardening Nginx dotfile, CSRF token aktif, SSRF QR guard terpasang, Inline SVG CAPTCHA, Tiered Rate Limiter (Account & IP), Real IP bypass Cloudflare/Tunnel, Verifikasi aman CVE-2026-114509 & mitigasi PHP2Shell, CSP dinamis dev vs produksi, UFW firewall rule #1 blocking botnet 45.148.10.9, Anti-XSS & Honeypot Komentar Katalog, PII hidden protection ($hidden = ['email', 'phone']), serta validasi ketat nama (hanya huruf) dan nomor telepon (hanya digit angka) |
 | **Arsitektur (Architecture)**| 🟢 RAPI | Pemisahan bersih controller, resource Filament, model Eloquent, middleware non-blocking (RecordVisitor), dan event listener |
 | **Penyimpanan (Storage)** | 🟢 KONSISTEN | Seluruh media dan PDF diarahkan ke disk `public` dengan symlink `public/storage` |
 | **Performa (Performance)** | 🟢 TEROPTIMASI | Logo dimigrasi ke WebP (-87% ukuran), chart di-lazyload, database berindeks, cache throttling pada tracking pengunjung |

@@ -60,6 +60,31 @@ Dokumen spesifikasi endpoint publik, integrasi eksternal, dan antarmuka data JDI
   - **Query Params**: `type` (`abstract` | opsional)
   - **Response**: Binary file stream (Content-Disposition: attachment) langsung dari disk publik.
 
+### E. Komentar & Tanggapan Katalog Dokumen
+- **POST** `/comments`
+  - **Auth**: Public (Rate-limited: `throttle:5,1` per IP)
+  - **Payload**:
+    ```json
+    {
+      "legal_document_id": 1420,
+      "name": "Nama Lengkap (Huruf saja)",
+      "email": "warga@example.com",
+      "phone": "081234567890",
+      "comment": "Isi masukan atau tanggapan terhadap produk hukum...",
+      "b_hp_field": ""
+    }
+    ```
+  - **Validasi & Proteksi**:
+    - `name`: Huruf dan tanda baca resmi nama (`regex:/^[\pL\s\.\'\,\-]+$/u`).
+    - `phone`: Digit angka murni (`regex:/^[0-9]+$/`).
+    - `b_hp_field`: Perangkap honeypot bot (wajib kosong; jika terisi mengembalikan `422`).
+    - Anti-Duplicate Guard: Konten sama dalam 5 menit ditolak `429`.
+    - PII Protection: Data `email` dan `phone` disembunyikan dari serialisasi publik (`$hidden`).
+  - **Response Status**:
+    - `200 OK`: `{"success": true, "message": "Terima kasih! Komentar dan masukan Anda telah terkirim dan sedang menunggu moderasi admin."}`
+    - `422 Unprocessable Content`: Validasi karakter gagal atau bot terdeteksi.
+    - `429 Too Many Requests`: Limit 5 req/min atau duplikasi komentar terdeteksi.
+
 ## 2. External Integration Endpoints (JDIHN & Desa)
 
 ### A. Sinkronisasi JDIHN Nasional
