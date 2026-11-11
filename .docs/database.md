@@ -70,7 +70,19 @@ Dokumen arsitektur basis data, skema tabel, indeks, dan relasi data sistem JDIH 
 | `created_at` / `updated_at` | TIMESTAMP | Nullable | Waktu pertama dan terakhir kunjungan hari itu |
 | *Constraint* | UNIQUE (`ip_address`, `visited_date`) | - | 1 baris per IP per hari (agregasi hits) |
 
-### F. Tabel Pendukung Lainnya
+### F. `comments` (Tanggapan & Masukan Publik pada Dokumen)
+| Kolom | Tipe | Index / Constraint | Keterangan |
+|---|---|---|---|
+| `id` | BIGINT UNSIGNED | PK, Auto Increment | ID Komentar |
+| `legal_document_id` | BIGINT UNSIGNED | FK ke `legal_documents.id` (cascadeOnDelete) | Dokumen yang dikomentari |
+| `name` | VARCHAR(255) | - | Nama lengkap pengirim |
+| `email` | VARCHAR(255) | - | Alamat email (hidden dari publik/API) |
+| `phone` | VARCHAR(30) | Nullable | No. Telp / WhatsApp (hidden dari publik/API) |
+| `comment` | TEXT | - | Isi masukan (anti-XSS sanitized) |
+| `is_approved` | TINYINT(1) | Default: 0 | Status moderasi admin (1 = tampil, 0 = pending) |
+| `created_at` / `updated_at` | TIMESTAMP | - | Waktu kirim dan moderasi |
+
+### G. Tabel Pendukung Lainnya
 - `categories`: Kategori/tipe peraturan daerah.
 - `legal_document_relations`: Relasi antar-peraturan (mencabut, diubah oleh, dsb).
 - `news`: Berita dan artikel hukum.

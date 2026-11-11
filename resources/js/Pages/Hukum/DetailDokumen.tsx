@@ -27,7 +27,9 @@ import {
     ShieldCheck,
     AlertTriangle,
     Zap,
-    ChevronRight
+    ChevronRight,
+    Send,
+    Phone
 } from 'lucide-react';
 
 interface DocumentDetailProps {
@@ -46,6 +48,8 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
     const [isMobileDevice, setIsMobileDevice] = useState(false);
     const [forceInlineDoc, setForceInlineDoc] = useState(false);
     const [forceInlineAbstract, setForceInlineAbstract] = useState(false);
+    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+    const [commentNotice, setCommentNotice] = useState<{type: 'success'|'error', text: string} | null>(null);
 
     useEffect(() => {
         const checkMobile = () => {
@@ -570,38 +574,148 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
 
                                         {/* Form Kirim Komentar */}
                                         <div className="bg-white rounded-3xl p-8 border border-[#0d9488]/10 shadow-xl shadow-teal-900/5">
-                                            <h5 className="text-slate-900 font-black text-lg mb-6">Berikan Tanggapan Anda</h5>
+                                            <h5 className="text-slate-900 font-black text-lg mb-1">Berikan Tanggapan / Masukan Anda</h5>
+                                            <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+                                                Masukan Anda sangat berharga untuk peningkatan mutu regulasi daerah. Seluruh komentar akan dimoderasi oleh admin sebelum ditampilkan.
+                                            </p>
+
+                                            {commentNotice && (
+                                                <div className={`p-4 rounded-2xl mb-6 text-sm flex items-start gap-3 border ${
+                                                    commentNotice.type === 'success' 
+                                                        ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+                                                        : 'bg-rose-50 border-rose-200 text-rose-800'
+                                                }`}>
+                                                    {commentNotice.type === 'success' ? (
+                                                        <ShieldCheck className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                                                    ) : (
+                                                        <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+                                                    )}
+                                                    <div className="flex-1 font-semibold leading-relaxed">
+                                                        {commentNotice.text}
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             <form 
-                                                onSubmit={(e) => {
+                                                onSubmit={async (e) => {
                                                     e.preventDefault();
-                                                    const formData = new FormData(e.currentTarget);
-                                                    axios.post('/comments', formData).then(() => {
-                                                        alert('Komentar Anda telah terkirim dan sedang menunggu moderasi.');
-                                                        (e.target as HTMLFormElement).reset();
-                                                    }).catch(() => {
-                                                        alert('Gagal mengirim komentar. Pastikan semua field terisi dengan benar.');
-                                                    });
+                                                    if (isSubmittingComment) return;
+                                                    const form = e.currentTarget;
+                                                    const formData = new FormData(form);
+                                                    
+                                                    setIsSubmittingComment(true);
+                                                    setCommentNotice(null);
+
+                                                    try {
+                                                        const res = await axios.post('/comments', formData);
+                                                        setCommentNotice({
+                                                            type: 'success',
+                                                            text: res.data?.message || 'Komentar Anda telah berhasil terkirim dan sedang menunggu moderasi admin.'
+                                                        });
+                                                        form.reset();
+                                                    } catch (err: any) {
+                                                        const errorMsg = err.response?.data?.message 
+                                                            || (err.response?.data?.errors ? Object.values(err.response.data.errors).flat().join(' ') : null)
+                                                            || 'Gagal mengirim komentar. Pastikan semua field wajib (Nama, Email, Telp/WA) terisi dengan benar.';
+                                                        setCommentNotice({
+                                                            type: 'error',
+                                                            text: errorMsg
+                                                        });
+                                                    } finally {
+                                                        setIsSubmittingComment(false);
+                                                    }
                                                 }}
                                                 className="space-y-4"
                                             >
                                                 <input type="hidden" name="legal_document_id" value={document.id} />
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {/* Anti-Bot Honeypot Field (Tersembunyi) */}
+                                                <input 
+                                                    type="text" 
+                                                    name="b_hp_field" 
+                                                    tabIndex={-1} 
+                                                    autoComplete="off" 
+                                                    aria-hidden="true"
+                                                    style={{ display: 'none' }} 
+                                                />
+                                                
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                     <div className="space-y-1">
-                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Nama Lengkap</label>
-                                                        <input required name="name" type="text" className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#0d9488] transition-all" placeholder="Masukkan nama..." />
+                                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1 flex items-center gap-1">
+                                                            Nama Lengkap <span className="text-rose-500">*</span>
+                                                        </label>
+                                                        <input 
+                                                            required 
+                                                            name="name" 
+                                                            type="text" 
+                                                            maxLength={100}
+                                                            className="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#0d9488] focus:bg-white transition-all outline-none" 
+                                                            placeholder="Nama lengkap Anda..." 
+                                                        />
                                                     </div>
                                                     <div className="space-y-1">
-                                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Alamat Email</label>
-                                                        <input required name="email" type="email" className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#0d9488] transition-all" placeholder="Masukkan email..." />
+                                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1 flex items-center gap-1">
+                                                            Alamat Email <span className="text-rose-500">*</span>
+                                                        </label>
+                                                        <input 
+                                                            required 
+                                                            name="email" 
+                                                            type="email" 
+                                                            maxLength={150}
+                                                            className="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#0d9488] focus:bg-white transition-all outline-none" 
+                                                            placeholder="nama@email.com" 
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1 flex items-center gap-1">
+                                                            No. Telp / WhatsApp <span className="text-rose-500">*</span>
+                                                        </label>
+                                                        <input 
+                                                            required 
+                                                            name="phone" 
+                                                            type="tel" 
+                                                            maxLength={20}
+                                                            className="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#0d9488] focus:bg-white transition-all outline-none" 
+                                                            placeholder="Contoh: 081234567890" 
+                                                        />
                                                     </div>
                                                 </div>
+
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Komentar / Masukan</label>
-                                                    <textarea required name="comment" rows={4} maxLength={1000} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#0d9488] transition-all" placeholder="Tuliskan komentar Anda di sini... (max 1000 karakter)"></textarea>
+                                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1 flex items-center gap-1">
+                                                        Komentar / Masukan <span className="text-rose-500">*</span>
+                                                    </label>
+                                                    <textarea 
+                                                        required 
+                                                        name="comment" 
+                                                        rows={4} 
+                                                        maxLength={1000} 
+                                                        className="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#0d9488] focus:bg-white transition-all outline-none" 
+                                                        placeholder="Tuliskan tanggapan, kritik, atau saran Anda terhadap dokumen hukum ini... (maksimal 1000 karakter)"
+                                                    ></textarea>
                                                 </div>
-                                                <button type="submit" className="px-8 py-3 bg-[#0d9488] text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[#0b7a6f] transition-all shadow-lg shadow-teal-900/10 active:scale-95">
-                                                    Kirim Komentar
-                                                </button>
+
+                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                                                    <p className="text-[11px] text-slate-400 italic">
+                                                        * Kontak email & telepon dijaga kerahasiaannya untuk validasi admin dan tidak ditampilkan ke publik.
+                                                    </p>
+                                                    <button 
+                                                        type="submit" 
+                                                        disabled={isSubmittingComment}
+                                                        className="px-8 py-3 bg-[#0d9488] text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[#0b7a6f] transition-all shadow-lg shadow-teal-900/10 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0"
+                                                    >
+                                                        {isSubmittingComment ? (
+                                                            <>
+                                                                <div className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                                <span>Mengirim...</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Send className="h-4 w-4" />
+                                                                <span>Kirim Komentar</span>
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>

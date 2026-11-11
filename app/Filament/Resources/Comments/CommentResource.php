@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Comments;
 use App\Filament\Resources\Comments\Pages\ManageComments;
 use App\Models\Comment;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -17,7 +18,6 @@ use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -41,18 +41,26 @@ class CommentResource extends Resource
         return $schema
             ->components([
                 TextInput::make('legal_document_id')
+                    ->label('ID Dokumen Hukum')
                     ->required()
                     ->numeric(),
                 TextInput::make('name')
+                    ->label('Nama Lengkap')
                     ->required(),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Alamat Email')
                     ->email()
                     ->required(),
+                TextInput::make('phone')
+                    ->label('No. Telp / WhatsApp')
+                    ->tel()
+                    ->required(),
                 Textarea::make('comment')
+                    ->label('Isi Komentar / Tanggapan')
                     ->required()
                     ->columnSpanFull(),
                 Toggle::make('is_approved')
+                    ->label('Disetujui untuk Tampil Publik')
                     ->required(),
             ]);
     }
@@ -61,20 +69,29 @@ class CommentResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('legal_document_id')
-                    ->numeric(),
-                TextEntry::make('name'),
+                TextEntry::make('legalDocument.title')
+                    ->label('Dokumen Terkait'),
+                TextEntry::make('name')
+                    ->label('Nama Pengirim'),
                 TextEntry::make('email')
-                    ->label('Email address'),
+                    ->label('Alamat Email'),
+                TextEntry::make('phone')
+                    ->label('No. Telp / WhatsApp'),
                 TextEntry::make('comment')
+                    ->label('Isi Komentar')
                     ->columnSpanFull(),
                 IconEntry::make('is_approved')
+                    ->label('Status Disetujui')
                     ->boolean(),
                 TextEntry::make('created_at')
-                    ->dateTime()
+                    ->label('Tanggal Dikirim')
+                    ->dateTime('d M Y H:i:s')
+                    ->timezone('Asia/Jakarta')
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
-                    ->dateTime()
+                    ->label('Terakhir Diperbarui')
+                    ->dateTime('d M Y H:i:s')
+                    ->timezone('Asia/Jakarta')
                     ->placeholder('-'),
             ]);
     }
@@ -86,7 +103,8 @@ class CommentResource extends Resource
             ->columns([
                 TextColumn::make('legalDocument.title')
                     ->label('Dokumen')
-                    ->limit(50)
+                    ->limit(45)
+                    ->tooltip(fn ($record) => $record->legalDocument?->title)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
@@ -94,16 +112,23 @@ class CommentResource extends Resource
                     ->searchable(),
                 TextColumn::make('email')
                     ->label('Email')
+                    ->copyable()
+                    ->searchable(),
+                TextColumn::make('phone')
+                    ->label('Telp / WA')
+                    ->copyable()
                     ->searchable(),
                 TextColumn::make('comment')
                     ->label('Komentar')
                     ->limit(50)
+                    ->tooltip(fn ($record) => $record->comment)
                     ->searchable(),
                 ToggleColumn::make('is_approved')
                     ->label('Disetujui'),
                 TextColumn::make('created_at')
                     ->label('Tanggal')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
+                    ->timezone('Asia/Jakarta')
                     ->sortable(),
             ])
             ->filters([

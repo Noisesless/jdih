@@ -236,6 +236,26 @@ Tambahkan kolom `role` atau periksa email domain resmi:
 
 ---
 
+## 8. Audit Keamanan & Proteksi Komentar Katalog (November 2026)
+
+### Temuan Celah & Mitigasi Exploit Komentar:
+1. **Stored XSS Prevention (SP-002)**:
+   - *Sebelum*: Input komentar hanya divalidasi string standar tanpa pembersihan tag HTML.
+   - *Mitigasi*: Diterapkan `strip_tags()` dan regex penghapusan null-byte/control character pada `name`, `phone`, dan `comment`. Di sisi frontend, teks dirender melalui text node aman (React JSX escaping otomatis).
+2. **Citizen Privacy / PII Information Disclosure (SP-008)**:
+   - *Sebelum*: Serialisasi relasi `comments` berpotensi mengekspos alamat email dan no telepon ke inspeksi network/DOM.
+   - *Mitigasi*: Model `Comment` menambahkan `$hidden = ['email', 'phone']`, dan query publik di `routes/web.php` secara eksplisit hanya memproyeksikan kolom aman: `['id', 'legal_document_id', 'name', 'comment', 'created_at']`.
+3. **Anti-Spam & Honeypot Trap (SP-022)**:
+   - Ditambahkan field tersembunyi `b_hp_field` yang tak terlihat oleh manusia. Bot pengisi otomatis langsung ditolak dengan kode status HTTP 422 tanpa menyentuh basis data.
+4. **Anti-Flooding & Duplicate Flood Guard (SP-024)**:
+   - Rate limit diperketat dari `throttle:30,1` menjadi `throttle:5,1` pada rute `POST /comments`.
+   - Ditambahkan pengecekan duplikasi konten komentar yang sama dari email & dokumen yang sama dalam jendela waktu 5 menit.
+5. **Enforced Moderation & Mandatory Field Compliance**:
+   - Status `is_approved` di-lock mutlak `false` saat create. Komentar wajib lolos moderasi admin di panel Filament sebelum tampil publik.
+   - Isian wajib ditambahkan: **Nama Lengkap**, **Alamat Email**, dan **No. Telp / WhatsApp** dengan validasi regex format nomor telepon Indonesia/internasional.
+
+---
+
 ## Catatan untuk Sesi Berikutnya
 
 1. Pada server produksi (Linux dengan PHP 8.2+), jalankan `composer update league/commonmark livewire/livewire filament/filament` secara berkala untuk menjaga advisories PHP selalu mutakhir.

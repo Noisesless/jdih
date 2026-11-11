@@ -87,7 +87,15 @@ ui_desktop = "Card section Statistik Pengunjung & Akses Portal pada Pages/Statis
 ui_mobile = "Card Pengunjung Portal pada Mobile/Statistik.tsx (4 Metrik + Online Live Badge)"
 chart_mobile_fix = "Container h-[340px], bottom margin 65px, toggle filter Top 8 vs Semua, minPointSize=4"
 
+[COMMENT_SYSTEM]
+table = "comments (id, legal_document_id, name, email, phone, comment, is_approved, timestamps)"
+moderation = "Wajib dimoderasi admin (default is_approved = false) sebelum tayang publik"
+mandatory_fields = "Nama Lengkap, Alamat Email, No. Telp / WhatsApp, Komentar / Masukan"
+security_protections = "Anti-XSS strip_tags & null-byte filter, Anti-Spam Honeypot (b_hp_field), Anti-Duplicate Guard (5 min), Route Throttle (5/min), PII Leak Protection ($hidden = ['email', 'phone'])"
+admin_resource = "App\Filament\Resources\Comments\CommentResource"
+activity_logging = "Auto-tracked via LogsActivity trait pada Comment model"
+
 [FASE_STATUS]
 active_fase = "Fase 7 (Audit Keamanan Selesai & Stabilisasi Dependensi)"
-security_audit = "OWASP Top 10:2025 Audit selesai (.docs/security-audit.md). VULN-001, VULN-003, VULN-004, VULN-006 resolved."
+security_audit = "OWASP Top 10:2025 Audit selesai (.docs/security-audit.md). VULN-001, VULN-003, VULN-004, VULN-006 resolved. Audit Komentar Katalog Aman (SP-002, SP-008, SP-022, SP-024)."
 pending_task = "Sinkronisasi 179 regulasi tanpa relasi & accessor pivot relation_type"

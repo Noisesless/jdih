@@ -282,3 +282,32 @@ php artisan optimize:clear
     *   Kolom Keterangan pada `ActivityLogResource` ditampilkan secara default dan dapat dicari (*searchable*).
 *   **Pembaruan Kredensial Dev Admin**:
     *   Password akun pengembang `admin@jdih.test` diperbarui dan diselaraskan pada database serta `database/seeders/DatabaseSeeder.php`.
+
+---
+
+## 10. Status Sesi Terkini (11 November 2026 - Bagian 2)
+
+### Sesi Bagian 9: Audit Eksploitasi & Penguatan Keamanan Komentar Katalog, Isian Wajib (Nama, Email, Telp/WA), & Proteksi Anti-Abuse
+*   **Audit Keamanan Sistem Komentar Katalog (`CommentController.php`, `Comment.php`, `CommentResource.php`)**:
+    *   **Anti-XSS & Input Sanitization (SP-002)**: Diterapkan sanitasi berlapis `strip_tags()` dan penyaringan null-byte/control character pada input nama, nomor telepon, dan teks komentar untuk menangkal potensi stored XSS.
+    *   **Proteksi PII & Anti-Information Disclosure (SP-008)**: Menambahkan `protected $hidden = ['email', 'phone'];` pada model `Comment` dan membatasi proyeksi kolom publik pada `routes/web.php` ke `['id', 'legal_document_id', 'name', 'comment', 'created_at']` agar data kontak pribadi warga tidak bocor ke API publik atau inspeksi DOM.
+    *   **Anti-Bot & Honeypot Trap (SP-022)**: Menyematkan field tersembunyi `b_hp_field` yang tak kasat mata bagi pengunjung manusia. Bot spammer yang otomatis mengisi seluruh field langsung ditolak dengan kode `HTTP 422 Unprocessable Content`.
+    *   **Anti-Flooding & Duplicate Flood Guard (SP-024)**: Memperketat middleware route rate limit dari `throttle:30,1` menjadi `throttle:5,1` (maksimal 5 pengiriman/menit per IP) dan menolak submission duplikat dengan konten, email, dan dokumen yang sama dalam jendela waktu 5 menit (`HTTP 429`).
+    *   **Enforced Moderation Status**: Mengunci nilai atribut `is_approved = false` secara mutlak di backend. Komentar tidak akan pernah tampil ke publik sampai disetujui secara sadar oleh admin di panel Filament.
+*   **Penambahan Isian Wajib (Nama, Email, dan No. Telp / WhatsApp)**:
+    *   Membuat migrasi `2026_11_11_120000_add_phone_to_comments_table.php` untuk menambahkan kolom `phone` (VARCHAR 30, nullable untuk backwards-compatibility data lawas) ke tabel `comments`.
+    *   Menambahkan aturan validasi ketat di `CommentController`:
+        - `name`: Wajib, string, min 2, max 100 karakter.
+        - `email`: Wajib, email valid, max 150 karakter.
+        - `phone`: Wajib, string, min 9, max 20 digit dengan regex telepon Indonesia/internasional (`/^(\+?[0-9\s\-\(\)]+)$/`).
+        - `comment`: Wajib, string, min 5, max 1000 karakter.
+*   **Penyelarasan Antarmuka Admin Filament (`CommentResource.php`)**:
+    *   Menambahkan kolom `phone` bertanda label *Telp / WA* yang dapat dicari (*searchable*) dan disalin (*copyable*) ke dalam tabel dan infolist detail komentar.
+    *   Menambahkan input `phone` pada form detail komentar dengan tipe tel.
+*   **Penyempurnaan Formulir Frontend (`DetailDokumen.tsx`)**:
+    *   Menyediakan 3 kolom masukan sejajar yang rapi dan responsif: Nama Lengkap, Alamat Email, dan No. Telp / WhatsApp.
+    *   Menambahkan indikator required asterik merah (`*`) dan teks penjaminan privasi bahwa data email & telepon dijaga kerahasiaannya untuk validasi internal admin.
+    *   Mengganti `alert()` bawaan browser dengan notifikasi inline state modern (sukses / error) dengan visual badge *ShieldCheck* dan *AlertTriangle*.
+    *   Menambahkan status tombol pengiriman dengan animasi spinner (*"Mengirim..."*) serta disable button saat proses berlangsung untuk mencegah double-click / multiple request.
+*   **Kompilasi Frontend & Build Produksi**:
+    *   Aset frontend telah dikompilasi ulang secara bersih via `npm run build` (vite v7.3.7) tanpa error.

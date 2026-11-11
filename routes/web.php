@@ -573,7 +573,7 @@ Route::post('/ai/ask', [AiAssistantController::class, 'ask'])
     ->middleware('throttle:20,1') // 20 requests per minute (AI lebih mahal)
     ->name('ai.ask');
 Route::post('/comments', [CommentController::class, 'store'])
-    ->middleware('throttle:30,1') // 30 requests per minute
+    ->middleware('throttle:5,1') // 5 requests per minute (anti-spam protection)
     ->name('comments.store');
 Route::post('/community-satisfaction', [\App\Http\Controllers\CommunitySatisfactionController::class, 'store'])
     ->middleware('throttle:5,1') // 5 requests per minute (survey)
@@ -1160,7 +1160,7 @@ Route::get("/{category:slug}", function(string $slug, \Illuminate\Http\Request $
 Route::get("/{category:slug}/{id}", function(string $slug, int $id) {
     $doc = \App\Models\LegalDocument::with([
         'category', 
-        'comments' => fn($q) => $q->where('is_approved', true)->latest(), 
+        'comments' => fn($q) => $q->where('is_approved', true)->select(['id', 'legal_document_id', 'name', 'comment', 'created_at'])->latest(), 
         'relatedDocuments.category', 
         'referencedByDocuments.category'
     ])->findOrFail($id);
