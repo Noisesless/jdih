@@ -45,15 +45,23 @@ class CommentResource extends Resource
                     ->required()
                     ->numeric(),
                 TextInput::make('name')
-                    ->label('Nama Lengkap')
+                    ->label('Nama Lengkap (Huruf)')
+                    ->regex('/^[\pL\s\.\'\,\-]+$/u')
+                    ->validationMessages([
+                        'regex' => 'Kolom nama hanya boleh diisi huruf / tulisan.',
+                    ])
                     ->required(),
                 TextInput::make('email')
                     ->label('Alamat Email')
                     ->email()
                     ->required(),
                 TextInput::make('phone')
-                    ->label('No. Telp / WhatsApp')
+                    ->label('No. Telp / WhatsApp (Angka)')
                     ->tel()
+                    ->regex('/^[0-9]+$/')
+                    ->validationMessages([
+                        'regex' => 'Kolom nomor telepon / WhatsApp hanya boleh diisi angka (digit 0-9).',
+                    ])
                     ->required(),
                 Textarea::make('comment')
                     ->label('Isi Komentar / Tanggapan')

@@ -21,16 +21,23 @@ class CommentController extends Controller
         }
 
         // 2. Strict Input Validation (Wajib: Nama, Email, Telp/WA, Komentar)
+        // Nama hanya boleh tulisan/huruf, Telp/WA hanya boleh angka murni
         $validated = $request->validate([
             'legal_document_id' => 'required|integer|exists:legal_documents,id',
-            'name'              => 'required|string|min:2|max:100',
+            'name'              => [
+                'required',
+                'string',
+                'min:2',
+                'max:100',
+                'regex:/^[\pL\s\.\'\,\-]+$/u',
+            ],
             'email'             => 'required|email|max:150',
             'phone'             => [
                 'required',
                 'string',
                 'min:9',
                 'max:20',
-                'regex:/^(\+?[0-9\s\-\(\)]+)$/',
+                'regex:/^[0-9]+$/',
             ],
             'comment'           => 'required|string|min:5|max:1000',
         ], [
@@ -39,22 +46,23 @@ class CommentController extends Controller
             'name.required'              => 'Nama lengkap wajib diisi.',
             'name.min'                   => 'Nama minimal terdiri dari 2 karakter.',
             'name.max'                   => 'Nama maksimal 100 karakter.',
+            'name.regex'                 => 'Kolom nama hanya boleh diisi huruf / tulisan (tidak boleh berisi angka atau simbol).',
             'email.required'             => 'Alamat email aktif wajib diisi.',
             'email.email'                => 'Format alamat email tidak valid.',
             'phone.required'             => 'Nomor telepon / WhatsApp aktif wajib diisi.',
-            'phone.min'                  => 'Nomor telepon / WhatsApp minimal 9 digit.',
-            'phone.max'                  => 'Nomor telepon / WhatsApp maksimal 20 digit.',
-            'phone.regex'                => 'Format nomor telepon / WhatsApp hanya boleh berisi angka, spasi, tanda plus (+) atau tanda minus (-).',
+            'phone.min'                  => 'Nomor telepon / WhatsApp minimal 9 digit angka.',
+            'phone.max'                  => 'Nomor telepon / WhatsApp maksimal 20 digit angka.',
+            'phone.regex'                => 'Kolom nomor telepon / WhatsApp hanya boleh diisi angka (digit 0-9).',
             'comment.required'           => 'Komentar / masukan wajib diisi.',
             'comment.min'                => 'Komentar minimal terdiri dari 5 karakter.',
             'comment.max'                => 'Komentar maksimal 1000 karakter.',
         ]);
 
         // 3. Sanitasi Anti-XSS & Anti-Exploit
-        // Bersihkan seluruh tag HTML, skrip, dan karakter kendali berbahaya (null bytes).
-        $sanitizedName = preg_replace('/[\x00-\x1F\x7F]/u', '', trim(strip_tags($validated['name'])));
+        // Bersihkan seluruh tag HTML, skrip, dan filter tipe konten
+        $sanitizedName = preg_replace('/[^\pL\s\.\'\,\-]/u', '', trim(strip_tags($validated['name'])));
         $sanitizedEmail = trim(filter_var($validated['email'], FILTER_SANITIZE_EMAIL));
-        $sanitizedPhone = preg_replace('/[^\+0-9\s\-\(\)]/', '', trim(strip_tags($validated['phone'])));
+        $sanitizedPhone = preg_replace('/[^0-9]/', '', trim(strip_tags($validated['phone'])));
         // Untuk komentar, buang semua tag HTML (strip_tags) tapi pertahankan baris baru normal
         $sanitizedComment = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', trim(strip_tags($validated['comment'])));
 

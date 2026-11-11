@@ -641,7 +641,7 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                     <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1 flex items-center gap-1">
-                                                            Nama Lengkap <span className="text-rose-500">*</span>
+                                                            Nama Lengkap (Huruf) <span className="text-rose-500">*</span>
                                                         </label>
                                                         <input 
                                                             required 
@@ -650,6 +650,17 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                                             maxLength={100}
                                                             className="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#0d9488] focus:bg-white transition-all outline-none" 
                                                             placeholder="Nama lengkap Anda..." 
+                                                            onKeyDown={(e) => {
+                                                                // Tolak angka dan karakter terlarang (hanya izinkan huruf, spasi, titik, koma, petik, minus)
+                                                                if (e.key.length === 1 && !/^[a-zA-Z\s\.\'\,\-]$/.test(e.key)) {
+                                                                    e.preventDefault();
+                                                                }
+                                                            }}
+                                                            onInput={(e) => {
+                                                                // Bersihkan angka dan karakter terlarang saat di-paste
+                                                                const target = e.currentTarget;
+                                                                target.value = target.value.replace(/[^a-zA-Z\s\.\'\,\-]/g, '');
+                                                            }}
                                                         />
                                                     </div>
                                                     <div className="space-y-1">
@@ -667,15 +678,28 @@ export default function DetailDokumen({ document, category, popular = [] }: Docu
                                                     </div>
                                                     <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1 flex items-center gap-1">
-                                                            No. Telp / WhatsApp <span className="text-rose-500">*</span>
+                                                            No. Telp / WhatsApp (Angka) <span className="text-rose-500">*</span>
                                                         </label>
                                                         <input 
                                                             required 
                                                             name="phone" 
                                                             type="tel" 
+                                                            inputMode="numeric"
+                                                            pattern="[0-9]*"
                                                             maxLength={20}
                                                             className="w-full bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#0d9488] focus:bg-white transition-all outline-none" 
                                                             placeholder="Contoh: 081234567890" 
+                                                            onKeyDown={(e) => {
+                                                                // Hanya izinkan angka (0-9) dan tombol navigasi
+                                                                if (e.key.length === 1 && !/^[0-9]$/.test(e.key)) {
+                                                                    e.preventDefault();
+                                                                }
+                                                            }}
+                                                            onInput={(e) => {
+                                                                // Bersihkan huruf dan simbol saat di-paste
+                                                                const target = e.currentTarget;
+                                                                target.value = target.value.replace(/[^0-9]/g, '');
+                                                            }}
                                                         />
                                                     </div>
                                                 </div>
