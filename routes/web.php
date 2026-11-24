@@ -1094,6 +1094,17 @@ Route::prefix('mobile')->group(function () use ($renderMobileBeritaDetail) {
     })->name('mobile.statistik');
 });
 
+// ---------------------------------------------------------------
+// JDIHN & JDIH JATENG PULL-BASED INTEGRATION FEED
+// URL resmi terdaftar di connect.jdihn.go.id: /integrasi/
+// ---------------------------------------------------------------
+Route::get('/integrasi', [App\Http\Controllers\Api\JdihIntegrasiController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('jdihn.integrasi');
+Route::get('/main/integrasi', [App\Http\Controllers\Api\JdihIntegrasiController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('jdihn.integrasi.main');
+
 Route::get("/{category:slug}", function(string $slug, \Illuminate\Http\Request $request) {
     $cat = \App\Models\Category::where('slug', $slug)->first();
     if (!$cat) abort(404);

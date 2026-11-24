@@ -31,10 +31,10 @@ class RecordVisitor
      */
     protected function recordVisit(Request $request): void
     {
-        // Abaikan route background, API, aset statis, atau livewire/healthcheck
+        // Abaikan route background, API, feed integrasi, aset statis, atau livewire/healthcheck
         if (
             $request->ajax() ||
-            $request->is('api/*', 'storage/*', 'build/*', 'images/*', 'favicon.ico', 'robots.txt', 'up')
+            $request->is('api/*', 'integrasi', 'integrasi/*', 'main/integrasi', 'main/integrasi/*', 'storage/*', 'build/*', 'images/*', 'favicon.ico', 'robots.txt', 'up')
         ) {
             return;
         }

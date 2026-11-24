@@ -15,6 +15,34 @@ $settings = JdihApiSetting::class;
     </div>
 
     <div class="fi-content">
+        {{-- Official Pull-Based Integration Endpoint Info --}}
+        <div class="mb-6 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-900">Endpoint Integrasi Resmi (Pull-Based JDIHN)</h3>
+                <p class="text-sm text-gray-500 mt-1">URL sumber JSON resmi yang dibaca oleh konsol sinkronisasi <code>connect.jdihn.go.id</code> dan JDIH Provinsi Jawa Tengah</p>
+            </div>
+            <div class="p-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">URL Sinkronisasi Resmi</label>
+                <div class="flex items-center gap-2">
+                    <input
+                        type="text"
+                        readonly
+                        value="{{ url('/integrasi') }}/"
+                        class="w-full rounded-lg border-gray-300 bg-gray-50 text-gray-800 font-mono text-sm"
+                    />
+                    <a
+                        href="{{ url('/integrasi') }}/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="shrink-0 inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
+                    >
+                        Buka Feed
+                    </a>
+                </div>
+                <p class="mt-2 text-xs text-gray-500">Pastikan URL ini sama dengan URL sinkronisasi yang terdaftar pada portal <strong>https://connect.jdihn.go.id/my-sync</strong>.</p>
+            </div>
+        </div>
+
         <form wire:submit="saveSettings" class="space-y-6">
             {{-- API Configuration Section --}}
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">

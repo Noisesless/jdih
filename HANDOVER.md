@@ -344,3 +344,18 @@ php artisan optimize:clear
 *   **Audit Sanitasi & Pencegahan Kebocoran Rahasia Produksi**:
     *   Memverifikasi `README.md` dan seluruh berkas `.docs/` bebas dari nilai `.env`, kata sandi database/server, dan kredensial SSH.
     *   Memastikan `.env` dan berkas backup database lokal tetap berada dalam `.gitignore`.
+
+---
+
+## 11. Status Sesi Terkini (24 November 2026)
+
+### Sesi Bagian 13: Implementasi Endpoint Feed Resmi Pull-Based JDIHN (`/integrasi/`)
+*   **Analisis Kegagalan Sinkronisasi `https://connect.jdihn.go.id/my-sync`**:
+    *   Pemeriksaan `/home/jdih1bna/logs/nginx/access.log` menunjukkan konsol resmi pusat `connect.jdihn.go.id` (`103.145.96.150` / `jdihn-integration-console/0.34.0`), `JDIH Jateng User Agent 1.0` (`103.107.245.244`), dan `SPLP-Active-Availability-Monitor/1.0` (`103.134.19.173`) memanggil `GET /integrasi/` dan `GET /main/integrasi/`, namun ditolak `HTTP 404` karena rute tertangkap wildcard `/{category:slug}` di `routes/web.php`.
+*   **Perbaikan & Implementasi (`JdihIntegrasiController.php`, `routes/web.php`, `RecordVisitor.php`)**:
+    *   Menambahkan `App\Http\Controllers\Api\JdihIntegrasiController@index` yang menghasilkan *JSON array* publik sesuai spesifikasi standar BPHN / ILDIS (`idData`, `tahun_pengundangan`, `tanggal_penetapan`, `tanggal_pengundangan`, `jenis`, `noPeraturan`, `judul`, `noPanggil`, `singkatanJenis`, `tempatTerbit`, `penerbit`, `deskripsiFisik`, `sumber`, `subjek`, `isbn`, `status`, `bahasa`, `bidangHukum`, `teuBadan`, `nomorIndukBuku`, `abstrak`, `last_updated`, `urlAbstrak`, `urlDetailPeraturan`, `fileDownload`, `urlDownload`, `operasi`, `display`).
+    *   Mendaftarkan rute `/integrasi` (mencakup `/integrasi/`) dan `/main/integrasi` sebelum rute wildcard `/{category:slug}` dengan rate limit `throttle:60,1` serta header CORS publik (`Access-Control-Allow-Origin: *`).
+    *   Menambahkan cache versi 10 menit dengan invalidasi otomatis via model hook `LegalDocument::booted()` dan `Category::booted()` agar perubahan data langsung tercermin tanpa membebani DB.
+    *   Mengecualikan rute `integrasi/*` dan `main/integrasi/*` di `RecordVisitor` agar *polling* sinkronisasi tidak merusak statistik pengunjung.
+    *   Menampilkan panel informasi URL Pull-Based Resmi (`https://jdih.banjarnegarakab.go.id/integrasi/`) pada halaman pengaturan `jdih-sync-settings.blade.php`.
+    *   Seluruh perbaikan dilakukan tanpa mengubah struktur maupun isi database produksi.

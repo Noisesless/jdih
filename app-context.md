@@ -1,5 +1,5 @@
 # APP CONTEXT — JDIH KABUPATEN BANJARNEGARA
-# Last Updated: 2026-11-11
+# Last Updated: 2026-11-24
 # State Snapshot untuk Vibes Coding Workflow / Antigravity IDE
 # Status: Production Clean & Sanitized
 
@@ -99,8 +99,16 @@ activity_logging = "Auto-tracked via LogsActivity trait pada Comment model"
 [SECURITY_HARDENING]
 bruteforce_mitigation = "UFW Firewall Rule #1 block 45.148.10.9 (botnet 414 POST/sec), Nginx proxy_set_header X-Real-IP $remote_addr, Tiered Rate Limiter (5x email / 25x IP), Inline SVG CAPTCHA Filament"
 real_ip_resolution = "Laravel trustProxies('*') + AppServiceProvider::getClientIp() (prioritas CF-Connecting-IP, X-Real-IP, X-Forwarded-For)"
-rate_limiting = "Tiered Filament login (5 email / 25 IP), Route /comments (5/min), Public consultation (5/min), Chat AI (15/min)"
+rate_limiting = "Tiered Filament login (5 email / 25 IP), Route /comments (5/min), Public consultation (5/min), Chat AI (15/min), JDIHN /integrasi/ (60/min)"
 public_safety = "README.md & .docs/ bebas kredensial/rahasia produksi, .env* di-gitignore, SP-032 & SP-033 compliant"
+
+[JDIHN_INTEGRATION]
+official_sync_url = "https://jdih.banjarnegarakab.go.id/integrasi/"
+aliases = "/integrasi, /integrasi/, /main/integrasi, /main/integrasi/"
+controller = "App\Http\Controllers\Api\JdihIntegrasiController@index"
+feed_format = "Pull-based JSON Array standar ILDIS/BPHN (idData, jenis, noPeraturan, judul, urlDetailPeraturan, fileDownload, urlDownload, urlAbstrak, operasi=4, display=1)"
+cache_invalidation = "Otomatis invalidasi versi cache saat LegalDocument atau Category disimpan/dihapus"
+visitor_exclusion = "RecordVisitor mengabaikan integrasi/* & main/integrasi/* agar tidak mengotori statistik pengunjung"
 
 [FASE_STATUS]
 active_fase = "Fase 7 (Audit Keamanan Selesai & Stabilisasi Dependensi)"

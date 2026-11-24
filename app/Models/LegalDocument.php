@@ -9,6 +9,16 @@ class LegalDocument extends Model
 {
     use LogsActivity;
 
+    /**
+     * Bootstrap model hooks to invalidate the JDIHN integration feed cache on changes.
+     */
+    protected static function booted(): void
+    {
+        $invalidateFeed = fn () => \App\Http\Controllers\Api\JdihIntegrasiController::clearFeedCache();
+        static::saved($invalidateFeed);
+        static::deleted($invalidateFeed);
+    }
+
     protected $fillable = [
         'title',
         'document_number',

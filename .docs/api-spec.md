@@ -87,7 +87,13 @@ Dokumen spesifikasi endpoint publik, integrasi eksternal, dan antarmuka data JDI
 
 ## 2. External Integration Endpoints (JDIHN & Desa)
 
-### A. Sinkronisasi JDIHN Nasional
+### A. Sinkronisasi JDIHN Nasional (Pull Feed & Push API)
+- **GET** `/integrasi/` (alias: `/integrasi`, `/main/integrasi/`)
+  - **Auth**: Public Open-Data Feed (Rate-limited: `throttle:60,1` per IP, CORS `*`)
+  - **Konsumen Resmi**: Konsol sinkronisasi JDIHN Pusat (`https://connect.jdihn.go.id/my-sync`), JDIH Provinsi Jawa Tengah (`JDIH Jateng User Agent 1.0`), dan `SPLP-Active-Availability-Monitor`.
+  - **Response**: JSON Array berstandar ILDIS / BPHN JDIHN (`idData`, `tahun_pengundangan`, `tanggal_penetapan`, `tanggal_pengundangan`, `jenis`, `noPeraturan`, `judul`, `noPanggil`, `singkatanJenis`, `tempatTerbit`, `penerbit`, `deskripsiFisik`, `sumber`, `subjek`, `isbn`, `status`, `bahasa`, `bidangHukum`, `teuBadan`, `nomorIndukBuku`, `abstrak`, `last_updated`, `urlAbstrak`, `urlDetailPeraturan`, `fileDownload`, `urlDownload`, `operasi`, `display`).
+  - **Caching**: Cache 10 menit dengan invalidasi otomatis via model hook `LegalDocument` & `Category` (`saved`/`deleted`).
+
 - **GET** `/api/jdihn/sync`
   - **Auth**: Bearer Token (JDIHN API Key)
   - **Response**: JSON metadata berstandar BPHN / JDIHN pusat untuk indexing nasional.

@@ -55,6 +55,8 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 | `POST` | `/api/chat-ai` | `AiAssistantController@chat` | Public (Rate-limit) | Tanya Jawab AI Hukum |
 | `POST` | `/public-consultation` | `Closure -> Store Consultation` | Public | Submit Formulir Aspirasi & Konsultasi |
 | `POST` | `/api/ikm` | `Closure -> Store IKM` | Public | Submit Penilaian Survei IKM |
+| `GET` | `/integrasi` (`/integrasi/`) | `JdihIntegrasiController@index` | Public (throttle:60,1) | Feed JSON Resmi Pull-Based untuk `connect.jdihn.go.id` & JDIH Jateng |
+| `GET` | `/main/integrasi` (`/main/integrasi/`) | `JdihIntegrasiController@index` | Public (throttle:60,1) | Alias Feed JSON Integrasi JDIHN / SPLP Monitor |
 | `GET` | `/api/jdihn/sync` | `Closure -> JDIHN Export` | API Key | Sinkronisasi JDIHN Nasional |
 
 ## 5. Middleware Chain
