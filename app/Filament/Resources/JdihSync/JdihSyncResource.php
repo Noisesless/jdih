@@ -269,34 +269,6 @@ class JdihSyncResource extends Resource
                 ->url(JdihSyncResource::getUrl('settings'))
                 ->icon('heroicon-o-cog-6-tooth')
                 ->color('gray'),
-
-            Action::make('sync_documents')
-                ->label('Push Dokumen (API)')
-                ->icon('heroicon-o-document-arrow-up')
-                ->color('warning')
-                ->requiresConfirmation()
-                ->action(function (): void {
-                    $result = static::syncDocuments();
-                    Notification::make()
-                        ->title($result['success'] ? 'Sinkronisasi Dokumen' : 'Sinkronisasi Gagal')
-                        ->body($result['message'])
-                        ->{$result['success'] ? 'success' : 'danger'}()
-                        ->send();
-                }),
-
-            Action::make('sync_members')
-                ->label('Push Anggota (API)')
-                ->icon('heroicon-o-user-group')
-                ->color('gray')
-                ->requiresConfirmation()
-                ->action(function (): void {
-                    $result = static::syncMembers();
-                    Notification::make()
-                        ->title($result['success'] ? 'Sinkronisasi Anggota' : 'Sinkronisasi Gagal')
-                        ->body($result['message'])
-                        ->{$result['success'] ? 'success' : 'danger'}()
-                        ->send();
-                }),
         ];
     }
 

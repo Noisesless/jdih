@@ -1,207 +1,117 @@
-<?php
-
-use App\Filament\Resources\JdihSync\Pages\JdihSyncSettings;
-
-// Get current settings from the page class
-$settings = JdihApiSetting::class;
-?>
-
-<div class="filament-page">
-    <div class="fi-header">
-        <div class="fi-header-heading">
-            <h1 class="fi-header-title">Pengaturan API JDIH Nasional</h1>
-        </div>
-        <p class="fi-header-description">Konfigurasi sinkronisasi data ke JDIH Nasional (JDIHN)</p>
-    </div>
-
-    <div class="fi-content">
+<x-filament-panels::page>
+    <div style="display:flex; flex-direction:column; gap:1.5rem;">
         {{-- Official Pull-Based Integration Endpoint Info --}}
-        <div class="mb-6 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h3 class="text-lg font-semibold text-gray-900">Endpoint Integrasi Resmi (Pull-Based JDIHN)</h3>
-                <p class="text-sm text-gray-500 mt-1">URL sumber JSON resmi yang dibaca oleh konsol sinkronisasi <code>connect.jdihn.go.id</code> dan JDIH Provinsi Jawa Tengah</p>
+        <div style="background:var(--fi-bg); border:1px solid color-mix(in srgb,currentColor 12%,transparent); border-radius:.75rem; overflow:hidden;">
+            <div style="padding:1rem 1.5rem; border-bottom:1px solid color-mix(in srgb,currentColor 10%,transparent); background:color-mix(in srgb,currentColor 3%,transparent);">
+                <h3 style="font-size:1rem; font-weight:600; margin:0;">Endpoint Integrasi Resmi (Pull-Based JDIHN)</h3>
+                <p style="font-size:.875rem; color:var(--fi-color-gray-500); margin:.25rem 0 0;">
+                    URL feed JSON resmi yang ditarik langsung oleh konsol sinkronisasi <strong>connect.jdihn.go.id</strong> dan JDIH Provinsi Jawa Tengah.
+                </p>
             </div>
-            <div class="p-6">
-                <label class="block text-sm font-medium text-gray-700 mb-1">URL Sinkronisasi Resmi</label>
-                <div class="flex items-center gap-2">
+            <div style="padding:1.5rem; display:flex; flex-direction:column; gap:.75rem;">
+                <label style="font-size:.875rem; font-weight:500;">URL Sinkronisasi Resmi</label>
+                <div style="display:flex; gap:.75rem; align-items:center; flex-wrap:wrap;">
                     <input
                         type="text"
                         readonly
                         value="{{ url('/integrasi') }}/"
-                        class="w-full rounded-lg border-gray-300 bg-gray-50 text-gray-800 font-mono text-sm"
+                        style="flex:1; min-width:260px; padding:.5rem .75rem; border-radius:.5rem; border:1px solid color-mix(in srgb,currentColor 15%,transparent); background:color-mix(in srgb,currentColor 5%,transparent); font-family:monospace; font-size:.875rem;"
                     />
                     <a
                         href="{{ url('/integrasi') }}/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="shrink-0 inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
+                        style="display:inline-flex; align-items:center; padding:.5rem 1rem; border-radius:.5rem; background:#0d9488; color:#fff; font-size:.875rem; font-weight:500; text-decoration:none;"
                     >
-                        Buka Feed
+                        Buka Feed JSON
+                    </a>
+                    <a
+                        href="https://connect.jdihn.go.id/my-sync"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style="display:inline-flex; align-items:center; padding:.5rem 1rem; border-radius:.5rem; background:color-mix(in srgb,currentColor 10%,transparent); font-size:.875rem; font-weight:500; text-decoration:none;"
+                    >
+                        Buka connect.jdihn.go.id
                     </a>
                 </div>
-                <p class="mt-2 text-xs text-gray-500">Pastikan URL ini sama dengan URL sinkronisasi yang terdaftar pada portal <strong>https://connect.jdihn.go.id/my-sync</strong>.</p>
+                <p style="font-size:.75rem; color:var(--fi-color-gray-500); margin:0;">
+                    Setiap penarikan data melalui URL di atas otomatis tercatat di halaman Riwayat Sinkronisasi JDIH.
+                </p>
             </div>
         </div>
 
-        <form wire:submit="saveSettings" class="space-y-6">
-            {{-- API Configuration Section --}}
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 class="text-lg font-semibold text-gray-900">Konfigurasi API</h3>
-                    <p class="text-sm text-gray-500 mt-1">Pengaturan koneksi ke server JDIHN</p>
+        {{-- Legacy Outbound Push Settings --}}
+        <form wire:submit="saveSettings" style="display:flex; flex-direction:column; gap:1.5rem;">
+            <div style="background:var(--fi-bg); border:1px solid color-mix(in srgb,currentColor 12%,transparent); border-radius:.75rem; overflow:hidden;">
+                <div style="padding:1rem 1.5rem; border-bottom:1px solid color-mix(in srgb,currentColor 10%,transparent); background:color-mix(in srgb,currentColor 3%,transparent);">
+                    <h3 style="font-size:1rem; font-weight:600; margin:0;">Konfigurasi API Outbound (Opsional / Push Legacy)</h3>
+                    <p style="font-size:.875rem; color:var(--fi-color-gray-500); margin:.25rem 0 0;">
+                        Hanya diperlukan apabila JDIHN Pusat mengaktifkan endpoint Push Token terpisah di luar konsol Pull Feed.
+                    </p>
                 </div>
 
-                <div class="p-6 space-y-4">
-                    {{-- API URL --}}
+                <div style="padding:1.5rem; display:flex; flex-direction:column; gap:1rem;">
                     <div>
-                        <label for="jdihnh_api_url" class="block text-sm font-medium text-gray-700 mb-1">
-                            URL API JDIHN <span class="text-red-500">*</span>
+                        <label for="jdihnh_api_url" style="display:block; font-size:.875rem; font-weight:500; margin-bottom:.25rem;">
+                            URL API JDIHN
                         </label>
                         <input
                             type="url"
                             id="jdihnh_api_url"
                             wire:model="jdihnh_api_url"
-                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                             placeholder="https://jdihnh.kemkumham.go.id/api"
-                            required
+                            style="width:100%; padding:.5rem .75rem; border-radius:.5rem; border:1px solid color-mix(in srgb,currentColor 15%,transparent); background:transparent; font-size:.875rem;"
                         />
-                        <p class="mt-1 text-xs text-gray-500">URL endpoint API JDIH Nasional</p>
                     </div>
 
-                    {{-- API Token --}}
                     <div>
-                        <label for="jdihnh_api_token" class="block text-sm font-medium text-gray-700 mb-1">
-                            API Token <span class="text-red-500">*</span>
+                        <label for="jdihnh_api_token" style="display:block; font-size:.875rem; font-weight:500; margin-bottom:.25rem;">
+                            API Token
                         </label>
                         <input
                             type="password"
                             id="jdihnh_api_token"
                             wire:model="jdihnh_api_token"
-                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                            placeholder="Masukkan API token"
-                            required
+                            placeholder="Masukkan API token (opsional)"
+                            style="width:100%; padding:.5rem .75rem; border-radius:.5rem; border:1px solid color-mix(in srgb,currentColor 15%,transparent); background:transparent; font-size:.875rem;"
                         />
                         @if($this->getMaskedToken())
-                            <p class="mt-1 text-xs text-gray-500">
-                                Token saat ini: <code class="bg-gray-100 px-1 rounded">{{ $this->getMaskedToken() }}</code>
+                            <p style="font-size:.75rem; color:var(--fi-color-gray-500); margin:.25rem 0 0;">
+                                Token tersimpan: <code>{{ $this->getMaskedToken() }}</code>
                             </p>
                         @endif
                     </div>
 
-                    {{-- Organization Code --}}
                     <div>
-                        <label for="jdihnh_org_code" class="block text-sm font-medium text-gray-700 mb-1">
-                            Kode Organisasi <span class="text-red-500">*</span>
+                        <label for="jdihnh_org_code" style="display:block; font-size:.875rem; font-weight:500; margin-bottom:.25rem;">
+                            Kode Organisasi
                         </label>
                         <input
                             type="text"
                             id="jdihnh_org_code"
                             wire:model="jdihnh_org_code"
-                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                             placeholder="Contoh: KAB_BANJARNEGARA"
-                            required
+                            style="width:100%; padding:.5rem .75rem; border-radius:.5rem; border:1px solid color-mix(in srgb,currentColor 15%,transparent); background:transparent; font-size:.875rem;"
                         />
-                        <p class="mt-1 text-xs text-gray-500">Kode unik organisasi di JDIHN</p>
                     </div>
 
-                    {{-- Test Connection Button --}}
-                    <div class="pt-4 border-t border-gray-200">
+                    <div style="padding-top:.5rem; display:flex; align-items:center; justify-content:flex-end; gap:.75rem;">
                         <button
                             type="button"
-                            wire:click="testConnection"
-                            class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+                            wire:click="loadSettings"
+                            style="padding:.5rem 1rem; border-radius:.5rem; background:color-mix(in srgb,currentColor 10%,transparent); border:none; font-size:.875rem; font-weight:500; cursor:pointer;"
                         >
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                            Test Koneksi
+                            Reset
                         </button>
-
-                        @if($test_result)
-                            <div class="mt-3 p-3 rounded-lg text-sm {{ $test_success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700' }}">
-                                {{ $test_result }}
-                            </div>
-                        @endif
+                        <button
+                            type="submit"
+                            style="padding:.5rem 1.25rem; border-radius:.5rem; background:#0d9488; color:#fff; border:none; font-size:.875rem; font-weight:500; cursor:pointer;"
+                        >
+                            Simpan Pengaturan
+                        </button>
                     </div>
                 </div>
-            </div>
-
-            {{-- Sync Options Section --}}
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 class="text-lg font-semibold text-gray-900">Opsi Sinkronisasi</h3>
-                    <p class="text-sm text-gray-500 mt-1">Pengaturan otomatis sinkronisasi</p>
-                </div>
-
-                <div class="p-6 space-y-4">
-                    {{-- Enable Sync --}}
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <label for="sync_enabled" class="text-sm font-medium text-gray-700">Aktifkan Sinkronisasi Otomatis</label>
-                            <p class="text-xs text-gray-500 mt-0.5">Sinkronisasi data secara otomatis sesuai interval</p>
-                        </div>
-                        <input
-                            type="checkbox"
-                            id="sync_enabled"
-                            wire:model="sync_enabled"
-                            class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                        />
-                    </div>
-
-                    {{-- Sync Interval --}}
-                    <div>
-                        <label for="sync_interval_hours" class="block text-sm font-medium text-gray-700 mb-1">
-                            Interval Sinkronisasi (jam)
-                        </label>
-                        <input
-                            type="number"
-                            id="sync_interval_hours"
-                            wire:model="sync_interval_hours"
-                            min="1"
-                            max="168"
-                            class="w-32 rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                        />
-                        <p class="mt-1 text-xs text-gray-500">1-168 jam (default: 24 jam)</p>
-                    </div>
-
-                    {{-- Sync on Create/Update --}}
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <label for="sync_on_create_update" class="text-sm font-medium text-gray-700">Sinkronisasi saat Tambah/Edit</label>
-                            <p class="text-xs text-gray-500 mt-0.5">Otomatis sinkronkan data baru atau yang diupdate</p>
-                        </div>
-                        <input
-                            type="checkbox"
-                            id="sync_on_create_update"
-                            wire:model="sync_on_create_update"
-                            class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {{-- Submit Button --}}
-            <div class="flex items-center justify-end gap-3">
-                <button
-                    type="button"
-                    wire:click="loadSettings"
-                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
-                >
-                    Reset
-                </button>
-                <button
-                    type="submit"
-                    class="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
-                >
-                    Simpan Pengaturan
-                </button>
             </div>
         </form>
-
-        @if(session()->has('message'))
-            <div class="mt-4 p-4 bg-green-50 text-green-700 rounded-lg">
-                {{ session('message') }}
-            </div>
-        @endif
     </div>
-</div>
+</x-filament-panels::page>
