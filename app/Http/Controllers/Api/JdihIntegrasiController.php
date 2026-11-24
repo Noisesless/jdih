@@ -81,6 +81,7 @@ class JdihIntegrasiController extends Controller
                 'page_count',
                 'language',
                 'publisher_place',
+                'created_at',
                 'updated_at',
             ])
             ->with('category:id,name,slug,code')
@@ -111,8 +112,18 @@ class JdihIntegrasiController extends Controller
             }
 
             $subject = $this->formatSubject($doc->subject);
-            $tanggalPenetapan = $doc->published_at?->format('Y-m-d');
-            $tanggalPengundangan = $doc->promulgated_at?->format('Y-m-d') ?? $tanggalPenetapan ?? '-';
+            $fallbackDate = ($doc->created_at && (int) $doc->created_at->format('Y') === (int) $doc->year)
+                ? $doc->created_at->format('Y-m-d')
+                : (($doc->year && (int) $doc->year >= 1900 && (int) $doc->year <= (int) date('Y') + 1)
+                    ? sprintf('%04d-01-01', (int) $doc->year)
+                    : ($doc->created_at?->format('Y-m-d') ?? date('Y-m-d')));
+
+            $tanggalPenetapan = $doc->published_at?->format('Y-m-d')
+                ?? $doc->promulgated_at?->format('Y-m-d')
+                ?? $fallbackDate;
+            $tanggalPengundangan = $doc->promulgated_at?->format('Y-m-d')
+                ?? $doc->published_at?->format('Y-m-d')
+                ?? $fallbackDate;
 
             $rows[] = [
                 'idData' => (string) $doc->id,
