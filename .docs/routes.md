@@ -45,6 +45,7 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 | `/admin/surveys` | `SurveyResource` | `auth:web` | Rekap Survei IKM |
 | `/admin/aspirations` | `AspirationResource` | `auth:web` | Manajemen Aspirasi Warga |
 | `/admin/comments` | `CommentResource` | `auth:web` | Moderasi & Manajemen Komentar Katalog |
+| `/admin/jdih-sync` | `JdihSyncResource` | `auth:web` | Riwayat Penarikan Pusat (`/integrasi/`) & Pengaturan Sinkronisasi JDIH |
 | `/admin/activity-logs` | `ActivityLogResource` | `auth:web` | Pemantauan Audit Trail |
 
 ## 4. API & Async Routes

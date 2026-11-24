@@ -107,8 +107,11 @@ official_sync_url = "https://jdih.banjarnegarakab.go.id/integrasi/"
 aliases = "/integrasi, /integrasi/, /main/integrasi, /main/integrasi/"
 controller = "App\Http\Controllers\Api\JdihIntegrasiController@index"
 feed_format = "Pull-based JSON Array standar ILDIS/BPHN (idData, jenis, noPeraturan, judul, urlDetailPeraturan, fileDownload, urlDownload, urlAbstrak, operasi=4, display=1)"
+date_fallback = "Otomatis YYYY-MM-DD (created_at atau YYYY-01-01) bila published_at/promulgated_at null di DB (Bad dates: 0)"
 cache_invalidation = "Otomatis invalidasi versi cache saat LegalDocument atau Category disimpan/dihapus"
 visitor_exclusion = "RecordVisitor mengabaikan integrasi/* & main/integrasi/* agar tidak mengotori statistik pengunjung"
+admin_sync_logging = "Setiap pull GET /integrasi/ tercatat di jdih_sync_logs (sync_type=integrasi, direction=inbound) & tampil di /admin/jdih-sync"
+last_verified = "Sync #1415 Completed (1.581 diambil: 1.556 insert, 24 update, 1.504 lampiran antre download; fix fallback tanggal commit 5ac547f & pull logging /admin/jdih-sync)"
 
 [FASE_STATUS]
 active_fase = "Fase 7 (Audit Keamanan Selesai & Stabilisasi Dependensi)"

@@ -76,6 +76,11 @@ graph TD
   - *Validasi Tipe Karakter*: Kolom nama diwajibkan hanya huruf/tanda baca nama (`regex:/^[\pL\s\.\'\,\-]+$/u`), dan kolom nomor telepon/WhatsApp diwajibkan hanya angka digit murni (`regex:/^[0-9]+$/`).
   - *Anti-Exploit & Anti-Spam*: Sanitasi input berlapis via `strip_tags()` dan filter null-byte, perangkap honeypot tersembunyi (`b_hp_field`), route rate limiting `throttle:5,1`, serta anti-duplicate guard (jendela 5 menit).
   - *Moderasi Penuh*: Default status `is_approved = false` dikunci mutlak di backend. Seluruh tanggapan publik wajib disetujui admin di panel Filament sebelum ditampilkan pada katalog dokumen.
+- **Feed Integrasi Pull-Based JDIHN Nasional (`JdihIntegrasiController.php` & `JdihSyncResource.php`)**:
+  - Menyediakan endpoint publik resmi `GET /integrasi/` (serta alias `/integrasi` dan `/main/integrasi/`) berstandar JSON ILDIS/BPHN untuk konsol sinkronisasi `connect.jdihn.go.id` dan JDIH Provinsi Jawa Tengah (`throttle:60,1`, header CORS `*`).
+  - Dilengkapi cache versi 10 menit dengan invalidasi otomatis via `LegalDocument::booted()` & `Category::booted()` serta fallback tanggal `YYYY-MM-DD` agar validasi skema JDIHN tetap lolos meski tanggal penetapan/pengundangan di DB bernilai `null`.
+  - Setiap permintaan `GET` penarikan feed dicatat otomatis ke `jdih_sync_logs` (`sync_type: integrasi`, `direction: inbound`, deduplikasi per klien/IP) untuk dipantau di `/admin/jdih-sync` (lengkap dengan filter sumber, infolist detail, auto-poll 30s, serta aksi cepat cek feed & `connect.jdihn.go.id`).
+  - Rute integrasi dikecualikan dari `RecordVisitor` agar polling sinkronisasi tidak mengotori statistik pengunjung portal.
 - **RAG & AI Assistant**: Layanan asisten hukum multi-tier terintegrasi pada antarmuka Desktop (modal popup) dan Mobile (bottom-sheet drawer 85vh):
   1. *Primary*: Google Gemini API dengan rotasi multi-key pool (`GEMINI_API_KEYS`) dan fallback pool model.
   2. *Secondary / Offline*: `OfflineLegalRagService` 100% Native PHP in-process via Eloquent & text matching (bebas dari subprocess Python atau kegagalan koneksi luar).

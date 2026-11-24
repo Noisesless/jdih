@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\JdihSyncLog;
 use App\Models\LegalDocument;
+use App\Providers\AppServiceProvider;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class JdihIntegrasiController extends Controller
@@ -19,13 +22,19 @@ class JdihIntegrasiController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $startedAt = microtime(true);
         $baseUrl = rtrim($request->getSchemeAndHttpHost() ?: config('app.url'), '/');
         $version = (int) Cache::get(self::CACHE_VERSION_KEY, 1);
         $cacheKey = 'jdihn_integrasi_feed_v1_' . $version . '_' . md5($baseUrl);
+        $cacheHit = Cache::has($cacheKey);
 
         $payload = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($baseUrl) {
             return $this->buildFeedPayload($baseUrl);
         });
+
+        if ($request->isMethod('GET')) {
+            $this->recordPullSyncLog($request, count($payload), $cacheHit, $startedAt);
+        }
 
         return response()->json($payload, 200, [
             'Content-Type' => 'application/json; charset=utf-8',
@@ -33,6 +42,74 @@ class JdihIntegrasiController extends Controller
             'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
             'Cache-Control' => 'public, max-age=300',
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * Record incoming pull-based sync requests from JDIHN Pusat, JDIH Jateng,
+     * and public monitors into jdih_sync_logs for visibility in /admin/jdih-sync.
+     */
+    protected function recordPullSyncLog(Request $request, int $documentCount, bool $cacheHit, float $startedAt): void
+    {
+        try {
+            $clientIp = AppServiceProvider::getClientIp() ?: (string) $request->ip();
+            $ua = (string) ($request->userAgent() ?? '');
+
+            [$triggeredBy, $clientLabel, $dedupeSeconds] = match (true) {
+                stripos($ua, 'jdihn-integration-console') !== false || $clientIp === '103.145.96.150' => [
+                    'jdihn_pusat',
+                    'JDIHN Pusat (connect.jdihn.go.id)',
+                    5,
+                ],
+                stripos($ua, 'JDIH Jateng') !== false || $clientIp === '103.107.245.244' => [
+                    'jdih_jateng',
+                    'JDIH Provinsi Jawa Tengah',
+                    10,
+                ],
+                stripos($ua, 'SPLP-') !== false || $clientIp === '103.134.19.173' => [
+                    'splp_monitor',
+                    'SPLP Availability Monitor',
+                    60,
+                ],
+                default => [
+                    'public_pull',
+                    'Akses Feed / Browser',
+                    60,
+                ],
+            };
+
+            $dedupeKey = 'jdih_pull_log_' . md5($triggeredBy . '|' . $clientIp . '|' . $request->getPathInfo());
+            if (!Cache::add($dedupeKey, 1, $dedupeSeconds)) {
+                return;
+            }
+
+            $durationMs = round((microtime(true) - $startedAt) * 1000, 1);
+
+            JdihSyncLog::create([
+                'sync_type' => 'integrasi',
+                'direction' => 'inbound',
+                'status' => 'success',
+                'total_records' => $documentCount,
+                'success_records' => $documentCount,
+                'failed_records' => 0,
+                'triggered_by' => $triggeredBy,
+                'api_token_name' => "{$clientLabel} ({$clientIp})",
+                'payload' => [
+                    'endpoint' => $request->getPathInfo(),
+                    'method' => $request->method(),
+                    'client_ip' => $clientIp,
+                    'user_agent' => substr($ua, 0, 255),
+                    'cache_hit' => $cacheHit,
+                ],
+                'response' => [
+                    'http_status' => 200,
+                    'total_documents' => $documentCount,
+                    'duration_ms' => $durationMs,
+                ],
+                'synced_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Failed to record JDIHN pull sync log: ' . $e->getMessage());
+        }
     }
 
     /**

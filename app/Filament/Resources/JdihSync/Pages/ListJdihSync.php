@@ -9,5 +9,10 @@ class ListJdihSync extends ListRecords
 {
     protected static string $resource = JdihSyncResource::class;
 
-    protected static ?string $title = 'Riwayat Sinkronisasi';
+    protected static ?string $title = 'Riwayat Sinkronisasi JDIH';
+
+    protected function getHeaderActions(): array
+    {
+        return JdihSyncResource::getHeaderActions();
+    }
 }

@@ -13,6 +13,7 @@ Laporan peninjauan kualitas kode, kepatuhan arsitektur, dan evaluasi anti-bloat 
 | **Audit Trail** | 🟢 TERPUSAT | Login, logout, failed login, serta modul CRUD tercatat dengan IP asli & timestamp WIB. Counter publik dilabeli terstruktur sebagai `Pengunjung (Tamu)` |
 | **Mobile & PWA** | 🟢 TERINTEGRASI | Service Worker offline aktif, manifest standalone tersinkron, Asisten AI aktif di mobile drawer, visualisasi mobile statistik adaptif |
 | **Integrasi Desa** | 🟢 AMAN & TERUJI | Reverse-proxy OpenSID tersertifikasi aman SSRF, 63 desa aktif, penyaringan privasi SK Kades, rate-limit 30 req/min |
+| **Integrasi JDIHN** | 🟢 TERSINKRON | Feed JSON pull-based `/integrasi/` berstandar resmi BPHN/ILDIS (1.581 dokumen), fallback tanggal valid `YYYY-MM-DD`, auto-cache invalidation, bebas mutasi DB |
 | **Server OS Health**| 🟢 STABIL | Inode `/tmp` terpelihara pada 20% melalui pembersihan otomatis cron harian `ci_session*` OpenSID |
 | **Anti-Bloat Law** | 🟢 PATUH | 24 berkas uji/ad-hoc/dump dibersihkan, folder scratch dihapus, tanpa dependensi usang, microcopy UI lugas dan bebas kata lebay |
 

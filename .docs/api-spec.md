@@ -91,7 +91,8 @@ Dokumen spesifikasi endpoint publik, integrasi eksternal, dan antarmuka data JDI
 - **GET** `/integrasi/` (alias: `/integrasi`, `/main/integrasi/`)
   - **Auth**: Public Open-Data Feed (Rate-limited: `throttle:60,1` per IP, CORS `*`)
   - **Konsumen Resmi**: Konsol sinkronisasi JDIHN Pusat (`https://connect.jdihn.go.id/my-sync`), JDIH Provinsi Jawa Tengah (`JDIH Jateng User Agent 1.0`), dan `SPLP-Active-Availability-Monitor`.
-  - **Response**: JSON Array berstandar ILDIS / BPHN JDIHN (`idData`, `tahun_pengundangan`, `tanggal_penetapan`, `tanggal_pengundangan`, `jenis`, `noPeraturan`, `judul`, `noPanggil`, `singkatanJenis`, `tempatTerbit`, `penerbit`, `deskripsiFisik`, `sumber`, `subjek`, `isbn`, `status`, `bahasa`, `bidangHukum`, `teuBadan`, `nomorIndukBuku`, `abstrak`, `last_updated`, `urlAbstrak`, `urlDetailPeraturan`, `fileDownload`, `urlDownload`, `operasi`, `display`).
+  - **Response**: JSON Array berstandar ILDIS / BPHN JDIHN (`idData`, `tahun_pengundangan`, `tanggal_penetapan`, `tanggal_pengundangan`, `jenis`, `noPeraturan`, `judul`, `noPanggil`, `singkatanJenis`, `tempatTerbit`, `penerbit`, `deskripsiFisik`, `sumber`, `subjek`, `isbn`, `status`, `bahasa`, `bidangHukum`, `teuBadan`, `nomorIndukBuku`, `abstrak`, `last_updated`, `urlAbstrak`, `urlDetailPeraturan`, `fileDownload`, `urlDownload`, `operasi`, `display`). Tanggal penetapan/pengundangan otomatis menggunakan fallback `YYYY-MM-DD` (`created_at` atau `YYYY-01-01`) bila kolom tanggal di database bernilai `null`.
+  - **Audit & Tracking Admin**: Setiap penarikan `GET` ke endpoint ini dicatat otomatis ke tabel `jdih_sync_logs` (`sync_type = 'integrasi'`, `direction = 'inbound'`) dan tampil pada panel admin `/admin/jdih-sync`.
   - **Caching**: Cache 10 menit dengan invalidasi otomatis via model hook `LegalDocument` & `Category` (`saved`/`deleted`).
 
 - **GET** `/api/jdihn/sync`
