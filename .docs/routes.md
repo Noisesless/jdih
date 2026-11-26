@@ -32,13 +32,14 @@ Dokumen pemetaan seluruh rute aktif, controller, status autentikasi, dan rantai 
 | `/mobile/statistik` | `Closure -> Inertia::render('Mobile/Statistik')` | Visualisasi Data, Tren Regulasi & Trafik Pengunjung | Public | Active |
 | `/mobile/info` | `Closure -> Inertia::render('Mobile/InfoJdih')` | Informasi & Profil Interaktif (Accordion) | Public | Active |
 
-## 3. Admin Backoffice Routes (Filament v3)
+## 3. Admin Backoffice Routes (Filament v5)
 
 | Route Path | Handler | Auth Guard | Purpose |
 |---|---|---|---|
 | `/admin/login` | `App\Filament\Pages\Auth\Login` | Public (Web Guest) | Login Panel Admin (Inline SVG CAPTCHA & Tiered Rate Limiter: 5x/min email, 25x/min IP) |
 | `/admin` | `Filament\Pages\Dashboard` | `auth:web` + `canAccessPanel` | Dashboard Utama Admin |
 | `/admin/legal-documents` | `LegalDocumentResource` | `auth:web` | Manajemen Perda, Perbup, SK |
+| `/admin/legal-decisions` | `LegalDecisionResource` | `auth:web` | Manajemen Putusan Pengadilan (14 Metadata Permenkumham 8/2019) |
 | `/admin/categories` | `CategoryResource` | `auth:web` | Manajemen Kategori Hukum |
 | `/admin/news` | `NewsResource` | `auth:web` | Manajemen Berita & Media |
 | `/admin/banners` | `BannerResource` | `auth:web` | Manajemen Slider Hero Beranda |

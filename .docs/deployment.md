@@ -5,8 +5,8 @@ Panduan teknis penerapan (deployment), environment variables, dan strategi rollb
 ## 1. Deployment Targets
 | Target | Tipe | Web Server | PHP / Node | Domain |
 |---|---|---|---|---|
-| **Production** | Cloud Server / VPS | Nginx 1.24+ (Reverse Proxy) + FastCGI | PHP 8.2+ FPM (Tanpa Node.js di server) | `jdih.banjarnegarakab.go.id` |
-| **Development** | Localhost Workstation | Nginx / Artisan Serve | PHP 8.2+, Node 20+ (Vite) | `localhost:8000` / `jdih.test` |
+| **Production** | Cloud Server / VPS | Nginx 1.24+ (Reverse Proxy) + FastCGI | PHP 8.5.12 FPM (Tanpa Node.js di server) | `jdih.banjarnegarakab.go.id` |
+| **Development** | Localhost Workstation | Artisan Serve / Nginx | PHP 8.5.13 NTS (`.tools/php/`), Node 20+ (Vite) | `127.0.0.1:8080` / `5173` |
 
 ## 2. Environment Mapping (.env)
 
@@ -17,7 +17,7 @@ Panduan teknis penerapan (deployment), environment variables, dan strategi rollb
 | `APP_URL` | `http://localhost:8000` | `https://jdih.banjarnegarakab.go.id` | URL canonical |
 | `APP_TIMEZONE` | `Asia/Jakarta` | `Asia/Jakarta` | Waktu WIB lokal |
 | `DB_CONNECTION` | `mysql` | `mysql` | MySQL/MariaDB |
-| `DB_DATABASE` | `jdihdb1` | `jdihdb1` | Database produksi |
+| `DB_DATABASE` | `jdih_local` | `nama_database_jdih` | Database aplikasi (jangan bocorkan nilai aktual di repo) |
 | `SESSION_SECURE_COOKIE`| `false` | `true` | Enforce HTTPS cookies |
 | `GEMINI_API_KEYS` | `AIzaSy...` | `AIzaSy...,AIzaSy...` | API key Google Gemini (dipisahkan koma untuk rotasi) |
 | `GEMINI_MODEL` | `gemini-2.5-flash` | `gemini-2.5-flash` | Model AI primer |
