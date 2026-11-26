@@ -53,20 +53,41 @@ class LegalDecision extends Model
     }
 
     /**
-     * Accessor for encoded public storage URL when the PDF exists on disk.
+     * Resolve the actual existing file path on the public disk, including legacy year-based folders.
      */
-    public function getFileAttribute(): ?string
+    public function resolvePublicFilePath(): ?string
     {
         if (!$this->file_path) {
             return null;
         }
 
+        $disk = Storage::disk('public');
         $cleanPath = ltrim((string) $this->file_path, '/');
-        if (!Storage::disk('public')->exists($cleanPath)) {
+        if ($disk->exists($cleanPath)) {
+            return $cleanPath;
+        }
+
+        if ($this->year) {
+            $yearCandidate = 'produk_hukum/' . (int) $this->year . '/' . basename($cleanPath);
+            if ($disk->exists($yearCandidate)) {
+                return $yearCandidate;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Accessor for encoded public storage URL when the PDF exists on disk.
+     */
+    public function getFileAttribute(): ?string
+    {
+        $resolved = $this->resolvePublicFilePath();
+        if (!$resolved) {
             return null;
         }
 
-        $segments = explode('/', $cleanPath);
+        $segments = explode('/', $resolved);
         return '/storage/' . implode('/', array_map('rawurlencode', $segments));
     }
 }

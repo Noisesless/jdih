@@ -372,6 +372,8 @@ php artisan optimize:clear
     *   Mengikutkan Putusan terpublikasi ke feed `/integrasi/` (`idData = 900000 + id`).
 *   **Perbaikan Bug HTTP 500 `model_label` (`LogsActivity.php` & `ActivityLog.php`)**:
     *   Memotong aman `model_label` via `Str::limit(..., 245, '...')` guna mencegah `SQLSTATE[22001]: Data too long` ketika pengunjung membuka regulasi berjudul > 255 karakter.
+*   **Resolver Path PDF Legacy Putusan (`LegalDecision::resolvePublicFilePath()`)**:
+    *   Menghubungkan 12 path legacy `produk_hukum/produk_hukum/putusan/...` ke berkas fisik aktual di `storage/app/public/produk_hukum/{year}/...` tanpa mengubah baris DB, sehingga preview `/putusan/{id}` dan `urlDownload` pada `/integrasi/` 100% aktif (`HTTP 200`).
 *   **Catatan CVE Production (`composer.lock` & Aset Filament)**:
     *   Drift lokal pada production (`laravel/framework v12.72.0`, `filament/* v5.11.2`, `symfony/* v8.1.x`, `livewire v4.4.8`, `guzzlehttp/guzzle 7.16.1`) dipertahankan utuh di server sebagai patch CVE khusus PHP 8.4 produksi tanpa tertimpa saat deploy.
 *   **Sinkronisasi PHP 8.5 & CVE Patch Lockfile ke Dev + GitHub**:

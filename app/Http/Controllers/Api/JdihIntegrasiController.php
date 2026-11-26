@@ -252,12 +252,10 @@ class JdihIntegrasiController extends Controller
         foreach ($decisions as $decision) {
             $fileDownload = '-';
             $urlDownload = '-';
-            if (filled($decision->file_path)) {
-                $cleanPath = ltrim((string) $decision->file_path, '/');
-                if (is_file($publicDisk->path($cleanPath))) {
-                    $fileDownload = basename($cleanPath);
-                    $urlDownload = $baseUrl . '/storage/' . $this->encodeStoragePath($cleanPath);
-                }
+            $resolvedPath = $decision->resolvePublicFilePath();
+            if ($resolvedPath !== null) {
+                $fileDownload = basename($resolvedPath);
+                $urlDownload = $baseUrl . '/storage/' . $this->encodeStoragePath($resolvedPath);
             }
 
             $decisionDate = $decision->decision_date?->format('Y-m-d')
