@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\JdihSyncLog;
+use App\Models\LegalDecision;
 use App\Models\LegalDocument;
 use App\Providers\AppServiceProvider;
 use Illuminate\Http\JsonResponse;
@@ -235,6 +236,60 @@ class JdihIntegrasiController extends Controller
                 'last_updated' => $doc->updated_at?->format('Y-m-d H:i:s') ?? '',
                 'urlAbstrak' => $urlAbstrak,
                 'urlDetailPeraturan' => "{$baseUrl}/{$categorySlug}/{$doc->id}",
+                'fileDownload' => $fileDownload,
+                'urlDownload' => $urlDownload,
+                'operasi' => '4',
+                'display' => '1',
+            ];
+        }
+
+        // Sertakan Putusan Pengadilan (tabel legal_decisions) dengan offset ID agar tidak bertabrakan dengan LegalDocument.
+        $decisions = LegalDecision::query()
+            ->where('is_published', true)
+            ->orderByDesc('id')
+            ->get();
+
+        foreach ($decisions as $decision) {
+            $fileDownload = '-';
+            $urlDownload = '-';
+            if (filled($decision->file_path)) {
+                $cleanPath = ltrim((string) $decision->file_path, '/');
+                if (is_file($publicDisk->path($cleanPath))) {
+                    $fileDownload = basename($cleanPath);
+                    $urlDownload = $baseUrl . '/storage/' . $this->encodeStoragePath($cleanPath);
+                }
+            }
+
+            $decisionDate = $decision->decision_date?->format('Y-m-d')
+                ?? (($decision->year && (int) $decision->year >= 1900 && (int) $decision->year <= (int) date('Y') + 1)
+                    ? sprintf('%04d-01-01', (int) $decision->year)
+                    : ($decision->created_at?->format('Y-m-d') ?? date('Y-m-d')));
+
+            $rows[] = [
+                'idData' => (string) (900000 + (int) $decision->id),
+                'tahun_pengundangan' => (string) ($decision->year ?? ''),
+                'tanggal_penetapan' => $decisionDate,
+                'tanggal_pengundangan' => $decisionDate,
+                'jenis' => filled($decision->document_type) ? (string) $decision->document_type : 'Putusan',
+                'noPeraturan' => filled($decision->document_number) ? (string) $decision->document_number : '-',
+                'judul' => (string) $decision->title,
+                'noPanggil' => '-',
+                'singkatanJenis' => filled($decision->court_abbreviation) ? (string) $decision->court_abbreviation : 'PUT',
+                'tempatTerbit' => filled($decision->court_place) ? (string) $decision->court_place : 'Banjarnegara',
+                'penerbit' => filled($decision->court_type) ? (string) $decision->court_type : 'Pengadilan',
+                'deskripsiFisik' => '-',
+                'sumber' => filled($decision->source) ? (string) $decision->source : '-',
+                'subjek' => filled($decision->subject) ? (string) $decision->subject : '',
+                'isbn' => '-',
+                'status' => filled($decision->status) && $decision->status !== '-' ? (string) $decision->status : 'Inkracht',
+                'bahasa' => filled($decision->language) ? (string) $decision->language : 'Bahasa Indonesia',
+                'bidangHukum' => filled($decision->legal_field) ? (string) $decision->legal_field : 'Hukum Tata Usaha Negara',
+                'teuBadan' => filled($decision->teu) ? (string) $decision->teu : (filled($decision->court_type) ? (string) $decision->court_type : 'Pengadilan'),
+                'nomorIndukBuku' => '-',
+                'abstrak' => filled($decision->content) ? (string) $decision->content : '',
+                'last_updated' => $decision->updated_at?->format('Y-m-d H:i:s') ?? '',
+                'urlAbstrak' => '',
+                'urlDetailPeraturan' => "{$baseUrl}/putusan/{$decision->id}",
                 'fileDownload' => $fileDownload,
                 'urlDownload' => $urlDownload,
                 'operasi' => '4',

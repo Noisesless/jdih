@@ -82,7 +82,30 @@ Dokumen arsitektur basis data, skema tabel, indeks, dan relasi data sistem JDIH 
 | `is_approved` | TINYINT(1) | Default: 0 | Status moderasi admin (1 = tampil, 0 = pending) |
 | `created_at` / `updated_at` | TIMESTAMP | - | Waktu kirim dan moderasi |
 
-### G. Tabel Pendukung Lainnya
+### G. `legal_decisions` (Putusan Pengadilan — Standar Permenkumham 8/2019)
+| Kolom | Tipe | Index / Constraint | Keterangan |
+|---|---|---|---|
+| `id` | BIGINT UNSIGNED | PK, Auto Increment | ID Putusan |
+| `document_type` | VARCHAR(255) | Default: `Putusan` | Tipe dokumen |
+| `document_number` | VARCHAR(255) | Required | Nomor Putusan |
+| `year` | INT | Required | Tahun Putusan |
+| `title` | VARCHAR(255) | Required | Judul Putusan |
+| `teu` | VARCHAR(255) | Nullable | T.E.U. Badan / Pengarang |
+| `court_type` | VARCHAR(255) | Required | Jenis Peradilan |
+| `court_abbreviation` | VARCHAR(50) | Nullable | Singkatan Jenis Peradilan (`PTUN`, `PN`, `MA`, `MK`) |
+| `court_place` | VARCHAR(255) | Nullable | Tempat Peradilan |
+| `decision_date` | DATE | Nullable | Tanggal/ Bulan/ Tahun Dibacakan |
+| `source` | VARCHAR(255) | Nullable | Sumber dokumen |
+| `subject` | VARCHAR(255) | Nullable | Subjek Putusan |
+| `status` | VARCHAR(255) | Nullable | Status Putusan (`Inkracht`, dsb) |
+| `language` | VARCHAR(100) | Default: `Bahasa Indonesia` | Bahasa |
+| `legal_field` | VARCHAR(255) | Nullable | Bidang Hukum |
+| `location` | VARCHAR(255) | Nullable | Lokasi penyimpanan |
+| `content` | TEXT | Nullable | Abstrak / Ringkasan Putusan |
+| `file_path` | VARCHAR(255) | Nullable | Path berkas PDF (`disk: public`) |
+| `is_published` | TINYINT(1) | Default: 1 | Status tampil publik |
+
+### H. Tabel Pendukung Lainnya
 - `categories`: Kategori/tipe peraturan daerah.
 - `legal_document_relations`: Relasi antar-peraturan (mencabut, diubah oleh, dsb).
 - `news`: Berita dan artikel hukum.

@@ -65,10 +65,12 @@ class ActivityLog extends Model
 
     private static function guessLabel(Model $model): string
     {
-        return $model->title
+        $raw = (string) ($model->title
             ?? $model->name
             ?? $model->subject
-            ?? ('#' . $model->getKey());
+            ?? ('#' . $model->getKey()));
+
+        return \Illuminate\Support\Str::limit($raw, 245, '...');
     }
 
     public function getActionLabelAttribute(): string

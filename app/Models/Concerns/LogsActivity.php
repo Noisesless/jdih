@@ -71,7 +71,11 @@ trait LogsActivity
                     'action'      => 'updated',
                     'model_type'  => class_basename($model),
                     'model_id'    => $model->getKey(),
-                    'model_label' => $model->title ?? $model->name ?? "ID #{$model->getKey()}",
+                    'model_label' => \Illuminate\Support\Str::limit(
+                        (string) ($model->title ?? $model->name ?? "ID #{$model->getKey()}"),
+                        245,
+                        '...'
+                    ),
                     'description' => $description,
                     'old_values'  => array_intersect_key($model->getOriginal(), $activeChanges),
                     'new_values'  => $activeChanges,

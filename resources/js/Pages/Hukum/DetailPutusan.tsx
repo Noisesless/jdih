@@ -50,12 +50,26 @@ export default function DetailPutusan({ document }: Props) {
         }
     };
 
+    const fileUrl = document.file || (document.file_path ? `/storage/${document.file_path}` : null);
+
     const metadata = [
-        { label: 'Nomor Putusan', value: document.document_number },
-        { label: 'Tahun', value: document.year },
-        { label: 'Jenis Peradilan', value: document.court_type },
-        { label: 'Status', value: document.status || 'Inkracht' },
-        { label: 'Tanggal Diunggah', value: formatDate(document.created_at) },
+        { label: 'Tipe Dokumen', value: document.document_type || 'Putusan' },
+        { label: 'Judul', value: document.title || '-' },
+        { label: 'T.E.U', value: document.teu || document.court_type || '-' },
+        { label: 'Nomor', value: document.document_number || '-' },
+        { label: 'Jenis Peradilan', value: document.court_type || '-' },
+        { label: 'Singkatan Jenis Peradilan', value: document.court_abbreviation || '-' },
+        { label: 'Tempat Peradilan', value: document.court_place || '-' },
+        {
+            label: 'Tanggal/ Bulan/ Tahun Dibacakan',
+            value: document.decision_date ? formatDate(document.decision_date) : (document.year ? String(document.year) : '-'),
+        },
+        { label: 'Sumber', value: document.source || '-' },
+        { label: 'Subjek', value: document.subject || '-' },
+        { label: 'Status Putusan', value: document.status && document.status !== '-' ? document.status : 'Inkracht' },
+        { label: 'Bahasa', value: document.language || 'Bahasa Indonesia' },
+        { label: 'Bidang Hukum', value: document.legal_field || '-' },
+        { label: 'Lokasi', value: document.location || 'Bagian Hukum Sekretariat Daerah Kab. Banjarnegara' },
     ];
 
     return (
@@ -98,11 +112,16 @@ export default function DetailPutusan({ document }: Props) {
                                         Informasi Putusan
                                     </h3>
                                 </div>
-                                <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="p-6 sm:p-8 divide-y divide-slate-100">
                                     {metadata.map((m, i) => (
-                                        <div key={i} className="space-y-1">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{m.label}</p>
-                                            <p className="text-sm font-bold text-slate-700">{m.value}</p>
+                                        <div key={i} className="py-3.5 first:pt-0 last:pb-0 grid grid-cols-1 sm:grid-cols-12 gap-1 sm:gap-4 items-baseline">
+                                            <div className="sm:col-span-4 text-sm font-bold text-slate-800">
+                                                {m.label}
+                                            </div>
+                                            <div className="sm:col-span-8 flex items-baseline gap-2.5 text-sm font-medium text-slate-700 leading-relaxed">
+                                                <span className="hidden sm:inline font-bold text-slate-400">:</span>
+                                                <span>{m.value}</span>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -114,10 +133,10 @@ export default function DetailPutusan({ document }: Props) {
                                         <FileType className="h-5 w-5 text-teal-600" />
                                         Berkas Putusan
                                     </h3>
-                                    {document.file_path && (
+                                    {fileUrl && (
                                         <div className="flex items-center gap-2">
                                             <a 
-                                                href={`/storage/${document.file_path}`} 
+                                                href={fileUrl} 
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="px-3 py-2 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-100 transition-all flex items-center gap-1.5"
@@ -127,7 +146,7 @@ export default function DetailPutusan({ document }: Props) {
                                                 <span className="hidden sm:inline">Buka Tab Baru</span>
                                             </a>
                                             <a 
-                                                href={`/storage/${document.file_path}`} 
+                                                href={fileUrl} 
                                                 className="px-4 py-2 bg-teal-600 text-white text-xs font-black rounded-xl hover:bg-teal-700 transition-all flex items-center gap-2"
                                             >
                                                 <Download className="h-4 w-4" /> UNDUH PDF
@@ -136,7 +155,7 @@ export default function DetailPutusan({ document }: Props) {
                                     )}
                                 </div>
                                 <div className="p-0">
-                                    {document.file_path ? (
+                                    {fileUrl ? (
                                         isMobileDevice && !forceInlineDoc ? (
                                             <div className="aspect-[4/5.5] w-full bg-slate-900 flex flex-col items-center justify-center p-6 text-center text-white">
                                                 <div className="w-16 h-16 rounded-2xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center mb-4">
@@ -150,7 +169,7 @@ export default function DetailPutusan({ document }: Props) {
                                                 </p>
                                                 <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
                                                     <a 
-                                                        href={`/storage/${document.file_path}`}
+                                                        href={fileUrl}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="flex items-center justify-center gap-2 px-5 py-3 bg-[#0d9488] text-white text-xs font-bold rounded-xl hover:bg-teal-700 active:scale-95 transition-all shadow-lg shadow-teal-900/30"
@@ -159,7 +178,7 @@ export default function DetailPutusan({ document }: Props) {
                                                         Buka di Tab Baru
                                                     </a>
                                                     <a 
-                                                        href={`/storage/${document.file_path}`}
+                                                        href={fileUrl}
                                                         download
                                                         className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-xl hover:bg-slate-700 active:scale-95 transition-all"
                                                     >
@@ -178,13 +197,13 @@ export default function DetailPutusan({ document }: Props) {
                                         ) : (
                                             <div className="aspect-[4/5.5] w-full bg-slate-900">
                                                 <object 
-                                                    data={`/storage/${document.file_path}`}
+                                                    data={fileUrl}
                                                     type="application/pdf"
                                                     className="w-full h-full"
                                                 >
                                                     <div className="flex flex-col items-center justify-center h-full text-white p-8 text-center">
                                                         <p className="text-sm font-bold mb-4">Preview PDF tidak tersedia di browser ini.</p>
-                                                        <a href={`/storage/${document.file_path}`} className="px-6 py-2 bg-teal-600 rounded-lg text-xs font-bold">Download File</a>
+                                                        <a href={fileUrl} className="px-6 py-2 bg-teal-600 rounded-lg text-xs font-bold">Download File</a>
                                                     </div>
                                                 </object>
                                             </div>

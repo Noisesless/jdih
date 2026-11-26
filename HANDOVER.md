@@ -361,3 +361,16 @@ php artisan optimize:clear
     *   **Perbaikan Validasi Tanggal (`5ac547f`)**: Menangani kasus 1 dokumen (`Origin ID 1515`) yang gagal pada Sync `#1415` (`record 67: #/tanggal_pen...`) akibat `published_at`/`promulgated_at` bernilai `null` dengan menambahkan fallback `YYYY-MM-DD` otomatis tanpa menyentuh DB (`Bad dates: 0` dari 1.581 dokumen).
     *   **Pencatatan Pull Sinkronisasi Pusat di `/admin/jdih-sync` & Perbaikan `Pengaturan API`**: `JdihIntegrasiController` kini merekam setiap request `GET /integrasi/` dari `connect.jdihn.go.id`, JDIH Jateng, dan SPLP Monitor ke tabel `jdih_sync_logs` (`sync_type: integrasi`, `direction: inbound`). `JdihSyncResource` & `ListJdihSync` diperbarui ke Filament v4 (filter sumber, `ViewAction` infolist detail, auto-poll 30s, tombol cepat `Cek Feed /integrasi/` & `Buka JDIHN Connect`, serta menyembunyikan tombol legacy `Push Dokumen`/`Push Anggota`). `JdihSyncSettings` & `jdih-sync-settings.blade.php` diperbaiki dari `TypeError` properti `null` (`HTTP 500`) dan disesuaikan dengan `<x-filament-panels::page>` agar mendukung dark mode.
     *   Seluruh perbaikan dilakukan tanpa mengubah struktur maupun isi database produksi.
+
+### Sesi Bagian 14 (26 Nov 2026): Standardisasi 14 Metadata Putusan Permenkumham 8/2019 & Perbaikan `LogsActivity`
+*   **Migrasi Non-Destruktif `legal_decisions` (`2026_11_26_093000_add_permenkumham_metadata_to_legal_decisions_table.php`)**:
+    *   Menambahkan 10 kolom metadata standar Putusan (`document_type`, `teu`, `court_abbreviation`, `court_place`, `decision_date`, `source`, `subject`, `language`, `legal_field`, `location`) dengan default/nullable aman tanpa memodifikasi 12 data putusan eksisting di production.
+*   **Perbaikan Form & Infolist Admin (`LegalDecisionForm.php`, `LegalDecisionResource.php`, `LegalDecision.php`)**:
+    *   Mengisi form admin Putusan yang sebelumnya kosong (yang menyebabkan error SQL 1364 saat admin menambah putusan) dengan seluruh 14 field standar Permenkumham 8/2019, unggahan PDF ke disk `public`, serta infolist detail.
+*   **Pembaruan Tampilan Detail Putusan (`DetailPutusan.tsx`) & Kompilasi Vite**:
+    *   Menampilkan 14 baris metadata dalam format daftar tulisan `Label : Nilai` sesuai permintaan klien (*Tipe Dokumen, Judul, T.E.U, Nomor, Jenis Peradilan, Singkatan Jenis Peradilan, Tempat Peradilan, Tanggal/ Bulan/ Tahun Dibacakan, Sumber, Subjek, Status Putusan, Bahasa, Bidang Hukum, Lokasi*).
+    *   Mengikutkan Putusan terpublikasi ke feed `/integrasi/` (`idData = 900000 + id`).
+*   **Perbaikan Bug HTTP 500 `model_label` (`LogsActivity.php` & `ActivityLog.php`)**:
+    *   Memotong aman `model_label` via `Str::limit(..., 245, '...')` guna mencegah `SQLSTATE[22001]: Data too long` ketika pengunjung membuka regulasi berjudul > 255 karakter.
+*   **Catatan CVE Production (`composer.lock` & Aset Filament)**:
+    *   Drift lokal pada production (`laravel/framework v12.72.0`, `filament/* v5.11.2`, `symfony/* v8.1.x`, `livewire v4.4.8`, `guzzlehttp/guzzle 7.16.1`) dipertahankan utuh di server sebagai patch CVE khusus PHP 8.4 produksi tanpa tertimpa saat deploy.

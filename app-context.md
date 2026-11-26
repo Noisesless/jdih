@@ -1,5 +1,5 @@
 # APP CONTEXT — JDIH KABUPATEN BANJARNEGARA
-# Last Updated: 2026-11-24
+# Last Updated: 2026-11-26
 # State Snapshot untuk Vibes Coding Workflow / Antigravity IDE
 # Status: Production Clean & Sanitized
 
@@ -112,6 +112,12 @@ cache_invalidation = "Otomatis invalidasi versi cache saat LegalDocument atau Ca
 visitor_exclusion = "RecordVisitor mengabaikan integrasi/* & main/integrasi/* agar tidak mengotori statistik pengunjung"
 admin_sync_logging = "Setiap pull GET /integrasi/ tercatat di jdih_sync_logs (sync_type=integrasi, direction=inbound) & tampil di /admin/jdih-sync; tombol Push legacy disembunyikan & halaman /admin/jdih-sync/settings diperbaiki"
 last_verified = "Sync #1415 Completed (1.581 diambil: 1.556 insert, 24 update, 1.504 lampiran antre download; fix fallback tanggal commit 5ac547f & pull logging /admin/jdih-sync)"
+
+[PUTUSAN_METADATA]
+table = "legal_decisions (14 field Permenkumham 8/2019: document_type, title, teu, document_number, court_type, court_abbreviation, court_place, decision_date, source, subject, status, language, legal_field, location)"
+admin_form = "app/Filament/Resources/LegalDecisions/Schemas/LegalDecisionForm.php (Tabs + disk public + validation)"
+frontend_detail = "resources/js/Pages/Hukum/DetailPutusan.tsx (format baris tulisan Label : Nilai 14 poin)"
+integrasi_sync = "LegalDecision terpublikasi ikut diekspos di /integrasi/ dengan offset idData 900000 + id"
 
 [FASE_STATUS]
 active_fase = "Fase 7 (Audit Keamanan Selesai & Stabilisasi Dependensi)"
