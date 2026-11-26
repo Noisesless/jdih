@@ -53,7 +53,7 @@ graph TD
 - **Aset Frontend**: Terkompilasi mandiri via Vite (`public/build`) di lingkungan pengembang lokal sehingga server produksi dapat beroperasi tanpa Node.js.
 
 ## 2. Lapisan Logika & Bisnis (Business Logic Layer)
-- **Framework**: Laravel 12 (v12.69.2) dengan struktur MVC yang bersih.
+- **Framework**: Laravel 12 (`v12.72.0`) + Filament (`v5.11.2`) + Livewire (`v4.4.8`) dengan struktur MVC yang bersih.
 - **Admin Authentication & Tiered Rate Limiter (`app/Filament/Pages/Auth/Login.php`)**:
   - *Inline SVG CAPTCHA*: Tantangan matematika acak bergaya tema JDIH Teal (`#0d9488`) untuk memblokir bot DOM scraping dan serangan otomatis, dilengkapi tombol refresh instan.
   - *Tiered Rate Limiter (Bertahap)*:

@@ -7,8 +7,8 @@
 name = "JDIH Kabupaten Banjarnegara"
 slug = "jdih-banjarnegara"
 type = "Web Portal & Admin Backoffice"
-stack = "Laravel 12 (v12.69.2) + Filament + Inertia.js (React) + Tailwind CSS + MySQL"
-php_version = "8.5.12 (Production) / 8.2+ (Minimum Requirement)"
+stack = "Laravel 12 (v12.72.0) + Filament (v5.11.2) + Inertia.js (React) + Tailwind CSS + MySQL"
+php_version = "8.5.12 FPM (Production) / 8.5.13 NTS (.tools/php Local Dev) / 8.2+ (Min)"
 production_url = "https://jdih.banjarnegarakab.go.id"
 timezone = "Asia/Jakarta (UTC+7)"
 locale = "id"
@@ -65,6 +65,7 @@ viewport_rule = "min-h-[calc(100vh-140px)] prevent vertical clipping"
 
 [DEPLOYMENT]
 server_nature = "Linux Server tanpa Node.js / NPM"
+local_php_tool = ".tools/php/ (PHP 8.5.13 NTS x64 terisolasi via use-php.ps1, .gitignore)"
 flow = "Local Vite Build (public/build) -> commit git -> pull di server -> composer install -> migrate -> optimize:clear"
 storage = "Symlink public/storage -> storage/app/public via php artisan storage:link"
 disk_default = "Filament forms & tables harus eksplisit ->disk('public')"

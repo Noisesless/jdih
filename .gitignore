@@ -26,6 +26,7 @@ Thumbs.db
 /scratch
 *.sql
 *.sql.gz
+/.tools
 
 # Presentations & personal draft notes
 *.pptx

@@ -374,3 +374,6 @@ php artisan optimize:clear
     *   Memotong aman `model_label` via `Str::limit(..., 245, '...')` guna mencegah `SQLSTATE[22001]: Data too long` ketika pengunjung membuka regulasi berjudul > 255 karakter.
 *   **Catatan CVE Production (`composer.lock` & Aset Filament)**:
     *   Drift lokal pada production (`laravel/framework v12.72.0`, `filament/* v5.11.2`, `symfony/* v8.1.x`, `livewire v4.4.8`, `guzzlehttp/guzzle 7.16.1`) dipertahankan utuh di server sebagai patch CVE khusus PHP 8.4 produksi tanpa tertimpa saat deploy.
+*   **Sinkronisasi PHP 8.5 & CVE Patch Lockfile ke Dev + GitHub**:
+    *   Menyiapkan environment terisolasi **PHP 8.5.13 NTS x64** di `.tools/php/` (dikecualikan di `.gitignore`) beserta helper `use-php.ps1`, `php.bat`, `composer.bat`, dan `artisan.bat` agar identik dengan PHP-FPM 8.5.12 production tanpa mengubah XAMPP global.
+    *   Menarik `composer.lock` patch CVE dari production ke dev, menjalankan `composer install` & `filament:upgrade` (`v5.11.2`), dan menyinkronkan penuh ke GitHub & production sehingga drift = 0.
